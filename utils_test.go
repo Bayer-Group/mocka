@@ -214,27 +214,6 @@ var _ = Describe("utils", func() {
 		})
 	})
 
-	Describe("areEqual", func() {
-		It("return true is all values are equal", func() {
-			thing := Thing{"The Thing"}
-			result := areEqual(
-				[]interface{}{thing, 42, "Hello", false, nil},
-				[]interface{}{thing, 42, "Hello", false, nil},
-			)
-
-			Expect(result).To(BeTrue())
-		})
-
-		It("return false if one value in the slices are not equal", func() {
-			result := areEqual(
-				[]interface{}{nil, 42, "Hello", false, nil},
-				[]interface{}{nil, 42, "Sam", false, nil},
-			)
-
-			Expect(result).To(BeFalse())
-		})
-	})
-
 	Describe("mapToTypeName", func() {
 		type thisIsAStruct struct{}
 

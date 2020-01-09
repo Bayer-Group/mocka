@@ -112,17 +112,6 @@ func areTypeAndValueEquivalent(originalType reflect.Type, val interface{}) bool 
 	}
 }
 
-// areEqual compares slices are interface values to see if they are equal
-func areEqual(firsts, seconds []interface{}) (equal bool) {
-	equal = true
-
-	for i := 0; equal && i < len(firsts); i++ {
-		equal = firsts[i] == seconds[i]
-	}
-
-	return
-}
-
 // mapToTypeName maps a slice of interface values to their type names
 func mapToTypeName(interfaces []interface{}) (n []string) {
 	for _, inter := range interfaces {
