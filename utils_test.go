@@ -102,6 +102,11 @@ var _ = Describe("utils", func() {
 			return len(str) + num, nil
 		}
 
+		It("returns false if the type is nil", func() {
+			result := validateArguments(nil, []interface{}{"Arg1", 42})
+			Expect(result).To(BeFalse())
+		})
+
 		It("returns false if the type is not a function", func() {
 			result := validateArguments(reflect.TypeOf("I am not a funciton"), []interface{}{"Arg1", 42})
 			Expect(result).To(BeFalse())
@@ -128,6 +133,11 @@ var _ = Describe("utils", func() {
 			return len(str) + num, nil
 		}
 
+		It("returns false if the type is nil", func() {
+			result := validateOutParameters(nil, []interface{}{0, nil})
+			Expect(result).To(BeFalse())
+		})
+
 		It("returns false if the type is not a function", func() {
 			result := validateOutParameters(reflect.TypeOf("I am not a funciton"), []interface{}{0, nil})
 			Expect(result).To(BeFalse())
@@ -150,6 +160,10 @@ var _ = Describe("utils", func() {
 	})
 
 	Describe("areTypeAndValueEquivalent", func() {
+		It("returns false if the type is nil", func() {
+			Expect(areTypeAndValueEquivalent(nil, "")).To(BeFalse())
+		})
+
 		It("returns true if nil for type is a nilable kind", func() {
 			var namer Namer
 			namer = &Thing{"The Thing"}
@@ -214,27 +228,6 @@ var _ = Describe("utils", func() {
 		})
 	})
 
-	Describe("areEqual", func() {
-		It("return true is all values are equal", func() {
-			thing := Thing{"The Thing"}
-			result := areEqual(
-				[]interface{}{thing, 42, "Hello", false, nil},
-				[]interface{}{thing, 42, "Hello", false, nil},
-			)
-
-			Expect(result).To(BeTrue())
-		})
-
-		It("return false if one value in the slices are not equal", func() {
-			result := areEqual(
-				[]interface{}{nil, 42, "Hello", false, nil},
-				[]interface{}{nil, 42, "Sam", false, nil},
-			)
-
-			Expect(result).To(BeFalse())
-		})
-	})
-
 	Describe("mapToTypeName", func() {
 		type thisIsAStruct struct{}
 
@@ -247,6 +240,10 @@ var _ = Describe("utils", func() {
 			result := mapToTypeName(input)
 
 			Expect(result).To(Equal([]string{"*Thing", "int", "<nil>", "string", "float64", "*errorString", "thisIsAStruct", "*string"}))
+		})
+
+		It("returns an empty slice if passed a nil", func() {
+			Expect(mapToTypeName(nil)).To(Equal([]string{}))
 		})
 	})
 })

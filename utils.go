@@ -54,7 +54,7 @@ func cloneValue(source interface{}, destin interface{}) error {
 
 // validateArguments validates that the arguments provided match the argument types.
 func validateArguments(functionType reflect.Type, arguments []interface{}) bool {
-	if functionType.Kind() != reflect.Func {
+	if functionType == nil || functionType.Kind() != reflect.Func {
 		return false
 	}
 
@@ -74,7 +74,7 @@ func validateArguments(functionType reflect.Type, arguments []interface{}) bool 
 
 // validateOutParameters validates that the arguments provided match the argument types.
 func validateOutParameters(functionType reflect.Type, outParameters []interface{}) bool {
-	if functionType.Kind() != reflect.Func {
+	if functionType == nil || functionType.Kind() != reflect.Func {
 		return false
 	}
 
@@ -94,6 +94,10 @@ func validateOutParameters(functionType reflect.Type, outParameters []interface{
 
 // areTypeAndValueEquivalent does a kind wise check an interface{} to determine type equivalency
 func areTypeAndValueEquivalent(originalType reflect.Type, val interface{}) bool {
+	if originalType == nil {
+		return false
+	}
+
 	switch originalKind := originalType.Kind(); originalKind {
 	case reflect.Func, reflect.Chan, reflect.Map, reflect.Ptr, reflect.Slice:
 		if val == nil {
@@ -112,31 +116,22 @@ func areTypeAndValueEquivalent(originalType reflect.Type, val interface{}) bool 
 	}
 }
 
-// areEqual compares slices are interface values to see if they are equal
-func areEqual(firsts, seconds []interface{}) (equal bool) {
-	equal = true
-
-	for i := 0; equal && i < len(firsts); i++ {
-		equal = firsts[i] == seconds[i]
-	}
-
-	return
-}
-
 // mapToTypeName maps a slice of interface values to their type names
-func mapToTypeName(interfaces []interface{}) (n []string) {
-	for _, inter := range interfaces {
+func mapToTypeName(interfaces []interface{}) []string {
+	names := make([]string, len(interfaces))
+	for i, inter := range interfaces {
 		if inter == nil {
-			n = append(n, "<nil>")
+			names[i] = "<nil>"
 		} else {
 			t := reflect.TypeOf(inter)
 			switch t.Kind() {
 			case reflect.Ptr:
-				n = append(n, "*"+t.Elem().Name())
+				names[i] = "*" + t.Elem().Name()
 			default:
-				n = append(n, t.Name())
+				names[i] = t.Name()
 			}
 		}
 	}
-	return
+
+	return names
 }

@@ -81,8 +81,8 @@ func ExampleCall_ReturnValues() {
 }
 
 func ExampleOnCallReturner_Return() {
-	var fn = func(str string) int {
-		return len(str)
+	var fn = func(str []string, n int) int {
+		return len(str) + n
 	}
 
 	stub, err := mocka.Function(&fn, 20)
@@ -91,11 +91,11 @@ func ExampleOnCallReturner_Return() {
 	}
 	defer stub.Restore()
 
-	if err = stub.WithArgs("123").Return(5); err != nil {
+	if err = stub.WithArgs([]string{"123", "456"}, 2).Return(5); err != nil {
 		log.Fatal(err.Error())
 	}
 
-	fmt.Println(fn("123"))
+	fmt.Println(fn([]string{"123", "456"}, 2))
 	// Output: 5
 }
 
@@ -345,22 +345,31 @@ func ExampleStub_Restore() {
 }
 
 func ExampleStub_ExecOnCall() {
-	var fn = func(str string) int {
-		return len(str)
+	var fn = func(in <-chan int) <-chan int {
+		out := make(chan int, 1)
+		go func() {
+			out <- <-in
+		}()
+		return out
 	}
 
-	stub, err := mocka.Function(&fn, 20)
+	out := make(chan int, 1)
+	stub, err := mocka.Function(&fn, out)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 	defer stub.Restore()
 
 	stub.ExecOnCall(func(args []interface{}) {
-		fmt.Println(args)
+		c := args[0].(<-chan int)
+		out <- <-c
 	})
 
-	fn("123")
-	// Output: [123]
+	in := make(chan int, 1)
+	in <- 10
+	o := fn(in)
+	fmt.Println(<-o)
+	// Output: 10
 }
 
 func ExampleStub_GetCalls() {

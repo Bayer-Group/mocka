@@ -1,5 +1,7 @@
 package mocka
 
+import "errors"
+
 // OnCaller describes the functionality to set custom return value based on call index
 type OnCaller interface {
 	OnCall(int) Returner
@@ -16,6 +18,10 @@ type onCall struct {
 
 // Return sets the return values for this set of custom arguments
 func (c *onCall) Return(returnValues ...interface{}) error {
+	if c.stub == nil {
+		return errors.New("mocka: stub does not exist")
+	}
+
 	if !validateOutParameters(c.stub.toType(), returnValues) {
 		return &outParameterValidationError{c.stub.toType(), returnValues}
 	}

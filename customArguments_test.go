@@ -25,6 +25,17 @@ var _ = Describe("customArguments", func() {
 	})
 
 	Describe("Return", func() {
+		It("returns an error if the stub is nil", func() {
+			ca := &customArguments{
+				args: []interface{}{"", 42},
+			}
+
+			err := ca.Return(42, "nil")
+
+			Expect(err).Should(HaveOccurred())
+			Expect(err.Error()).To(Equal("mocka: stub does not exist"))
+		})
+
 		It("returns an error if one out parameter type does not match", func() {
 			ca := &customArguments{
 				stub: mockFn,
@@ -33,7 +44,7 @@ var _ = Describe("customArguments", func() {
 
 			err := ca.Return(42, "nil")
 
-			Expect(err).ToNot(BeNil())
+			Expect(err).Should(HaveOccurred())
 			Expect(err.Error()).To(Equal("mocka: expected return values of type [int error], but recieved [int string]"))
 		})
 
