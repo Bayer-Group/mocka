@@ -123,6 +123,7 @@ func (mf *mockFunction) getReturnValues(arguments []interface{}) (out []interfac
 			break
 		}
 	}
+
 	return out
 }
 
