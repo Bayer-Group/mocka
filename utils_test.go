@@ -102,6 +102,11 @@ var _ = Describe("utils", func() {
 			return len(str) + num, nil
 		}
 
+		It("returns false if the type is nil", func() {
+			result := validateArguments(nil, []interface{}{"Arg1", 42})
+			Expect(result).To(BeFalse())
+		})
+
 		It("returns false if the type is not a function", func() {
 			result := validateArguments(reflect.TypeOf("I am not a funciton"), []interface{}{"Arg1", 42})
 			Expect(result).To(BeFalse())
@@ -128,6 +133,11 @@ var _ = Describe("utils", func() {
 			return len(str) + num, nil
 		}
 
+		It("returns false if the type is nil", func() {
+			result := validateOutParameters(nil, []interface{}{0, nil})
+			Expect(result).To(BeFalse())
+		})
+
 		It("returns false if the type is not a function", func() {
 			result := validateOutParameters(reflect.TypeOf("I am not a funciton"), []interface{}{0, nil})
 			Expect(result).To(BeFalse())
@@ -150,6 +160,10 @@ var _ = Describe("utils", func() {
 	})
 
 	Describe("areTypeAndValueEquivalent", func() {
+		It("returns false if the type is nil", func() {
+			Expect(areTypeAndValueEquivalent(nil, "")).To(BeFalse())
+		})
+
 		It("returns true if nil for type is a nilable kind", func() {
 			var namer Namer
 			namer = &Thing{"The Thing"}

@@ -54,7 +54,7 @@ func cloneValue(source interface{}, destin interface{}) error {
 
 // validateArguments validates that the arguments provided match the argument types.
 func validateArguments(functionType reflect.Type, arguments []interface{}) bool {
-	if functionType.Kind() != reflect.Func {
+	if functionType == nil || functionType.Kind() != reflect.Func {
 		return false
 	}
 
@@ -74,7 +74,7 @@ func validateArguments(functionType reflect.Type, arguments []interface{}) bool 
 
 // validateOutParameters validates that the arguments provided match the argument types.
 func validateOutParameters(functionType reflect.Type, outParameters []interface{}) bool {
-	if functionType.Kind() != reflect.Func {
+	if functionType == nil || functionType.Kind() != reflect.Func {
 		return false
 	}
 
@@ -94,6 +94,10 @@ func validateOutParameters(functionType reflect.Type, outParameters []interface{
 
 // areTypeAndValueEquivalent does a kind wise check an interface{} to determine type equivalency
 func areTypeAndValueEquivalent(originalType reflect.Type, val interface{}) bool {
+	if originalType == nil {
+		return false
+	}
+
 	switch originalKind := originalType.Kind(); originalKind {
 	case reflect.Func, reflect.Chan, reflect.Map, reflect.Ptr, reflect.Slice:
 		if val == nil {
