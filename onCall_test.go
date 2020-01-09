@@ -25,6 +25,17 @@ var _ = Describe("onCall", func() {
 	})
 
 	Describe("Return", func() {
+		It("returns an error if the stub is nil", func() {
+			ca := &onCall{
+				index: 0,
+			}
+
+			err := ca.Return(42, "nil")
+
+			Expect(err).Should(HaveOccurred())
+			Expect(err.Error()).To(Equal("mocka: stub does not exist"))
+		})
+
 		It("returns an error if one out parameter type does not match", func() {
 			ca := &onCall{
 				stub:  mockFn,
@@ -33,7 +44,7 @@ var _ = Describe("onCall", func() {
 
 			err := ca.Return(42, "nil")
 
-			Expect(err).ToNot(BeNil())
+			Expect(err).Should(HaveOccurred())
 			Expect(err.Error()).To(Equal("mocka: expected return values of type [int error], but recieved [int string]"))
 		})
 
@@ -45,7 +56,7 @@ var _ = Describe("onCall", func() {
 
 			err := ca.Return(42, nil)
 
-			Expect(err).To(BeNil())
+			Expect(err).ShouldNot(HaveOccurred())
 			Expect(ca.out).To(Equal([]interface{}{42, nil}))
 		})
 	})

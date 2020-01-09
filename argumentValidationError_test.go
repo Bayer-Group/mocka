@@ -18,7 +18,7 @@ var _ = Describe("argumentValidationError", func() {
 	})
 
 	Describe("String", func() {
-		It("return less descriptive error if fnType is nil", func() {
+		It("returns a less descriptive error if fnType is nil", func() {
 			arguments := []interface{}{0, ""}
 			err := &argumentValidationError{nil, arguments}
 
@@ -39,7 +39,7 @@ var _ = Describe("argumentValidationError", func() {
 	})
 
 	Describe("Error", func() {
-		It("return less descriptive error if fnType is nil", func() {
+		It("returns a less descriptive error if fnType is nil", func() {
 			arguments := []interface{}{0, ""}
 			err := &argumentValidationError{nil, arguments}
 
