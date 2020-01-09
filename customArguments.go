@@ -1,6 +1,6 @@
 package mocka
 
-import "fmt"
+import "errors"
 
 type customArguments struct {
 	stub      *mockFunction
@@ -13,7 +13,7 @@ type customArguments struct {
 // Return sets the return values for this set of custom arguments
 func (ca *customArguments) Return(returnValues ...interface{}) error {
 	if ca.stub == nil {
-		return fmt.Errorf("mocka: stub does not exist")
+		return errors.New("mocka: stub does not exist")
 	}
 
 	if !validateOutParameters(ca.stub.toType(), returnValues) {
