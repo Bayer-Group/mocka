@@ -227,5 +227,9 @@ var _ = Describe("utils", func() {
 
 			Expect(result).To(Equal([]string{"*Thing", "int", "<nil>", "string", "float64", "*errorString", "thisIsAStruct", "*string"}))
 		})
+
+		It("returns an empty slice if passed a nil", func() {
+			Expect(mapToTypeName(nil)).To(Equal([]string{}))
+		})
 	})
 })

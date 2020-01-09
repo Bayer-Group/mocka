@@ -113,19 +113,21 @@ func areTypeAndValueEquivalent(originalType reflect.Type, val interface{}) bool 
 }
 
 // mapToTypeName maps a slice of interface values to their type names
-func mapToTypeName(interfaces []interface{}) (n []string) {
-	for _, inter := range interfaces {
+func mapToTypeName(interfaces []interface{}) []string {
+	names := make([]string, len(interfaces))
+	for i, inter := range interfaces {
 		if inter == nil {
-			n = append(n, "<nil>")
+			names[i] = "<nil>"
 		} else {
 			t := reflect.TypeOf(inter)
 			switch t.Kind() {
 			case reflect.Ptr:
-				n = append(n, "*"+t.Elem().Name())
+				names[i] = "*" + t.Elem().Name()
 			default:
-				n = append(n, t.Name())
+				names[i] = t.Name()
 			}
 		}
 	}
-	return
+
+	return names
 }
