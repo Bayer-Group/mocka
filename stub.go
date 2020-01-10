@@ -3,6 +3,7 @@ package mocka
 import (
 	"fmt"
 	"reflect"
+	"sync"
 
 	"github.com/pkg/errors"
 )
@@ -45,6 +46,8 @@ type Stub interface {
 }
 
 type mockFunction struct {
+	lock sync.RWMutex
+
 	originalFunc  interface{}
 	functionPtr   interface{}
 	outParameters []interface{}
@@ -135,6 +138,9 @@ func (mf *mockFunction) toType() reflect.Type {
 // implementation defines the function that replaces the original
 // function's functionality
 func (mf *mockFunction) implementation(arguments []reflect.Value) []reflect.Value {
+	mf.lock.Lock()
+	defer mf.lock.Unlock()
+
 	functionType := mf.toType()
 	argumentsAsInterfaces := mapToInterfaces(arguments)
 	outParameters := mf.getReturnValues(argumentsAsInterfaces)
@@ -183,6 +189,9 @@ func (mf *mockFunction) updateCustomArgsCallCount(args []interface{}) {
 // Returns updates the default out parameters returned when
 // the mock function is called
 func (mf *mockFunction) Return(returnValues ...interface{}) error {
+	mf.lock.Lock()
+	defer mf.lock.Unlock()
+
 	if !validateOutParameters(mf.toType(), returnValues) {
 		return &outParameterValidationError{mf.toType(), returnValues}
 	}
@@ -194,6 +203,9 @@ func (mf *mockFunction) Return(returnValues ...interface{}) error {
 // WithArgs returns a StubWithArgs that can change the out parameters
 // returned based on the arguments provided to this function
 func (mf *mockFunction) WithArgs(arguments ...interface{}) OnCallReturner {
+	mf.lock.Lock()
+	defer mf.lock.Unlock()
+
 	for _, ca := range mf.customArgs {
 		if reflect.DeepEqual(ca.args, arguments) {
 			return ca
@@ -209,12 +221,18 @@ func (mf *mockFunction) WithArgs(arguments ...interface{}) OnCallReturner {
 // CallCount returns the number of times the original function was called
 // after the function was stubbed
 func (mf *mockFunction) CallCount() int {
+	mf.lock.RLock()
+	defer mf.lock.RUnlock()
+
 	return len(mf.calls)
 }
 
 // GetCalls returns all calls made to the original function that were
 // captured by the stubbed implementation
 func (mf *mockFunction) GetCalls() []Call {
+	mf.lock.RLock()
+	defer mf.lock.RUnlock()
+
 	calls := make([]Call, len(mf.calls))
 
 	for i, call := range mf.calls {
@@ -234,6 +252,9 @@ func (mf *mockFunction) GetCalls() []Call {
 //
 // The call index uses zero-based indexing
 func (mf *mockFunction) GetCall(callIndex int) Call {
+	mf.lock.RLock()
+	defer mf.lock.RUnlock()
+
 	if callIndex < 0 || callIndex >= mf.CallCount() {
 		panic(fmt.Errorf("mocka: attempted to get CallMetaData for call %v, when the function has only been called %v times", callIndex, len(mf.calls)))
 	}
@@ -292,6 +313,9 @@ func (mf *mockFunction) CalledThrice() bool {
 // OnCall returns an interface that allows for changing the
 // return values based on the call index.
 func (mf *mockFunction) OnCall(index int) Returner {
+	mf.lock.Lock()
+	defer mf.lock.Unlock()
+
 	for _, o := range mf.onCalls {
 		if o.index == index {
 			return o
@@ -324,6 +348,9 @@ func (mf *mockFunction) OnThirdCall() Returner {
 // Restore removes the stub and restores the the original
 // functionality back to the method
 func (mf *mockFunction) Restore() {
+	mf.lock.Lock()
+	defer mf.lock.Unlock()
+
 	valueOforiginalFunc := reflect.ValueOf(mf.originalFunc)
 	functionValue := reflect.ValueOf(mf.functionPtr).Elem()
 
@@ -333,5 +360,8 @@ func (mf *mockFunction) Restore() {
 // ExecOnCall assigns a function to be called when the stub
 // implementation is called.
 func (mf *mockFunction) ExecOnCall(execFunc func([]interface{})) {
+	mf.lock.Lock()
+	defer mf.lock.Unlock()
+
 	mf.execFunc = execFunc
 }
