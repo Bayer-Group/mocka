@@ -45,13 +45,13 @@ var _ = Describe("anythingButNil", func() {
 		Entry("returns true with non nil slice", []string{}),
 	)
 
-	DescribeTable("Match true when",
+	DescribeTable("Match false when",
 		func(value interface{}) {
 			Expect(AnythingButNil().Match(value)).To(BeFalse())
 		},
 		Entry("returns false with nil chan", (chan int)(nil)),
 		Entry("returns false with nil func", (func())(nil)),
-		Entry("returns false with nil interface", (SupportedKindsMatcher)(nil)),
+		Entry("returns false with nil interface", (SupportedKindsMatcher)((*anythingButNil)(nil))),
 		Entry("returns false with nil map", (map[string]int)(nil)),
 		Entry("returns false with nil pointer", (*anythingButNil)(nil)),
 		Entry("returns false with nil slice", ([]string)(nil)),
