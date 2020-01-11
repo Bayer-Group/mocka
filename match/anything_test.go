@@ -10,7 +10,7 @@ import (
 
 var _ = Describe("anything", func() {
 	Describe("Anything", func() {
-		It("returns a anything struct", func() {
+		It("returns an anything struct", func() {
 			actual := Anything()
 
 			Expect(actual).To(BeAssignableToTypeOf(new(anything)))

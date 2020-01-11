@@ -2,16 +2,17 @@ package match
 
 import "reflect"
 
-// Anything retursn a new matcher that will match any value
-func Anything() SupportedKindsMatcher {
-	return &anything{}
+// Exactly returns a new matcher for matching exact values with reflect.DeepEqual
+func Exactly(value interface{}) SupportedKindsMatcher {
+	return &exactly{value}
 }
 
-type anything struct {
+type exactly struct {
+	value interface{}
 }
 
-// SupportedKinds returns all the kinds the anything matcher supports
-func (m *anything) SupportedKinds() map[reflect.Kind]struct{} {
+// SupportedKinds returns the kinds the exactly matcher supports
+func (m *exactly) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
 		reflect.Bool:          struct{}{},
 		reflect.Int:           struct{}{},
@@ -42,7 +43,7 @@ func (m *anything) SupportedKinds() map[reflect.Kind]struct{} {
 	}
 }
 
-// Match always returns true
-func (m *anything) Match(_ interface{}) bool {
-	return true
+// Match returns true when the values are equal using reflect.DeepEqual
+func (m *exactly) Match(value interface{}) bool {
+	return reflect.DeepEqual(m.value, value)
 }
