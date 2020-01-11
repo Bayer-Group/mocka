@@ -2,7 +2,7 @@ package match
 
 import "reflect"
 
-// Anything retursn a new matcher that will match any value
+// Anything returns a new matcher that will match any value
 func Anything() SupportedKindsMatcher {
 	return &anything{}
 }
