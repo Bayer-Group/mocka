@@ -10,7 +10,7 @@ import (
 
 var _ = Describe("implementerOf", func() {
 	Describe("ImplementerOf", func() {
-		It("returns an exactly struct", func() {
+		It("returns an implementerOf struct", func() {
 			actual := ImplementerOf(new(SupportedKindsMatcher))
 
 			Expect(actual).To(BeAssignableToTypeOf(new(implementerOf)))

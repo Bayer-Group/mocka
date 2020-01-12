@@ -10,7 +10,7 @@ import (
 
 var _ = Describe("convertibleTo", func() {
 	Describe("ConvertibleTo", func() {
-		It("returns an exactly struct", func() {
+		It("returns a convertibleTo struct", func() {
 			actual := ConvertibleTo(new(int))
 
 			Expect(actual).To(BeAssignableToTypeOf(new(convertibleTo)))
@@ -69,7 +69,7 @@ var _ = Describe("convertibleTo", func() {
 		},
 		Entry("when expected is nil", nil, &convertibleTo{}),
 		Entry("when actual is nil", new(SupportedKindsMatcher), nil),
-		Entry("when expexcted is not an pointer", *new(int), 10),
+		Entry("when expected is not an pointer", *new(int), 10),
 		Entry("when actual cannot be converted to expected", new(int), []string{}),
 	)
 })

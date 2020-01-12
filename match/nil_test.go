@@ -10,7 +10,7 @@ import (
 
 var _ = Describe("nil", func() {
 	Describe("Nil", func() {
-		It("returns an exactly struct", func() {
+		It("returns a nilMatcher struct", func() {
 			actual := Nil()
 
 			Expect(actual).To(BeAssignableToTypeOf(new(nilMatcher)))

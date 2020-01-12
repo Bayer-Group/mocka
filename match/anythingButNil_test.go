@@ -10,7 +10,7 @@ import (
 
 var _ = Describe("anythingButNil", func() {
 	Describe("AnythingButNil", func() {
-		It("returns an exactly struct", func() {
+		It("returns an anythingButNil struct", func() {
 			actual := AnythingButNil()
 
 			Expect(actual).To(BeAssignableToTypeOf(new(anythingButNil)))
