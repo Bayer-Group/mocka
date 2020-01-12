@@ -22,7 +22,7 @@ func (m *lengthOf) SupportedKinds() map[reflect.Kind]struct{} {
 	}
 }
 
-// Match return true is the length matches the provided length
+// Match return true if the length matches the provided length; otherwise false
 func (m *lengthOf) Match(value interface{}) bool {
 	if value == nil {
 		return false

@@ -9,7 +9,7 @@ import (
 )
 
 var _ = Describe("lengthOf", func() {
-	Describe("LengthOth", func() {
+	Describe("LengthOf", func() {
 		It("returns an lengthOf struct", func() {
 			actual := LengthOf(2)
 
