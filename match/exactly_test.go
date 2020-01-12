@@ -71,32 +71,34 @@ var _ = Describe("exactly", func() {
 		})
 	})
 
-	DescribeTable("Match",
-		func(first interface{}, second interface{}, expected bool) {
-			if expected {
-				Expect(Exactly(first).Match(second)).To(BeTrue())
-			} else {
-				Expect(Exactly(first).Match(second)).To(BeFalse())
-			}
+	DescribeTable("Match return true",
+		func(first interface{}, second interface{}) {
+			Expect(Exactly(first).Match(second)).To(BeTrue())
 		},
-		Entry("returns true when both are nils", nil, nil, true),
-		Entry("returns true when numbers are equal", 123, 123, true),
-		Entry("returns true when bools are equal", true, true, true),
-		Entry("returns true when structs are equal", exactly{123}, exactly{123}, true),
-		Entry("returns true when channels are equal", mockChan1, mockChan1, true),
-		Entry("returns true when functions are equal", mockFn1, mockFn1, true),
-		Entry("returns true when pointers are equal", mockPointer1, mockPointer1, true),
-		Entry("returns true when slices are equal", []string{"screams"}, []string{"screams"}, true),
-		Entry("returns true when arrays are equal", [1]int{1}, [1]int{1}, true),
-		Entry("returns true when maps are equal", map[string]struct{}{"a": struct{}{}}, map[string]struct{}{"a": struct{}{}}, true),
-		Entry("returns false when numbers are not equal", 123, 563, false),
-		Entry("returns false when bools are not equal", true, false, false),
-		Entry("returns false when structs are not equal", exactly{"a"}, exactly{123}, false),
-		Entry("returns false when channels are not equal", mockChan1, mockChan2, false),
-		Entry("returns false when functions are not equal", mockFn1, mockFn2, false),
-		Entry("returns false when pointers are not equal", mockPointer1, mockPointer2, false),
-		Entry("returns false when slices are not equal", []string{"scremas"}, []string{"apple"}, false),
-		Entry("returns false when arrays are not equal", [1]int{1}, [1]int{3}, false),
-		Entry("returns false when maps are not equal", map[string]struct{}{"a": struct{}{}}, map[string]struct{}{"b": struct{}{}}, false),
+		Entry("when both are nils", nil, nil),
+		Entry("when numbers are equal", 123, 123),
+		Entry("when bools are equal", true, true),
+		Entry("when structs are equal", exactly{123}, exactly{123}),
+		Entry("when channels are equal", mockChan1, mockChan1),
+		Entry("when functions are equal", mockFn1, mockFn1),
+		Entry("are equal", mockPointer1, mockPointer1),
+		Entry("when slices are equal", []string{"screams"}, []string{"screams"}),
+		Entry("when arrays are equal", [1]int{1}, [1]int{1}),
+		Entry("when maps are equal", map[string]struct{}{"a": struct{}{}}, map[string]struct{}{"a": struct{}{}}),
+	)
+
+	DescribeTable("Match return false",
+		func(first interface{}, second interface{}) {
+			Expect(Exactly(first).Match(second)).To(BeFalse())
+		},
+		Entry("when numbers are not equal", 123, 563),
+		Entry("when bools are not equal", true, false),
+		Entry("when structs are not equal", exactly{"a"}, exactly{123}),
+		Entry("when channels are not equal", mockChan1, mockChan2),
+		Entry("when functions are not equal", mockFn1, mockFn2),
+		Entry("when pointers are not equal", mockPointer1, mockPointer2),
+		Entry("when slices are not equal", []string{"scremas"}, []string{"apple"}),
+		Entry("when arrays are not equal", [1]int{1}, [1]int{3}),
+		Entry("when maps are not equal", map[string]struct{}{"a": struct{}{}}, map[string]struct{}{"b": struct{}{}}),
 	)
 })

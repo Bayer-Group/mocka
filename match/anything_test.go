@@ -53,18 +53,18 @@ var _ = Describe("anything", func() {
 		})
 	})
 
-	DescribeTable("Match",
+	DescribeTable("Match returns true",
 		func(input interface{}) {
 			Expect(Anything().Match(input)).To(BeTrue())
 		},
-		Entry("returns true with nil", nil),
-		Entry("returns true with number", 123),
-		Entry("returns true with bool", true),
-		Entry("returns true with struct", struct{}{}),
-		Entry("returns true with chan", make(chan int, 1)),
-		Entry("returns true with func", func() {}),
-		Entry("returns true with pointer", &anything{}),
-		Entry("returns true with slice", []string{"screams"}),
-		Entry("returns true with array", [1]int{1}),
+		Entry("with nil", nil),
+		Entry("with number", 123),
+		Entry("with bool", true),
+		Entry("with struct", struct{}{}),
+		Entry("with chan", make(chan int, 1)),
+		Entry("with func", func() {}),
+		Entry("with pointer", &anything{}),
+		Entry("with slice", []string{"screams"}),
+		Entry("with array", [1]int{1}),
 	)
 })
