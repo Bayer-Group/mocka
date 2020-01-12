@@ -52,26 +52,6 @@ func cloneValue(source interface{}, destin interface{}) error {
 	return nil
 }
 
-// validateArguments validates that the arguments provided match the argument types.
-func validateArguments(functionType reflect.Type, arguments []interface{}) bool {
-	if functionType == nil || functionType.Kind() != reflect.Func {
-		return false
-	}
-
-	argumentCount := functionType.NumIn()
-	if len(arguments) != argumentCount {
-		return false
-	}
-
-	isValid := true
-	for i := 0; isValid && i < argumentCount; i++ {
-		argumentType := functionType.In(i)
-		isValid = areTypeAndValueEquivalent(argumentType, arguments[i])
-	}
-
-	return isValid
-}
-
 // validateOutParameters validates that the arguments provided match the argument types.
 func validateOutParameters(functionType reflect.Type, outParameters []interface{}) bool {
 	if functionType == nil || functionType.Kind() != reflect.Func {

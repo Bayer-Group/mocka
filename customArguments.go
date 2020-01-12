@@ -1,13 +1,76 @@
 package mocka
 
-import "errors"
+import (
+	"errors"
+	"reflect"
+
+	"github.com/MonsantoCo/mocka/match"
+)
+
+func newCustomArguments(stub *mockFunction, arguments []interface{}) *customArguments {
+	if stub == nil || stub.toType().Kind() != reflect.Func {
+		return &customArguments{
+			argValidationError: &argumentValidationError{
+				provided: arguments,
+			},
+		}
+	}
+
+	functionType := stub.toType()
+	if len(arguments) != functionType.NumIn() {
+		return &customArguments{
+			argValidationError: &argumentValidationError{
+				fnType:   functionType,
+				provided: arguments,
+			},
+		}
+	}
+
+	var validationError error
+	matchers := make([]match.SupportedKindsMatcher, functionType.NumIn())
+	for i, arg := range arguments {
+		aType := functionType.In(i)
+
+		switch arg.(type) {
+		case match.SupportedKindsMatcher:
+			matcher := arg.(match.SupportedKindsMatcher)
+			if _, ok := matcher.SupportedKinds()[aType.Kind()]; !ok {
+				validationError = &argumentValidationError{
+					fnType:   functionType,
+					provided: arguments,
+				}
+				break
+			}
+
+			matchers[i] = matcher
+		default:
+			if !areTypeAndValueEquivalent(aType, arg) {
+				validationError = &argumentValidationError{
+					fnType:   functionType,
+					provided: arguments,
+				}
+				break
+			}
+
+			matchers[i] = match.Exactly(arg)
+		}
+	}
+
+	return &customArguments{
+		stub:               stub,
+		callCount:          0,
+		argMatchers:        matchers,
+		argValidationError: validationError,
+	}
+}
 
 type customArguments struct {
-	stub      *mockFunction
-	args      []interface{}
-	out       []interface{}
-	onCalls   []*onCall
-	callCount int
+	stub               *mockFunction
+	argMatchers        []match.SupportedKindsMatcher
+	argValidationError error
+	out                []interface{}
+	onCalls            []*onCall
+	callCount          int
 }
 
 // Return sets the return values for this set of custom arguments
@@ -16,12 +79,12 @@ func (ca *customArguments) Return(returnValues ...interface{}) error {
 		return errors.New("mocka: stub does not exist")
 	}
 
-	if !validateOutParameters(ca.stub.toType(), returnValues) {
-		return &outParameterValidationError{ca.stub.toType(), returnValues}
+	if ca.argValidationError != nil {
+		return ca.argValidationError
 	}
 
-	if !validateArguments(ca.stub.toType(), ca.args) {
-		return &argumentValidationError{ca.stub.toType(), ca.args}
+	if !validateOutParameters(ca.stub.toType(), returnValues) {
+		return &outParameterValidationError{ca.stub.toType(), returnValues}
 	}
 
 	ca.out = returnValues
@@ -62,4 +125,23 @@ func (ca *customArguments) OnSecondCall() Returner {
 // of custom arguments.
 func (ca *customArguments) OnThirdCall() Returner {
 	return ca.OnCall(2)
+}
+
+// match returns false if any of the argument matcher return false or
+// if there is a panic from inside a mather; otherwise true
+func (ca *customArguments) match(arguments []interface{}) (match bool) {
+	defer func() {
+		if r := recover(); r != nil {
+			match = false
+		}
+	}()
+
+	for i, arg := range arguments {
+		if !ca.argMatchers[i].Match(arg) {
+			return false
+		}
+
+	}
+
+	return true
 }

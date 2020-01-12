@@ -109,7 +109,7 @@ func (mf *mockFunction) getReturnValues(arguments []interface{}) (out []interfac
 	}
 
 	for _, ca := range mf.customArgs {
-		if ca != nil && reflect.DeepEqual(arguments, ca.args) {
+		if ca != nil && ca.match(arguments) {
 			if ca.out != nil {
 				out = ca.out
 			}
@@ -171,9 +171,9 @@ func (mf *mockFunction) implementation(arguments []reflect.Value) []reflect.Valu
 
 // updateCustomArgsCallCount updates the call count for
 // a specific set of arguments
-func (mf *mockFunction) updateCustomArgsCallCount(args []interface{}) {
+func (mf *mockFunction) updateCustomArgsCallCount(arguments []interface{}) {
 	for _, ca := range mf.customArgs {
-		if ca != nil && reflect.DeepEqual(args, ca.args) {
+		if ca != nil && ca.match(arguments) {
 			ca.callCount++
 			return
 		}
@@ -195,12 +195,12 @@ func (mf *mockFunction) Return(returnValues ...interface{}) error {
 // returned based on the arguments provided to this function
 func (mf *mockFunction) WithArgs(arguments ...interface{}) OnCallReturner {
 	for _, ca := range mf.customArgs {
-		if reflect.DeepEqual(ca.args, arguments) {
+		if ca != nil && ca.match(arguments) {
 			return ca
 		}
 	}
 
-	ca := &customArguments{stub: mf, args: arguments, callCount: 0}
+	ca := newCustomArguments(mf, arguments)
 	mf.customArgs = append(mf.customArgs, ca)
 
 	return ca

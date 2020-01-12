@@ -97,37 +97,6 @@ var _ = Describe("utils", func() {
 		})
 	})
 
-	Describe("validateArguments", func() {
-		var fn = func(str string, num int) (int, error) {
-			return len(str) + num, nil
-		}
-
-		It("returns false if the type is nil", func() {
-			result := validateArguments(nil, []interface{}{"Arg1", 42})
-			Expect(result).To(BeFalse())
-		})
-
-		It("returns false if the type is not a function", func() {
-			result := validateArguments(reflect.TypeOf("I am not a funciton"), []interface{}{"Arg1", 42})
-			Expect(result).To(BeFalse())
-		})
-
-		It("returns false of the number of arguments /= number of function arguments", func() {
-			result := validateArguments(reflect.TypeOf(fn), []interface{}{"Arg1", 42, true})
-			Expect(result).To(BeFalse())
-		})
-
-		It("returns false if one of the arguments type does not match", func() {
-			result := validateArguments(reflect.TypeOf(fn), []interface{}{"Arg1", "42"})
-			Expect(result).To(BeFalse())
-		})
-
-		It("returns true if all argument types match", func() {
-			result := validateArguments(reflect.TypeOf(fn), []interface{}{"Arg1", 42})
-			Expect(result).To(BeTrue())
-		})
-	})
-
 	Describe("validateOutParameters", func() {
 		var fn = func(str string, num int) (int, error) {
 			return len(str) + num, nil
