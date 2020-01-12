@@ -17,7 +17,7 @@ type stringSuffix struct {
 // SupportedKinds returns all the kinds the string suffix matcher supports
 func (m *stringSuffix) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
-		reflect.String:        struct{}{},
+		reflect.String: struct{}{},
 	}
 }
 

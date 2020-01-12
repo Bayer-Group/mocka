@@ -23,7 +23,7 @@ var _ = Describe("stringSuffix", func() {
 
 			Expect(actual).To(Equal(
 				map[reflect.Kind]struct{}{
-					reflect.String:      struct{}{},
+					reflect.String: struct{}{},
 				}))
 		})
 	})
