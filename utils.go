@@ -92,7 +92,12 @@ func areTypeAndValueEquivalent(originalType reflect.Type, val interface{}) bool 
 
 		return reflect.TypeOf(val).Implements(originalType)
 	default:
-		return originalKind == reflect.TypeOf(val).Kind()
+		v := reflect.ValueOf(val)
+		if !v.IsValid() {
+			return false
+		}
+
+		return originalKind == v.Type().Kind()
 	}
 }
 

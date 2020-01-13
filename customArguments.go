@@ -43,6 +43,16 @@ func newCustomArguments(stub *mockFunction, arguments []interface{}) *customArgu
 			}
 
 			matchers[i] = matcher
+		case nil:
+			if !areTypeAndValueEquivalent(aType, arg) {
+				validationError = &argumentValidationError{
+					fnType:   functionType,
+					provided: arguments,
+				}
+				break
+			}
+
+			matchers[i] = match.Nil()
 		default:
 			if !areTypeAndValueEquivalent(aType, arg) {
 				validationError = &argumentValidationError{
@@ -140,7 +150,6 @@ func (ca *customArguments) match(arguments []interface{}) (match bool) {
 		if !ca.argMatchers[i].Match(arg) {
 			return false
 		}
-
 	}
 
 	return true

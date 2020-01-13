@@ -54,7 +54,6 @@ func (m *typeOf) Match(value interface{}) bool {
 	}
 
 	actualType := reflect.TypeOf(value)
-
 	for actualType.Kind() == reflect.Ptr {
 		actualType = actualType.Elem()
 	}

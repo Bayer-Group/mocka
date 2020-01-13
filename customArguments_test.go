@@ -1,6 +1,7 @@
 package mocka
 
 import (
+	"errors"
 	"reflect"
 
 	"github.com/MonsantoCo/mocka/match"
@@ -102,6 +103,50 @@ var _ = Describe("customArguments", func() {
 			Expect(*ca).To(Equal(customArguments{
 				stub:        mockFn,
 				argMatchers: []match.SupportedKindsMatcher{match.Exactly("hi"), match.IntGreaterThan(10)},
+			}))
+		})
+
+		It("returns with validation error if the provided nil does not match the correct type", func() {
+			fn := func(msg string) error {
+				return errors.New(msg)
+			}
+			mockFn = &mockFunction{
+				originalFunc:  nil,
+				functionPtr:   &fn,
+				outParameters: []interface{}{42, nil},
+				execFunc:      func([]interface{}) {},
+			}
+
+			ca := newCustomArguments(mockFn, []interface{}{nil})
+
+			Expect(ca).ToNot(BeNil())
+			Expect(*ca).To(Equal(customArguments{
+				stub:        mockFn,
+				argMatchers: []match.SupportedKindsMatcher{nil},
+				argValidationError: &argumentValidationError{
+					fnType:   mockFn.toType(),
+					provided: []interface{}{nil},
+				},
+			}))
+		})
+
+		It("returns a nil matcher when called with nil", func() {
+			fn := func(err error) error {
+				return err
+			}
+			mockFn = &mockFunction{
+				originalFunc:  nil,
+				functionPtr:   &fn,
+				outParameters: []interface{}{42, nil},
+				execFunc:      func([]interface{}) {},
+			}
+
+			ca := newCustomArguments(mockFn, []interface{}{nil})
+
+			Expect(ca).ToNot(BeNil())
+			Expect(*ca).To(Equal(customArguments{
+				stub:        mockFn,
+				argMatchers: []match.SupportedKindsMatcher{match.Nil()},
 			}))
 		})
 	})
