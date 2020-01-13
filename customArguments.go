@@ -16,6 +16,9 @@ func (ca *customArguments) Return(returnValues ...interface{}) error {
 		return errors.New("mocka: stub does not exist")
 	}
 
+	ca.stub.lock.Lock()
+	defer ca.stub.lock.Unlock()
+
 	if !validateOutParameters(ca.stub.toType(), returnValues) {
 		return &outParameterValidationError{ca.stub.toType(), returnValues}
 	}
@@ -32,6 +35,12 @@ func (ca *customArguments) Return(returnValues ...interface{}) error {
 // return values based on the call index for this specific set
 // of custom arguments.
 func (ca *customArguments) OnCall(callIndex int) Returner {
+	// TODO - future story
+	// validate stub exists before using .lock
+	// change return to also return an error if stub does not exist
+	ca.stub.lock.Lock()
+	defer ca.stub.lock.Unlock()
+
 	for _, o := range ca.onCalls {
 		if o.index == callIndex {
 			return o
