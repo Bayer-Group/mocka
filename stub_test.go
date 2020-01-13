@@ -4,10 +4,12 @@ import (
 	"errors"
 	"reflect"
 
+	"github.com/MonsantoCo/mocka/match"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
+// TODO
 var _ = Describe("stub", func() {
 	var (
 		fn     func(string, int) (int, error)
@@ -154,14 +156,14 @@ var _ = Describe("stub", func() {
 			mockfn.customArgs = append(
 				mockfn.customArgs,
 				&customArguments{
-					stub: mockfn,
-					args: []interface{}{"apple", 0},
-					out:  []interface{}{0, errors.New("I am not an apple")},
+					stub:        mockfn,
+					argMatchers: []match.SupportedKindsMatcher{match.Exactly("apple"), match.IntGreaterThanOrEqualTo(0)},
+					out:         []interface{}{0, errors.New("I am not an apple")},
 				},
 				&customArguments{
-					stub: mockfn,
-					args: []interface{}{"B", 63},
-					out:  []interface{}{98, nil},
+					stub:        mockfn,
+					argMatchers: []match.SupportedKindsMatcher{match.Exactly("B"), match.Exactly(63)},
+					out:         []interface{}{98, nil},
 				})
 
 			result := mockfn.getReturnValues(args)
@@ -175,19 +177,19 @@ var _ = Describe("stub", func() {
 			mockfn.customArgs = append(
 				mockfn.customArgs,
 				&customArguments{
-					stub: mockfn,
-					args: []interface{}{"apple", 0},
-					out:  []interface{}{0, errors.New("I am not an apple")},
+					stub:        mockfn,
+					argMatchers: []match.SupportedKindsMatcher{match.StringPrefix("app"), match.Exactly(0)},
+					out:         []interface{}{0, errors.New("I am not an apple")},
 				},
 				&customArguments{
-					stub: mockfn,
-					args: []interface{}{"B", 63},
-					out:  []interface{}{98, nil},
+					stub:        mockfn,
+					argMatchers: []match.SupportedKindsMatcher{match.Exactly("B"), match.IntGreaterThan(60)},
+					out:         []interface{}{98, nil},
 				},
 				&customArguments{
-					stub: mockfn,
-					args: []interface{}{"Hello", 42},
-					out:  []interface{}{22, errors.New("I am an error")},
+					stub:        mockfn,
+					argMatchers: []match.SupportedKindsMatcher{match.StringSuffix("ello"), match.Exactly(42)},
+					out:         []interface{}{22, errors.New("I am an error")},
 				},
 			)
 
@@ -201,10 +203,10 @@ var _ = Describe("stub", func() {
 			mockfn.customArgs = append(
 				mockfn.customArgs,
 				&customArguments{
-					stub:      mockfn,
-					args:      []interface{}{"apple", 0},
-					out:       []interface{}{0, errors.New("I am not an apple")},
-					callCount: 2,
+					stub:        mockfn,
+					argMatchers: []match.SupportedKindsMatcher{match.Exactly("apple"), match.Exactly(0)},
+					out:         []interface{}{0, errors.New("I am not an apple")},
+					callCount:   2,
 					onCalls: []*onCall{
 						&onCall{
 							stub:  mockfn,
@@ -230,10 +232,10 @@ var _ = Describe("stub", func() {
 			mockfn.customArgs = append(
 				mockfn.customArgs,
 				&customArguments{
-					stub:      mockfn,
-					args:      []interface{}{"apple", 0},
-					out:       []interface{}{0, errors.New("I am not an apple")},
-					callCount: 2,
+					stub:        mockfn,
+					argMatchers: []match.SupportedKindsMatcher{match.Exactly("apple"), match.Exactly(0)},
+					out:         []interface{}{0, errors.New("I am not an apple")},
+					callCount:   2,
 					onCalls: []*onCall{
 						&onCall{
 							stub:  mockfn,
@@ -271,14 +273,14 @@ var _ = Describe("stub", func() {
 			mockfn.calls = []call{}
 			mockfn.customArgs = []*customArguments{
 				&customArguments{
-					stub: mockfn,
-					args: []interface{}{"custom", 0},
-					out:  []interface{}{0, errors.New("Ope")},
+					stub:        mockfn,
+					argMatchers: []match.SupportedKindsMatcher{match.Exactly("custom"), match.Exactly(0)},
+					out:         []interface{}{0, errors.New("Ope")},
 				},
 				&customArguments{
-					stub: mockfn,
-					args: []interface{}{"custom-missing", 0},
-					out:  nil,
+					stub:        mockfn,
+					argMatchers: []match.SupportedKindsMatcher{match.StringPrefix("custom-"), match.Exactly(0)},
+					out:         nil,
 				},
 			}
 		})
@@ -342,7 +344,7 @@ var _ = Describe("stub", func() {
 
 	Describe("updateCustomArgsCallCount", func() {
 		It("updates the call count on custom args if found", func() {
-			ca := &customArguments{args: []interface{}{"hello", 42}, callCount: 0}
+			ca := &customArguments{argMatchers: []match.SupportedKindsMatcher{match.Exactly("hello"), match.Exactly(42)}, callCount: 0}
 			mockfn.customArgs = append(mockfn.customArgs, ca)
 
 			mockfn.updateCustomArgsCallCount([]interface{}{"hello", 42})
@@ -371,9 +373,9 @@ var _ = Describe("stub", func() {
 	Describe("WithArgs", func() {
 		It("returns existing custom arguments if it matching arguments", func() {
 			ca := &customArguments{
-				stub: mockfn,
-				args: []interface{}{"apple", 0},
-				out:  []interface{}{0, errors.New("I am not an apple")},
+				stub:        mockfn,
+				argMatchers: []match.SupportedKindsMatcher{match.Exactly("apple"), match.Exactly(0)},
+				out:         []interface{}{0, errors.New("I am not an apple")},
 			}
 			mockfn.customArgs = append(mockfn.customArgs, ca)
 
@@ -395,7 +397,7 @@ var _ = Describe("stub", func() {
 			Expect(ok).To(BeTrue())
 
 			Expect(ca.stub).To(Equal(mockfn))
-			Expect(ca.args).To(Equal([]interface{}{"apple", 0}))
+			Expect(ca.argMatchers).To(Equal([]match.SupportedKindsMatcher{match.Exactly("apple"), match.Exactly(0)}))
 			Expect(ca.out).To(BeNil())
 		})
 	})
