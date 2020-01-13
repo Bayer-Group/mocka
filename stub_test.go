@@ -83,7 +83,7 @@ var _ = Describe("stub", func() {
 
 			Expect(mockFn).To(BeNil())
 			Expect(err).ToNot(BeNil())
-			Expect(err.Error()).To(Equal("mocka: expected return values of type [int error], but recieved [string <nil>]"))
+			Expect(err.Error()).To(Equal("mocka: expected return values of type (int, error), but recieved (string, <nil>)"))
 		})
 
 		It("returns error if cloneValue returns an error", func() {
@@ -359,7 +359,7 @@ var _ = Describe("stub", func() {
 			err := mockfn.Return(42, 42)
 
 			Expect(err).ToNot(BeNil())
-			Expect(err.Error()).To(Equal("mocka: expected return values of type [int error], but recieved [int int]"))
+			Expect(err.Error()).To(Equal("mocka: expected return values of type (int, error), but recieved (int, int)"))
 		})
 
 		It("replaces the out parameters if they are valid", func() {

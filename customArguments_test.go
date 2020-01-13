@@ -173,7 +173,7 @@ var _ = Describe("customArguments", func() {
 			err := ca.Return(42, "nil")
 
 			Expect(err).Should(HaveOccurred())
-			Expect(err.Error()).To(Equal("mocka: expected arguments of type [string int], but recieved [int int]"))
+			Expect(err.Error()).To(Equal("mocka: expected arguments of type (string, int), but recieved (int, int)"))
 		})
 
 		It("returns an error if one or more of the return values are not valid", func() {
@@ -187,7 +187,7 @@ var _ = Describe("customArguments", func() {
 			err := ca.Return("", 42)
 
 			Expect(err).Should(HaveOccurred())
-			Expect(err.Error()).To(Equal("mocka: expected return values of type [int error], but recieved [string int]"))
+			Expect(err.Error()).To(Equal("mocka: expected return values of type (int, error), but recieved (string, int)"))
 		})
 
 		It("assigns the OutParameters and returns nil if everything is valid", func() {

@@ -73,7 +73,7 @@ var _ = Describe("sandbox", func() {
 
 			Expect(stub).To(BeNil())
 			Expect(err).ToNot(BeNil())
-			Expect(err.Error()).To(Equal("mocka: expected return values of type [int error], but recieved [string <nil>]"))
+			Expect(err.Error()).To(Equal("mocka: expected return values of type (int, error), but recieved (string, <nil>)"))
 		})
 
 		It("returns error if cloneValue returns an error", func() {

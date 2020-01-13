@@ -24,7 +24,7 @@ var _ = Describe("argumentValidationError", func() {
 
 			result := err.String()
 
-			Expect(result).To(Equal("mocka: expected arguments of [int string] to match function arguments"))
+			Expect(result).To(Equal("mocka: expected arguments of (int, string) to match function arguments"))
 		})
 
 		It("returns the error string with the type names of the expected and actual arguments", func() {
@@ -33,7 +33,7 @@ var _ = Describe("argumentValidationError", func() {
 
 			result := err.String()
 
-			Expect(result).To(Equal("mocka: expected arguments of type [string int], but recieved [int string]"))
+			Expect(result).To(Equal("mocka: expected arguments of type (string, int), but recieved (int, string)"))
 		})
 
 	})
@@ -45,7 +45,7 @@ var _ = Describe("argumentValidationError", func() {
 
 			result := err.String()
 
-			Expect(result).To(Equal("mocka: expected arguments of [int string] to match function arguments"))
+			Expect(result).To(Equal("mocka: expected arguments of (int, string) to match function arguments"))
 		})
 
 		It("returns the error string with the type names of the expected and actual arguments", func() {
@@ -54,7 +54,7 @@ var _ = Describe("argumentValidationError", func() {
 
 			result := err.Error()
 
-			Expect(result).To(Equal("mocka: expected arguments of type [string int], but recieved [int string]"))
+			Expect(result).To(Equal("mocka: expected arguments of type (string, int), but recieved (int, string)"))
 		})
 	})
 })
