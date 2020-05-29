@@ -5,12 +5,12 @@ import (
 )
 
 // IntLessThanOrEqualTo returns a new matcher that will match int's less than or equal to the provided int
-func IntLessThanOrEqualTo(value int) SupportedKindsMatcher {
+func IntLessThanOrEqualTo(value int64) SupportedKindsMatcher {
 	return &intLessThanOrEqualTo{value}
 }
 
 type intLessThanOrEqualTo struct {
-	value int
+	value int64
 }
 
 // SupportedKinds returns all the kinds the int less than or equal to matcher supports
@@ -37,7 +37,7 @@ func (m *intLessThanOrEqualTo) Match(value interface{}) bool {
 
 	switch reflect.ValueOf(value).Kind() {
 	case reflect.Int:
-		return value.(int) <= m.value
+		return value.(int) <= int(m.value)
 	case reflect.Int8:
 		return value.(int8) <= int8(m.value)
 	case reflect.Int16:
@@ -45,7 +45,7 @@ func (m *intLessThanOrEqualTo) Match(value interface{}) bool {
 	case reflect.Int32:
 		return value.(int32) <= int32(m.value)
 	case reflect.Int64:
-		return value.(int64) <= int64(m.value)
+		return value.(int64) <= m.value
 	case reflect.Uint:
 		return value.(uint) <= uint(m.value)
 	case reflect.Uint8:

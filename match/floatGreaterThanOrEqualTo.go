@@ -5,12 +5,12 @@ import (
 )
 
 // FloatGreaterThanOrEqualTo returns a new matcher that will match float's greater than or equal to the provided float
-func FloatGreaterThanOrEqualTo(value float32) SupportedKindsMatcher {
+func FloatGreaterThanOrEqualTo(value float64) SupportedKindsMatcher {
 	return &floatGreaterThanOrEqualTo{value}
 }
 
 type floatGreaterThanOrEqualTo struct {
-	value float32
+	value float64
 }
 
 // SupportedKinds returns all the kinds the float greater than or equal to matcher supports
@@ -29,9 +29,9 @@ func (m *floatGreaterThanOrEqualTo) Match(value interface{}) bool {
 
 	switch reflect.ValueOf(value).Kind() {
 	case reflect.Float32:
-		return value.(float32) >= m.value
+		return value.(float32) >= float32(m.value)
 	case reflect.Float64:
-		return value.(float64) >= float64(m.value)
+		return value.(float64) >= m.value
 	default:
 		return false
 	}

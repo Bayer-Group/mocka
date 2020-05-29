@@ -30,22 +30,22 @@ var _ = Describe("floatGreaterThanOrEqualTo", func() {
 	})
 
 	DescribeTable("Match returns true",
-		func(expected float32, actual interface{}) {
+		func(expected float64, actual interface{}) {
 			Expect(FloatGreaterThanOrEqualTo(expected).Match(actual)).To(BeTrue())
 		},
-		Entry("with float32", float32(20), float32(40)),
-		Entry("with float64", float32(8), float64(15)),
-		Entry("when actual(float32) is the same as the expected", float32(20), float32(20)),
-		Entry("when actual(float64) is the same as the expected", float32(8), float64(8)),
+		Entry("with float32", float64(20), float32(40)),
+		Entry("with float64", float64(8), float64(15)),
+		Entry("when actual(float32) is the same as the expected", float64(20), float32(20)),
+		Entry("when actual(float64) is the same as the expected", float64(8), float64(8)),
 	)
 
 	DescribeTable("Match returns false",
-		func(expected float32, actual interface{}) {
+		func(expected float64, actual interface{}) {
 			Expect(FloatGreaterThanOrEqualTo(expected).Match(actual)).To(BeFalse())
 		},
-		Entry("when actual is nil", float32(5), nil),
-		Entry("when actual(float32) is less than expected", float32(20), float32(4)),
-		Entry("when actual(float64) is less than expected", float32(8), float64(5)),
-		Entry("when actual is not an int", float32(10), "10"),
+		Entry("when actual is nil", float64(5), nil),
+		Entry("when actual(float32) is less than expected", float64(20), float32(4)),
+		Entry("when actual(float64) is less than expected", float64(8), float64(5)),
+		Entry("when actual is not an int", float64(10), "10"),
 	)
 })
