@@ -18,6 +18,8 @@
 .idea
 *.iml
 .vscode
+*.tmp
+*.swp
 
 /vendor/
 /cmd/**/dist/
