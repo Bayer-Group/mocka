@@ -164,7 +164,10 @@ func (mf *mockFunction) getReturnValues(arguments []interface{}, functionType re
 		return out, nil
 	}
 
-	out = maybeCustomArgs.out
+	if maybeCustomArgs.out != nil {
+		out = maybeCustomArgs.out
+	}
+
 	for _, o := range maybeCustomArgs.onCalls {
 		if o.index == maybeCustomArgs.callCount && o.out != nil {
 			return o.out, maybeCustomArgs
@@ -213,7 +216,7 @@ func getHighestPriority(customArgs []*customArguments, numArgs int) *customArgum
 // that match the provided arguments
 func getPossible(customArgs []*customArguments, arguments []interface{}) (possible []*customArguments) {
 	for _, ca := range customArgs {
-		if ca != nil && ca.out != nil && ca.match(arguments) {
+		if ca != nil && ca.match(arguments) {
 			possible = append(possible, ca)
 		}
 	}
