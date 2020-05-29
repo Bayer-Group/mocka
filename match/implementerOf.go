@@ -16,7 +16,7 @@ type implementerOf struct {
 // SupportedKinds returns all the kinds the implementer of matcher supports
 func (m *implementerOf) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
-		reflect.Ptr: struct{}{},
+		reflect.Ptr: {},
 	}
 }
 

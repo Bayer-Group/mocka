@@ -23,10 +23,10 @@ var _ = Describe("empty", func() {
 
 			Expect(actual).To(Equal(
 				map[reflect.Kind]struct{}{
-					reflect.Array:  struct{}{},
-					reflect.Map:    struct{}{},
-					reflect.Slice:  struct{}{},
-					reflect.String: struct{}{},
+					reflect.Array:  {},
+					reflect.Map:    {},
+					reflect.Slice:  {},
+					reflect.String: {},
 				}))
 		})
 	})

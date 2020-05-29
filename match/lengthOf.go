@@ -15,10 +15,10 @@ type lengthOf struct {
 // SupportedKinds returns all the kinds the length of matcher supports
 func (m *lengthOf) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
-		reflect.Array:  struct{}{},
-		reflect.Map:    struct{}{},
-		reflect.Slice:  struct{}{},
-		reflect.String: struct{}{},
+		reflect.Array:  {},
+		reflect.Map:    {},
+		reflect.Slice:  {},
+		reflect.String: {},
 	}
 }
 

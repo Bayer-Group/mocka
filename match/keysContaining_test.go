@@ -23,7 +23,7 @@ var _ = Describe("keysContaining", func() {
 
 			Expect(actual).To(Equal(
 				map[reflect.Kind]struct{}{
-					reflect.Map: struct{}{},
+					reflect.Map: {},
 				}))
 		})
 	})

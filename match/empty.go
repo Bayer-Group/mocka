@@ -14,10 +14,10 @@ type empty struct {
 // SupportedKinds returns all the kinds the empty matcher supports
 func (m *empty) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
-		reflect.Array:  struct{}{},
-		reflect.Map:    struct{}{},
-		reflect.Slice:  struct{}{},
-		reflect.String: struct{}{},
+		reflect.Array:  {},
+		reflect.Map:    {},
+		reflect.Slice:  {},
+		reflect.String: {},
 	}
 }
 

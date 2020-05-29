@@ -396,8 +396,8 @@ type panicMatcher struct {
 
 func (m *panicMatcher) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
-		reflect.Int:    struct{}{},
-		reflect.String: struct{}{},
+		reflect.Int:    {},
+		reflect.String: {},
 	}
 }
 

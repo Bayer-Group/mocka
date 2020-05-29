@@ -23,8 +23,8 @@ var _ = Describe("floatGreaterThanOrEqualTo", func() {
 
 			Expect(actual).To(Equal(
 				map[reflect.Kind]struct{}{
-					reflect.Float32: struct{}{},
-					reflect.Float64: struct{}{},
+					reflect.Float32: {},
+					reflect.Float64: {},
 				}))
 		})
 	})

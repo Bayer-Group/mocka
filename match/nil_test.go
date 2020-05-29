@@ -23,12 +23,12 @@ var _ = Describe("nil", func() {
 
 			Expect(actual).To(Equal(
 				map[reflect.Kind]struct{}{
-					reflect.Chan:      struct{}{},
-					reflect.Func:      struct{}{},
-					reflect.Interface: struct{}{},
-					reflect.Map:       struct{}{},
-					reflect.Ptr:       struct{}{},
-					reflect.Slice:     struct{}{},
+					reflect.Chan:      {},
+					reflect.Func:      {},
+					reflect.Interface: {},
+					reflect.Map:       {},
+					reflect.Ptr:       {},
+					reflect.Slice:     {},
 				}))
 		})
 	})

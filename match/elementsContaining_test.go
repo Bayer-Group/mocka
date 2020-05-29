@@ -23,8 +23,8 @@ var _ = Describe("elementsContaining", func() {
 
 			Expect(actual).To(Equal(
 				map[reflect.Kind]struct{}{
-					reflect.Array: struct{}{},
-					reflect.Slice: struct{}{},
+					reflect.Array: {},
+					reflect.Slice: {},
 				}))
 		})
 	})

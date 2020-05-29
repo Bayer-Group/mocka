@@ -17,7 +17,7 @@ type keysContaining struct {
 // SupportedKinds returns all the kinds the keys containing matcher supports
 func (m *keysContaining) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
-		reflect.Map: struct{}{},
+		reflect.Map: {},
 	}
 }
 

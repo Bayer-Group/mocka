@@ -13,12 +13,12 @@ type anythingButNil struct {
 // SupportedKinds returns all the kinds the anything but nil matcher supports
 func (m *anythingButNil) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
-		reflect.Chan:      struct{}{},
-		reflect.Func:      struct{}{},
-		reflect.Interface: struct{}{},
-		reflect.Map:       struct{}{},
-		reflect.Ptr:       struct{}{},
-		reflect.Slice:     struct{}{},
+		reflect.Chan:      {},
+		reflect.Func:      {},
+		reflect.Interface: {},
+		reflect.Map:       {},
+		reflect.Ptr:       {},
+		reflect.Slice:     {},
 	}
 }
 

@@ -23,7 +23,7 @@ var _ = Describe("implementerOf", func() {
 
 			Expect(actual).To(Equal(
 				map[reflect.Kind]struct{}{
-					reflect.Ptr: struct{}{},
+					reflect.Ptr: {},
 				}))
 		})
 	})
