@@ -112,6 +112,7 @@ func (mf *mockFunction) getReturnValues(arguments []interface{}) (out []interfac
 	}
 
 	for _, ca := range mf.customArgs {
+		// TODO - Checking to see if the arguments passed in match a matcher
 		if ca != nil && ca.match(arguments) {
 			if ca.out != nil {
 				out = ca.out
@@ -170,6 +171,7 @@ func (mf *mockFunction) implementation(arguments []reflect.Value) []reflect.Valu
 		out:  outParametersAsInterfaces,
 	})
 
+	// TODO update getReturnValues to return the ca to update
 	mf.updateCustomArgsCallCount(argumentsAsInterfaces)
 
 	return outParametersAsValues
@@ -179,6 +181,7 @@ func (mf *mockFunction) implementation(arguments []reflect.Value) []reflect.Valu
 // a specific set of arguments
 func (mf *mockFunction) updateCustomArgsCallCount(arguments []interface{}) {
 	for _, ca := range mf.customArgs {
+
 		if ca != nil && ca.match(arguments) {
 			ca.callCount++
 			return
@@ -206,16 +209,16 @@ func (mf *mockFunction) WithArgs(arguments ...interface{}) OnCallReturner {
 	mf.lock.Lock()
 	defer mf.lock.Unlock()
 
+	newCA := newCustomArguments(mf, arguments)
 	for _, ca := range mf.customArgs {
-		if ca != nil && ca.match(arguments) {
+		if ca != nil && ca.matchersAreEqual(newCA) {
 			return ca
 		}
 	}
 
-	ca := newCustomArguments(mf, arguments)
-	mf.customArgs = append(mf.customArgs, ca)
+	mf.customArgs = append(mf.customArgs, newCA)
 
-	return ca
+	return newCA
 }
 
 // CallCount returns the number of times the original function was called
