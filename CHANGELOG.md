@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - `Anything()` — matches any value
   - `AnythingButNil()` — matches any value but `nil`
   -  `ConvertibleTo(interface{})` — matches if the actual value can be converted to the type of the provided value
-  - `ElementsContaining(...interface{})` — matches if the array of slice contains all the provided elements
+  - `ElementsContaining(...interface{})` — matches if the array or slice contains all the provided elements
   - `Empty()` — matches if the string, array, slice, or map have a length of 0
   - `Exactly(interface{})` — matches if the actual value is deep equal to the provided value
   - `KeysContaining(...interface{})` — matches if the actual map contains all the provided keys
