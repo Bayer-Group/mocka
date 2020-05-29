@@ -136,19 +136,20 @@ var _ = Describe("stub", func() {
 		It("returns the mockFunction.OutParameters if no customArgs or onCalls exist", func() {
 			args := []interface{}{"Hello", 42}
 
-			result := mockfn.getReturnValues(args)
+			result, maybeCustomArguments := mockfn.getReturnValues(args, reflect.TypeOf(fn))
 
 			Expect(result).To(Equal([]interface{}{42, nil}))
+			Expect(maybeCustomArguments).To(BeNil())
 		})
 
 		It("returns the mockFunction.OutParameters if the customArgs are nil", func() {
 			args := []interface{}{"Hello", 42}
 			mockfn.customArgs = append(mockfn.customArgs, nil, nil, nil)
 
-			result := mockfn.getReturnValues(args)
+			result, maybeCustomArguments := mockfn.getReturnValues(args, reflect.TypeOf(fn))
 
 			Expect(result).To(Equal([]interface{}{42, nil}))
-
+			Expect(maybeCustomArguments).To(BeNil())
 		})
 
 		It("returns the mockFunction.OutParameters if the argument do not equal any customArgs", func() {
@@ -166,14 +167,19 @@ var _ = Describe("stub", func() {
 					out:         []interface{}{98, nil},
 				})
 
-			result := mockfn.getReturnValues(args)
+			result, maybeCustomArguments := mockfn.getReturnValues(args, reflect.TypeOf(fn))
 
 			Expect(result).To(Equal([]interface{}{42, nil}))
-
+			Expect(maybeCustomArguments).To(BeNil())
 		})
 
 		It("returns the out parameters if the customArgs if the arguments match", func() {
 			args := []interface{}{"Hello", 42}
+			expected := &customArguments{
+				stub:        mockfn,
+				argMatchers: []match.SupportedKindsMatcher{match.StringSuffix("ello"), match.Exactly(42)},
+				out:         []interface{}{22, errors.New("I am an error")},
+			}
 			mockfn.customArgs = append(
 				mockfn.customArgs,
 				&customArguments{
@@ -186,16 +192,13 @@ var _ = Describe("stub", func() {
 					argMatchers: []match.SupportedKindsMatcher{match.Exactly("B"), match.IntGreaterThan(60)},
 					out:         []interface{}{98, nil},
 				},
-				&customArguments{
-					stub:        mockfn,
-					argMatchers: []match.SupportedKindsMatcher{match.StringSuffix("ello"), match.Exactly(42)},
-					out:         []interface{}{22, errors.New("I am an error")},
-				},
+				expected,
 			)
 
-			result := mockfn.getReturnValues(args)
+			result, maybeCustomArguments := mockfn.getReturnValues(args, reflect.TypeOf(fn))
 
 			Expect(result).To(Equal([]interface{}{22, errors.New("I am an error")}))
+			Expect(maybeCustomArguments).To(Equal(expected))
 		})
 
 		It("returns the the out parameters for the specific call index", func() {
@@ -223,28 +226,28 @@ var _ = Describe("stub", func() {
 				out:   []interface{}{22, errors.New("I am the first error")},
 			})
 
-			result := mockfn.getReturnValues(args)
+			result, maybeCustomArguments := mockfn.getReturnValues(args, reflect.TypeOf(fn))
+
 			Expect(result).To(Equal([]interface{}{22, errors.New("I am the first error")}))
+			Expect(maybeCustomArguments).To(BeNil())
 		})
 
 		It("returns the the out parameters for the specific call index on a custom argument", func() {
 			args := []interface{}{"apple", 0}
-			mockfn.customArgs = append(
-				mockfn.customArgs,
-				&customArguments{
-					stub:        mockfn,
-					argMatchers: []match.SupportedKindsMatcher{match.Exactly("apple"), match.Exactly(0)},
-					out:         []interface{}{0, errors.New("I am not an apple")},
-					callCount:   2,
-					onCalls: []*onCall{
-						&onCall{
-							stub:  mockfn,
-							index: 2,
-							out:   []interface{}{23, errors.New("I am the third not an apple")},
-						},
+			expected := &customArguments{
+				stub:        mockfn,
+				argMatchers: []match.SupportedKindsMatcher{match.Exactly("apple"), match.Exactly(0)},
+				out:         []interface{}{0, errors.New("I am not an apple")},
+				callCount:   2,
+				onCalls: []*onCall{
+					&onCall{
+						stub:  mockfn,
+						index: 2,
+						out:   []interface{}{23, errors.New("I am the third not an apple")},
 					},
 				},
-			)
+			}
+			mockfn.customArgs = append(mockfn.customArgs, expected)
 			mockfn.calls = []call{call{}, call{}, call{}}
 			mockfn.onCalls = append(mockfn.onCalls, &onCall{
 				stub:  mockfn,
@@ -252,8 +255,10 @@ var _ = Describe("stub", func() {
 				out:   []interface{}{22, errors.New("I am the first error")},
 			})
 
-			result := mockfn.getReturnValues(args)
+			result, maybeCustomArguments := mockfn.getReturnValues(args, reflect.TypeOf(fn))
+
 			Expect(result).To(Equal([]interface{}{23, errors.New("I am the third not an apple")}))
+			Expect(maybeCustomArguments).To(Equal(expected))
 		})
 	})
 
@@ -339,18 +344,6 @@ var _ = Describe("stub", func() {
 			outInterfaces := mapToInterfaces(outValues)
 
 			Expect(outInterfaces).To(Equal([]interface{}{42, nil}))
-		})
-	})
-
-	Describe("updateCustomArgsCallCount", func() {
-		It("updates the call count on custom args if found", func() {
-			ca := &customArguments{argMatchers: []match.SupportedKindsMatcher{match.Exactly("hello"), match.Exactly(42)}, callCount: 0}
-			mockfn.customArgs = append(mockfn.customArgs, ca)
-
-			mockfn.updateCustomArgsCallCount([]interface{}{"hello", 42})
-
-			Expect(ca.callCount).To(Equal(1))
-
 		})
 	})
 

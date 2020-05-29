@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"sync"
 
+	"github.com/MonsantoCo/mocka/match"
 	"github.com/pkg/errors"
 )
 
@@ -97,40 +98,6 @@ func newMockFunction(originalFuncPtr interface{}, returnValues []interface{}) (*
 	return stub, nil
 }
 
-// getReturnValues returns the correct out parameters based on the
-// arguments passed into the function.
-//
-// This function also takes into account the current call index of function.
-func (mf *mockFunction) getReturnValues(arguments []interface{}) (out []interface{}) {
-	out = mf.outParameters
-
-	for _, o := range mf.onCalls {
-		if o.index == len(mf.calls) && o.out != nil {
-			out = o.out
-			break
-		}
-	}
-
-	for _, ca := range mf.customArgs {
-		// TODO - Checking to see if the arguments passed in match a matcher
-		if ca != nil && ca.match(arguments) {
-			if ca.out != nil {
-				out = ca.out
-			}
-
-			for _, o := range ca.onCalls {
-				if o.index == ca.callCount && o.out != nil {
-					return o.out
-				}
-			}
-
-			break
-		}
-	}
-
-	return out
-}
-
 // toType gets the reflection type from the mock function pointer
 func (mf *mockFunction) toType() reflect.Type {
 	return reflect.ValueOf(mf.functionPtr).Elem().Type()
@@ -144,7 +111,7 @@ func (mf *mockFunction) implementation(arguments []reflect.Value) []reflect.Valu
 
 	functionType := mf.toType()
 	argumentsAsInterfaces := mapToInterfaces(arguments)
-	outParameters := mf.getReturnValues(argumentsAsInterfaces)
+	outParameters, maybeCustomArguments := mf.getReturnValues(argumentsAsInterfaces, functionType)
 	outParametersAsValues := mapToReflectValue(outParameters)
 
 	outParametersAsInterfaces := make([]interface{}, len(outParametersAsValues))
@@ -171,22 +138,86 @@ func (mf *mockFunction) implementation(arguments []reflect.Value) []reflect.Valu
 		out:  outParametersAsInterfaces,
 	})
 
-	// TODO update getReturnValues to return the ca to update
-	mf.updateCustomArgsCallCount(argumentsAsInterfaces)
+	if maybeCustomArguments != nil {
+		maybeCustomArguments.callCount++
+	}
 
 	return outParametersAsValues
 }
 
-// updateCustomArgsCallCount updates the call count for
-// a specific set of arguments
-func (mf *mockFunction) updateCustomArgsCallCount(arguments []interface{}) {
-	for _, ca := range mf.customArgs {
+// getReturnValues returns the correct out parameters based on the
+// arguments passed into the function.
+//
+// This function also takes into account the current call index of function.
+func (mf *mockFunction) getReturnValues(arguments []interface{}, functionType reflect.Type) ([]interface{}, *customArguments) {
+	out := mf.outParameters
 
-		if ca != nil && ca.match(arguments) {
-			ca.callCount++
-			return
+	for _, o := range mf.onCalls {
+		if o.index == len(mf.calls) && o.out != nil {
+			out = o.out
+			break
 		}
 	}
+
+	maybeCustomArgs := getHighestPriority(getPossible(mf.customArgs, arguments), functionType.NumIn())
+	if maybeCustomArgs == nil {
+		return out, nil
+	}
+
+	out = maybeCustomArgs.out
+	for _, o := range maybeCustomArgs.onCalls {
+		if o.index == maybeCustomArgs.callCount && o.out != nil {
+			return o.out, maybeCustomArgs
+		}
+	}
+
+	return out, maybeCustomArgs
+}
+
+// getHighestPriority returns the highest priority custom arguments if found;
+// otherwise a nil
+func getHighestPriority(customArgs []*customArguments, numArgs int) *customArguments {
+	switch len(customArgs) {
+	case 0:
+		return nil
+	case 1:
+		return customArgs[0]
+	}
+
+	for i := 0; i < numArgs; i++ {
+		highestPriority := 0
+		newCustomArgs := make([]*customArguments, 0)
+
+		for _, ca := range customArgs {
+			if p := match.Priority(ca.argMatchers[i]); p > highestPriority {
+				highestPriority = p
+				newCustomArgs = make([]*customArguments, 0)
+			}
+			newCustomArgs = append(newCustomArgs, ca)
+		}
+
+		switch len(newCustomArgs) {
+		case 0:
+			return nil
+		case 1:
+			return newCustomArgs[0]
+		default:
+			customArgs = newCustomArgs
+		}
+	}
+
+	return customArgs[0]
+}
+
+// getPossible returns the possible custom arguments
+// that match the provided arguments
+func getPossible(customArgs []*customArguments, arguments []interface{}) (possible []*customArguments) {
+	for _, ca := range customArgs {
+		if ca != nil && ca.out != nil && ca.match(arguments) {
+			possible = append(possible, ca)
+		}
+	}
+	return
 }
 
 // Returns updates the default out parameters returned when
