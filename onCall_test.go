@@ -45,7 +45,7 @@ var _ = Describe("onCall", func() {
 			err := ca.Return(42, "nil")
 
 			Expect(err).Should(HaveOccurred())
-			Expect(err.Error()).To(Equal("mocka: expected return values of type (int, error), but recieved (int, string)"))
+			Expect(err.Error()).To(Equal("mocka: expected return values of type (int, error), but received (int, string)"))
 		})
 
 		It("assigns the OutParameters and returns nil if everything is valid", func() {

@@ -173,7 +173,7 @@ var _ = Describe("customArguments", func() {
 			err := ca.Return(42, "nil")
 
 			Expect(err).Should(HaveOccurred())
-			Expect(err.Error()).To(Equal("mocka: expected arguments of type (string, int), but recieved (int, int)"))
+			Expect(err.Error()).To(Equal("mocka: expected arguments of type (string, int), but received (int, int)"))
 		})
 
 		It("returns an error if one or more of the return values are not valid", func() {
@@ -397,7 +397,7 @@ type panicMatcher struct {
 func (m *panicMatcher) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
 		reflect.Int:    struct{}{},
-		reflect.String: struct{}{},
+		reflect.String: {},
 	}
 }
 

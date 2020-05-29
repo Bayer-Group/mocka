@@ -24,7 +24,7 @@ func (a *outParameterValidationError) String() string {
 		real[i] = toFriendlyName(a.fnType.Out(i))
 	}
 
-	return fmt.Sprintf("mocka: expected return values of type (%v), but recieved (%v)", strings.Join(real, ", "), strings.Join(mapToTypeName(a.provided), ", "))
+	return fmt.Sprintf("mocka: expected return values of type (%v), but received (%v)", strings.Join(real, ", "), strings.Join(mapToTypeName(a.provided), ", "))
 }
 
 // Error returns a string that represents an out parameter validation error.
