@@ -52,6 +52,7 @@ var _ = Describe("uintGreaterThanOrEqualTo", func() {
 		func(expected uint64, actual interface{}) {
 			Expect(UintGreaterThanOrEqualTo(expected).Match(actual)).To(BeFalse())
 		},
+		Entry("when actual is nil", uint64(5), nil),
 		Entry("when actual(uint) is less than expected", uint64(5), uint(1)),
 		Entry("when actual(uint8) is less than expected", uint64(10), uint8(8)),
 		Entry("when actual(uint16) is less than expected", uint64(15), uint16(2)),

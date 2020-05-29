@@ -9,7 +9,6 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-// TODO
 var _ = Describe("stub", func() {
 	var (
 		fn     func(string, int) (int, error)
@@ -906,6 +905,105 @@ var _ = Describe("stub", func() {
 			mockfn.execFunc([]interface{}{})
 
 			Expect(called).To(BeTrue())
+		})
+	})
+
+	Describe("getHighestPriority", func() {
+		const numArguments = 2
+
+		var (
+			customArgs []*customArguments
+			matcher1   *customArguments
+			matcher2   *customArguments
+		)
+
+		BeforeEach(func() {
+			matcher1 = &customArguments{
+				stub:        mockfn,
+				argMatchers: []match.SupportedKindsMatcher{match.Exactly("custom-"), match.Exactly(0)},
+				out:         []interface{}{0, errors.New("Ope")},
+			}
+			matcher2 = &customArguments{
+				stub:        mockfn,
+				argMatchers: []match.SupportedKindsMatcher{match.StringPrefix("custom-"), match.Exactly(0)},
+				out:         nil,
+			}
+			customArgs = []*customArguments{matcher1, matcher2}
+		})
+
+		It("returns nil when no custom arguments are provided", func() {
+			actual := getHighestPriority(nil, numArguments)
+
+			Expect(actual).To(BeNil())
+		})
+
+		It("return the only custom argument when provided one custom argument", func() {
+			actual := getHighestPriority([]*customArguments{matcher1}, numArguments)
+
+			Expect(actual).To(Equal(matcher1))
+		})
+
+		It("returns the matcher with the highest priority", func() {
+			actual := getHighestPriority(customArgs, numArguments)
+
+			Expect(actual).To(Equal(matcher1))
+		})
+
+		It("returns the first matcher if multiple matchers have the same priority", func() {
+			customArgs = []*customArguments{
+				matcher2,
+				&customArguments{
+					stub:        mockfn,
+					argMatchers: []match.SupportedKindsMatcher{match.StringPrefix("custom"), match.Exactly(0)},
+					out:         nil,
+				},
+			}
+			actual := getHighestPriority(customArgs, numArguments)
+
+			Expect(actual).To(Equal(matcher2))
+		})
+	})
+
+	Describe("getPossible", func() {
+		var (
+			customArgs []*customArguments
+			matcher1   *customArguments
+			matcher2   *customArguments
+		)
+
+		BeforeEach(func() {
+			matcher1 = &customArguments{
+				stub:        mockfn,
+				argMatchers: []match.SupportedKindsMatcher{match.Exactly("custom-"), match.Exactly(0)},
+				out:         []interface{}{0, errors.New("Ope")},
+			}
+			matcher2 = &customArguments{
+				stub:        mockfn,
+				argMatchers: []match.SupportedKindsMatcher{match.StringPrefix("custom-"), match.Exactly(0)},
+				out:         nil,
+			}
+			customArgs = []*customArguments{matcher1, matcher2}
+		})
+
+		It("returns an empty slice when no matches are found", func() {
+			actual := getPossible(customArgs, []interface{}{"screams", 0})
+
+			Expect(actual).To(HaveLen(0))
+		})
+
+		It("returns all possible matches", func() {
+			actual := getPossible(customArgs, []interface{}{"custom-", 0})
+
+			Expect(actual).To(HaveLen(2))
+			Expect(actual).To(ContainElement(matcher1))
+			Expect(actual).To(ContainElement(matcher2))
+		})
+
+		It("returns a single match when only one is possible", func() {
+			actual := getPossible(customArgs, []interface{}{"custom-1", 0})
+
+			Expect(actual).To(HaveLen(1))
+			Expect(actual).To(ContainElement(matcher2))
 		})
 	})
 })

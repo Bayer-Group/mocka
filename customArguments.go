@@ -164,17 +164,3 @@ func (ca *customArguments) isMatch(arguments []interface{}) (isMatch bool) {
 
 	return true
 }
-
-// matchersAreEqual returns true is the stub and argument matchers are equal;
-// otherwise false
-func (ca *customArguments) matchersAreEqual(other *customArguments) bool {
-	if ca.stub != other.stub {
-		return false
-	}
-
-	if !reflect.DeepEqual(ca.argMatchers, other.argMatchers) {
-		return false
-	}
-
-	return true
-}

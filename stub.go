@@ -192,21 +192,22 @@ func getHighestPriority(customArgs []*customArguments, numArgs int) *customArgum
 		newCustomArgs := make([]*customArguments, 0)
 
 		for _, ca := range customArgs {
-			if p := match.Priority(ca.argMatchers[i]); p > highestPriority {
+			p := match.Priority(ca.argMatchers[i])
+			if p > highestPriority {
 				highestPriority = p
 				newCustomArgs = make([]*customArguments, 0)
 			}
-			newCustomArgs = append(newCustomArgs, ca)
+
+			if p == highestPriority {
+				newCustomArgs = append(newCustomArgs, ca)
+			}
 		}
 
-		switch len(newCustomArgs) {
-		case 0:
-			return nil
-		case 1:
+		if len(newCustomArgs) == 1 {
 			return newCustomArgs[0]
-		default:
-			customArgs = newCustomArgs
 		}
+
+		customArgs = newCustomArgs
 	}
 
 	return customArgs[0]
@@ -245,7 +246,7 @@ func (mf *mockFunction) WithArgs(arguments ...interface{}) OnCallReturner {
 
 	newCA := newCustomArguments(mf, arguments)
 	for _, ca := range mf.customArgs {
-		if ca != nil && ca.matchersAreEqual(newCA) {
+		if ca != nil && reflect.DeepEqual(ca.argMatchers, newCA.argMatchers) {
 			return ca
 		}
 	}
