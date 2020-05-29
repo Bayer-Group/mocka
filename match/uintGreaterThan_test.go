@@ -11,7 +11,7 @@ import (
 var _ = Describe("uintGreaterThan", func() {
 	Describe("UintGreaterThan", func() {
 		It("returns an uintGreaterThan struct", func() {
-			actual := UintGreaterThan(10)
+			actual := UintGreaterThan(uint64(10))
 
 			Expect(actual).To(BeAssignableToTypeOf(new(uintGreaterThan)))
 		})
@@ -19,7 +19,7 @@ var _ = Describe("uintGreaterThan", func() {
 
 	Describe("SupportedKinds", func() {
 		It("returns all support kinds in go", func() {
-			actual := UintGreaterThan(5).SupportedKinds()
+			actual := UintGreaterThan(uint64(5)).SupportedKinds()
 
 			Expect(actual).To(Equal(
 				map[reflect.Kind]struct{}{

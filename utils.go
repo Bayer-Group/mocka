@@ -128,14 +128,12 @@ func toFriendlyName(value interface{}) string {
 	case reflect.Map:
 		return fmt.Sprintf("map[%v]%v", toFriendlyName(t.Key()), toFriendlyName(t.Elem()))
 	case reflect.Chan:
-		toChannelFriendlyName(t)
+		return toChannelFriendlyName(t)
 	case reflect.Func:
-		toFunctionFriendlyName(t)
+		return toFunctionFriendlyName(t)
 	default:
 		return t.Name()
 	}
-
-	return ""
 }
 
 // toChannelFriendlyName returns the friendly name for a channel

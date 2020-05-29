@@ -74,7 +74,7 @@ var _ = Describe("customArguments", func() {
 			Expect(ca).ToNot(BeNil())
 			Expect(*ca).To(Equal(customArguments{
 				stub:        mockFn,
-				argMatchers: []match.SupportedKindsMatcher{anything, nil},
+				argMatchers: nil,
 				argValidationError: &argumentValidationError{
 					fnType:   mockFn.toType(),
 					provided: []interface{}{anything, lengthOf10},
@@ -88,7 +88,7 @@ var _ = Describe("customArguments", func() {
 			Expect(ca).ToNot(BeNil())
 			Expect(*ca).To(Equal(customArguments{
 				stub:        mockFn,
-				argMatchers: []match.SupportedKindsMatcher{match.Exactly("hi"), nil},
+				argMatchers: nil,
 				argValidationError: &argumentValidationError{
 					fnType:   mockFn.toType(),
 					provided: []interface{}{"hi", "ope"},
@@ -122,7 +122,7 @@ var _ = Describe("customArguments", func() {
 			Expect(ca).ToNot(BeNil())
 			Expect(*ca).To(Equal(customArguments{
 				stub:        mockFn,
-				argMatchers: []match.SupportedKindsMatcher{nil},
+				argMatchers: nil,
 				argValidationError: &argumentValidationError{
 					fnType:   mockFn.toType(),
 					provided: []interface{}{nil},

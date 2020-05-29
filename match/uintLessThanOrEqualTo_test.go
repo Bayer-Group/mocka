@@ -11,7 +11,7 @@ import (
 var _ = Describe("uintLessThanOrEqualTo", func() {
 	Describe("UintLessThanOrEqualTo", func() {
 		It("returns an uintLessThanOrEqualTo struct", func() {
-			actual := UintLessThanOrEqualTo(10)
+			actual := UintLessThanOrEqualTo(uint64(10))
 
 			Expect(actual).To(BeAssignableToTypeOf(new(uintLessThanOrEqualTo)))
 		})
@@ -19,7 +19,7 @@ var _ = Describe("uintLessThanOrEqualTo", func() {
 
 	Describe("SupportedKinds", func() {
 		It("returns all support kinds in go", func() {
-			actual := UintLessThanOrEqualTo(5).SupportedKinds()
+			actual := UintLessThanOrEqualTo(uint64(5)).SupportedKinds()
 
 			Expect(actual).To(Equal(
 				map[reflect.Kind]struct{}{
@@ -36,28 +36,28 @@ var _ = Describe("uintLessThanOrEqualTo", func() {
 		func(expected uint64, actual interface{}) {
 			Expect(UintLessThanOrEqualTo(expected).Match(actual)).To(BeTrue())
 		},
-		Entry("with uint", int64(10), uint(5)),
-		Entry("with uint8", int64(18), uint8(10)),
-		Entry("with uint16", int64(22), uint16(15)),
-		Entry("with uint32", int64(40), uint32(20)),
-		Entry("with uint64", int64(15), uint64(8)),
-		Entry("when actual(uint) is the same as the expected", int64(5), uint(5)),
-		Entry("when actual(uint8) is the same as the expected", int64(10), uint8(10)),
-		Entry("when actual(uint16) is the same as the expected", int64(15), uint16(15)),
-		Entry("when actual(uint32) is the same as the expected", int64(20), uint32(20)),
-		Entry("when actual(uint64) is the same as the expected", int64(8), uint64(8)),
+		Entry("with uint", uint64(10), uint(5)),
+		Entry("with uint8", uint64(18), uint8(10)),
+		Entry("with uint16", uint64(22), uint16(15)),
+		Entry("with uint32", uint64(40), uint32(20)),
+		Entry("with uint64", uint64(15), uint64(8)),
+		Entry("when actual(uint) is the same as the expected", uint64(5), uint(5)),
+		Entry("when actual(uint8) is the same as the expected", uint64(10), uint8(10)),
+		Entry("when actual(uint16) is the same as the expected", uint64(15), uint16(15)),
+		Entry("when actual(uint32) is the same as the expected", uint64(20), uint32(20)),
+		Entry("when actual(uint64) is the same as the expected", uint64(8), uint64(8)),
 	)
 
 	DescribeTable("Match returns false",
 		func(expected uint64, actual interface{}) {
 			Expect(UintLessThanOrEqualTo(expected).Match(actual)).To(BeFalse())
 		},
-		Entry("when actual is nil", int64(5), nil),
-		Entry("when actual(uint) is greater than expected", int64(1), uint(5)),
-		Entry("when actual(uint8) is greater than expected", int64(8), uint8(10)),
-		Entry("when actual(uint16) is greater than expected", int64(2), uint16(15)),
-		Entry("when actual(uint32) is greater than expected", int64(4), uint32(20)),
-		Entry("when actual(uint64) is greater than expected", int64(5), uint64(8)),
-		Entry("when actual is not an int", int64(10), "10"),
+		Entry("when actual is nil", uint64(5), nil),
+		Entry("when actual(uint) is greater than expected", uint64(1), uint(5)),
+		Entry("when actual(uint8) is greater than expected", uint64(8), uint8(10)),
+		Entry("when actual(uint16) is greater than expected", uint64(2), uint16(15)),
+		Entry("when actual(uint32) is greater than expected", uint64(4), uint32(20)),
+		Entry("when actual(uint64) is greater than expected", uint64(5), uint64(8)),
+		Entry("when actual is not an int", uint64(10), "10"),
 	)
 })

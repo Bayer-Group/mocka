@@ -23,11 +23,11 @@ var _ = Describe("intGreaterThan", func() {
 
 			Expect(actual).To(Equal(
 				map[reflect.Kind]struct{}{
-					reflect.Uint:   {},
-					reflect.Uint8:  {},
-					reflect.Uint16: {},
-					reflect.Uint32: {},
-					reflect.Uint64: {},
+					reflect.Int:   {},
+					reflect.Int8:  {},
+					reflect.Int16: {},
+					reflect.Int32: {},
+					reflect.Int64: {},
 				}))
 		})
 	})
