@@ -30,14 +30,13 @@ func (m *elementsContaining) Match(value interface{}) bool {
 
 	switch v := reflect.ValueOf(value); v.Kind() {
 	case reflect.Slice, reflect.Array:
-		allExist := true
 		elementKind := v.Type().Elem().Kind()
 		for _, e := range m.elements {
 			if reflect.TypeOf(e).Kind() != elementKind {
 				return false
 			}
 
-			found := false
+			var found bool
 			for i := 0; i < v.Len(); i++ {
 				actual := v.Index(i)
 				if reflect.DeepEqual(e, actual.Interface()) {
@@ -46,10 +45,12 @@ func (m *elementsContaining) Match(value interface{}) bool {
 				}
 			}
 
-			allExist = allExist && found
+			if !found {
+				return false
+			}
 		}
 
-		return allExist
+		return true
 	default:
 		return false
 	}

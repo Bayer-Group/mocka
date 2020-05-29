@@ -29,7 +29,6 @@ func (m *keysContaining) Match(value interface{}) bool {
 
 	switch v := reflect.ValueOf(value); v.Kind() {
 	case reflect.Map:
-		allExist := true
 		keyKind := v.Type().Key().Kind()
 		mapKeys := v.MapKeys()
 		for _, k := range m.keys {
@@ -37,7 +36,7 @@ func (m *keysContaining) Match(value interface{}) bool {
 				return false
 			}
 
-			found := false
+			var found bool
 			for _, mk := range mapKeys {
 				if reflect.DeepEqual(k, mk.Interface()) {
 					found = true
@@ -45,10 +44,12 @@ func (m *keysContaining) Match(value interface{}) bool {
 				}
 			}
 
-			allExist = allExist && found
+			if !found {
+				return false
+			}
 		}
 
-		return allExist
+		return true
 	default:
 		return false
 	}
