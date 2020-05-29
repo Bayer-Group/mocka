@@ -17,7 +17,7 @@ var _ = Describe("sandbox", func() {
 	)
 
 	BeforeEach(func() {
-		testSandbox = &sandbox{nil}
+		testSandbox = &sandbox{}
 		callCounts = map[string]int{"fn1": 0, "fn2": 0, "fn3": 0}
 		fn1 = func(str string, num int) (int, error) {
 			callCounts["fn1"]++

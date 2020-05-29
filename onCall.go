@@ -22,6 +22,9 @@ func (c *onCall) Return(returnValues ...interface{}) error {
 		return errors.New("mocka: stub does not exist")
 	}
 
+	c.stub.lock.Lock()
+	defer c.stub.lock.Unlock()
+
 	if !validateOutParameters(c.stub.toType(), returnValues) {
 		return &outParameterValidationError{c.stub.toType(), returnValues}
 	}
