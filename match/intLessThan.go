@@ -14,7 +14,7 @@ type intLessThan struct {
 }
 
 // SupportedKinds returns all the kinds the int less than matcher supports
-func (m *intLessThan) SupportedKinds() map[reflect.Kind]struct{} {
+func (intLessThan) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
 		reflect.Int:    {},
 		reflect.Int8:   {},

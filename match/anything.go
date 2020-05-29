@@ -11,7 +11,7 @@ type anything struct {
 }
 
 // SupportedKinds returns all the kinds the anything matcher supports
-func (m *anything) SupportedKinds() map[reflect.Kind]struct{} {
+func (anything) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
 		reflect.Bool:          {},
 		reflect.Int:           {},
@@ -43,6 +43,6 @@ func (m *anything) SupportedKinds() map[reflect.Kind]struct{} {
 }
 
 // Match always returns true
-func (m *anything) Match(_ interface{}) bool {
+func (anything) Match(_ interface{}) bool {
 	return true
 }

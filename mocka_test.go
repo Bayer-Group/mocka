@@ -105,7 +105,6 @@ var _ = Describe("mocka", func() {
 			Expect(stub).To(BeNil())
 			Expect(err).ToNot(BeNil())
 			Expect(err.Error()).To(Equal("mocka: could not clone function pointer to new memory address: Ope"))
-
 		})
 
 		It("returns a stub with a reference to the original function", func() {

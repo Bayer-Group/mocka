@@ -216,7 +216,7 @@ func getHighestPriority(customArgs []*customArguments, numArgs int) *customArgum
 // that match the provided arguments
 func getPossible(customArgs []*customArguments, arguments []interface{}) (possible []*customArguments) {
 	for _, ca := range customArgs {
-		if ca != nil && ca.match(arguments) {
+		if ca != nil && ca.isMatch(arguments) {
 			possible = append(possible, ca)
 		}
 	}

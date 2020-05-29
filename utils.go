@@ -118,15 +118,7 @@ func toFriendlyName(value interface{}) string {
 		return "<nil>"
 	}
 
-	var t reflect.Type
-	switch value.(type) {
-	case reflect.Type:
-		t = value.(reflect.Type)
-	default:
-		t = reflect.TypeOf(value)
-	}
-
-	switch t.Kind() {
+	switch t := getType(value); t.Kind() {
 	case reflect.Ptr:
 		return "*" + toFriendlyName(t.Elem())
 	case reflect.Slice:
@@ -136,31 +128,52 @@ func toFriendlyName(value interface{}) string {
 	case reflect.Map:
 		return fmt.Sprintf("map[%v]%v", toFriendlyName(t.Key()), toFriendlyName(t.Elem()))
 	case reflect.Chan:
-		switch t.ChanDir() {
-		case reflect.RecvDir:
-			return fmt.Sprintf("<-chan %v", toFriendlyName(t.Elem()))
-		case reflect.SendDir:
-			return fmt.Sprintf("chan<- %v", toFriendlyName(t.Elem()))
-		default:
-			return fmt.Sprintf("chan %v", toFriendlyName(t.Elem()))
-		}
+		toChannelFriendlyName(t)
 	case reflect.Func:
-		args := make([]string, t.NumIn())
-		for i := 0; i < t.NumIn(); i++ {
-			args[i] = toFriendlyName(t.In(i))
-		}
-
-		if t.NumOut() > 0 {
-			out := make([]string, t.NumOut())
-			for i := 0; i < t.NumOut(); i++ {
-				out[i] = toFriendlyName(t.Out(i))
-			}
-			return fmt.Sprintf("func(%v) (%v) {}", strings.Join(args, ", "), strings.Join(out, ", "))
-		}
-
-		return fmt.Sprintf("func(%v) {}", strings.Join(args, ", "))
+		toFunctionFriendlyName(t)
 	default:
 		return t.Name()
 	}
 
+	return ""
+}
+
+// toChannelFriendlyName returns the friendly name for a channel
+func toChannelFriendlyName(t reflect.Type) string {
+	switch t.ChanDir() {
+	case reflect.RecvDir:
+		return fmt.Sprintf("<-chan %v", toFriendlyName(t.Elem()))
+	case reflect.SendDir:
+		return fmt.Sprintf("chan<- %v", toFriendlyName(t.Elem()))
+	default:
+		return fmt.Sprintf("chan %v", toFriendlyName(t.Elem()))
+	}
+}
+
+// toFunctionFriendlyName returns the friendly name for a function
+func toFunctionFriendlyName(t reflect.Type) string {
+	args := make([]string, t.NumIn())
+	for i := 0; i < t.NumIn(); i++ {
+		args[i] = toFriendlyName(t.In(i))
+	}
+
+	if t.NumOut() > 0 {
+		out := make([]string, t.NumOut())
+		for i := 0; i < t.NumOut(); i++ {
+			out[i] = toFriendlyName(t.Out(i))
+		}
+		return fmt.Sprintf("func(%v) (%v) {}", strings.Join(args, ", "), strings.Join(out, ", "))
+	}
+
+	return fmt.Sprintf("func(%v) {}", strings.Join(args, ", "))
+}
+
+// getType returns the type of the argument
+func getType(value interface{}) reflect.Type {
+	switch value.(type) {
+	case reflect.Type:
+		return value.(reflect.Type)
+	default:
+		return reflect.TypeOf(value)
+	}
 }

@@ -62,5 +62,4 @@ func ExampleAnythingButNil() {
 	// 10
 	// 20
 	// 5
-
 }

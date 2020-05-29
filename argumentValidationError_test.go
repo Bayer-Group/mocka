@@ -35,7 +35,6 @@ var _ = Describe("argumentValidationError", func() {
 
 			Expect(result).To(Equal("mocka: expected arguments of type (string, int), but received (int, string)"))
 		})
-
 	})
 
 	Describe("Error", func() {

@@ -32,7 +32,6 @@ var _ = Describe("mockFile", func() {
 		It("returns nil when the file is closed", func() {
 			Expect(file.Close()).To(BeNil())
 		})
-
 	})
 
 	Describe("io.Reader", func() {
@@ -224,7 +223,6 @@ var _ = Describe("mockFile", func() {
 
 			bytesWritten, err = file.Write([]byte("I am"))
 		})
-
 	})
 
 	Describe("os.File", func() {
@@ -272,5 +270,4 @@ var _ = Describe("mockFile", func() {
 			Expect(file.limit).To(Equal(int64(8)))
 		})
 	})
-
 })

@@ -26,7 +26,16 @@ func newCustomArguments(stub *mockFunction, arguments []interface{}) *customArgu
 		}
 	}
 
-	var validationError error
+	matchers, err := getMatchers(functionType, arguments)
+	return &customArguments{
+		stub:               stub,
+		callCount:          0,
+		argMatchers:        matchers,
+		argValidationError: err,
+	}
+}
+
+func getMatchers(functionType reflect.Type, arguments []interface{}) ([]match.SupportedKindsMatcher, error) {
 	matchers := make([]match.SupportedKindsMatcher, functionType.NumIn())
 	for i, arg := range arguments {
 		aType := functionType.In(i)
@@ -35,43 +44,35 @@ func newCustomArguments(stub *mockFunction, arguments []interface{}) *customArgu
 		case match.SupportedKindsMatcher:
 			matcher := arg.(match.SupportedKindsMatcher)
 			if _, ok := matcher.SupportedKinds()[aType.Kind()]; !ok {
-				validationError = &argumentValidationError{
+				return nil, &argumentValidationError{
 					fnType:   functionType,
 					provided: arguments,
 				}
-				break
 			}
 
 			matchers[i] = matcher
 		case nil:
 			if !areTypeAndValueEquivalent(aType, arg) {
-				validationError = &argumentValidationError{
+				return nil, &argumentValidationError{
 					fnType:   functionType,
 					provided: arguments,
 				}
-				break
 			}
 
 			matchers[i] = match.Nil()
 		default:
 			if !areTypeAndValueEquivalent(aType, arg) {
-				validationError = &argumentValidationError{
+				return nil, &argumentValidationError{
 					fnType:   functionType,
 					provided: arguments,
 				}
-				break
 			}
 
 			matchers[i] = match.Exactly(arg)
 		}
 	}
 
-	return &customArguments{
-		stub:               stub,
-		callCount:          0,
-		argMatchers:        matchers,
-		argValidationError: validationError,
-	}
+	return matchers, nil
 }
 
 type customArguments struct {
@@ -146,12 +147,12 @@ func (ca *customArguments) OnThirdCall() Returner {
 	return ca.OnCall(2)
 }
 
-// match returns false if any of the argument matcher return false or
+// isMatch returns false if any of the argument matcher return false or
 // if there is a panic from inside a mather; otherwise true
-func (ca *customArguments) match(arguments []interface{}) (match bool) {
+func (ca *customArguments) isMatch(arguments []interface{}) (isMatch bool) {
 	defer func() {
 		if r := recover(); r != nil {
-			match = false
+			isMatch = false
 		}
 	}()
 

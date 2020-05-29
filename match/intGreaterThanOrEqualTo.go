@@ -14,7 +14,7 @@ type intGreaterThanOrEqualTo struct {
 }
 
 // SupportedKinds returns all the kinds the int greater than or equal to matcher supports
-func (m *intGreaterThanOrEqualTo) SupportedKinds() map[reflect.Kind]struct{} {
+func (intGreaterThanOrEqualTo) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
 		reflect.Int:    {},
 		reflect.Int8:   {},

@@ -232,7 +232,6 @@ var _ = Describe("customArguments", func() {
 			_ = ca.OnCall(5)
 
 			Expect(ca.onCalls).To(HaveLen(4))
-
 		})
 
 		It("returns an existing onCall object if one exists for that index", func() {
@@ -243,7 +242,6 @@ var _ = Describe("customArguments", func() {
 			Expect(ca.onCalls).To(HaveLen(3))
 			Expect(ok).To(BeTrue())
 			Expect(*o).To(Equal(onCall{stub: mockFn, index: 2}))
-
 		})
 	})
 
@@ -264,7 +262,6 @@ var _ = Describe("customArguments", func() {
 			Expect(ca.onCalls).To(HaveLen(3))
 			Expect(ok).To(BeTrue())
 			Expect(*o).To(Equal(onCall{stub: mockFn, index: 0}))
-
 		})
 
 		It("returns the existing first call", func() {
@@ -284,7 +281,6 @@ var _ = Describe("customArguments", func() {
 			Expect(ca.onCalls).To(HaveLen(3))
 			Expect(ok).To(BeTrue())
 			Expect(*o).To(Equal(onCall{stub: mockFn, index: 0}))
-
 		})
 	})
 
@@ -305,7 +301,6 @@ var _ = Describe("customArguments", func() {
 			Expect(ca.onCalls).To(HaveLen(3))
 			Expect(ok).To(BeTrue())
 			Expect(*o).To(Equal(onCall{stub: mockFn, index: 1}))
-
 		})
 
 		It("returns the existing second call", func() {
@@ -325,7 +320,6 @@ var _ = Describe("customArguments", func() {
 			Expect(ca.onCalls).To(HaveLen(3))
 			Expect(ok).To(BeTrue())
 			Expect(*o).To(Equal(onCall{stub: mockFn, index: 1}))
-
 		})
 	})
 
@@ -346,7 +340,6 @@ var _ = Describe("customArguments", func() {
 			Expect(ca.onCalls).To(HaveLen(3))
 			Expect(ok).To(BeTrue())
 			Expect(*o).To(Equal(onCall{stub: mockFn, index: 2}))
-
 		})
 
 		It("returns the existing third call", func() {
@@ -373,20 +366,19 @@ var _ = Describe("customArguments", func() {
 		It("returns false if any matcher panics", func() {
 			ca := newCustomArguments(mockFn, []interface{}{&panicMatcher{}, match.IntGreaterThan(10)})
 
-			Expect(ca.match([]interface{}{"hi", 11})).To(BeFalse())
-
+			Expect(ca.isMatch([]interface{}{"hi", 11})).To(BeFalse())
 		})
 
 		It("returns false if any matcher returns false", func() {
 			ca := newCustomArguments(mockFn, []interface{}{"hi", match.IntGreaterThan(10)})
 
-			Expect(ca.match([]interface{}{"hi", 5})).To(BeFalse())
+			Expect(ca.isMatch([]interface{}{"hi", 5})).To(BeFalse())
 		})
 
 		It("returns true if all matchers return true", func() {
 			ca := newCustomArguments(mockFn, []interface{}{"hi", match.IntGreaterThan(10)})
 
-			Expect(ca.match([]interface{}{"hi", 15})).To(BeTrue())
+			Expect(ca.isMatch([]interface{}{"hi", 15})).To(BeTrue())
 		})
 	})
 })
@@ -394,13 +386,13 @@ var _ = Describe("customArguments", func() {
 type panicMatcher struct {
 }
 
-func (m *panicMatcher) SupportedKinds() map[reflect.Kind]struct{} {
+func (*panicMatcher) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
 		reflect.Int:    {},
 		reflect.String: {},
 	}
 }
 
-func (m *panicMatcher) Match(_ interface{}) bool {
+func (*panicMatcher) Match(_ interface{}) bool {
 	panic("i am the panic matcher")
 }

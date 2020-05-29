@@ -99,7 +99,6 @@ var _ = Describe("stub", func() {
 			Expect(mockFn).To(BeNil())
 			Expect(err).ToNot(BeNil())
 			Expect(err.Error()).To(Equal("mocka: could not clone function pointer to new memory address: Ope"))
-
 		})
 
 		It("returns a mockFunction with a reference to the original function", func() {
@@ -756,7 +755,6 @@ var _ = Describe("stub", func() {
 			_ = mockfn.OnCall(5)
 
 			Expect(mockfn.onCalls).To(HaveLen(4))
-
 		})
 
 		It("returns an existing onCall object if one exists for that index", func() {
@@ -767,7 +765,6 @@ var _ = Describe("stub", func() {
 			Expect(mockfn.onCalls).To(HaveLen(3))
 			Expect(ok).To(BeTrue())
 			Expect(*o).To(Equal(onCall{stub: mockfn, index: 2}))
-
 		})
 	})
 
@@ -785,7 +782,6 @@ var _ = Describe("stub", func() {
 			Expect(mockfn.onCalls).To(HaveLen(3))
 			Expect(ok).To(BeTrue())
 			Expect(*o).To(Equal(onCall{stub: mockfn, index: 0}))
-
 		})
 
 		It("returns the existing first call", func() {
@@ -802,7 +798,6 @@ var _ = Describe("stub", func() {
 			Expect(mockfn.onCalls).To(HaveLen(3))
 			Expect(ok).To(BeTrue())
 			Expect(*o).To(Equal(onCall{stub: mockfn, index: 0}))
-
 		})
 	})
 
@@ -820,7 +815,6 @@ var _ = Describe("stub", func() {
 			Expect(mockfn.onCalls).To(HaveLen(3))
 			Expect(ok).To(BeTrue())
 			Expect(*o).To(Equal(onCall{stub: mockfn, index: 1}))
-
 		})
 
 		It("returns the existing second call", func() {
@@ -837,7 +831,6 @@ var _ = Describe("stub", func() {
 			Expect(mockfn.onCalls).To(HaveLen(3))
 			Expect(ok).To(BeTrue())
 			Expect(*o).To(Equal(onCall{stub: mockfn, index: 1}))
-
 		})
 	})
 
@@ -855,7 +848,6 @@ var _ = Describe("stub", func() {
 			Expect(mockfn.onCalls).To(HaveLen(3))
 			Expect(ok).To(BeTrue())
 			Expect(*o).To(Equal(onCall{stub: mockfn, index: 2}))
-
 		})
 
 		It("returns the existing third call", func() {
@@ -872,7 +864,6 @@ var _ = Describe("stub", func() {
 			Expect(mockfn.onCalls).To(HaveLen(3))
 			Expect(ok).To(BeTrue())
 			Expect(*o).To(Equal(onCall{stub: mockfn, index: 2}))
-
 		})
 	})
 

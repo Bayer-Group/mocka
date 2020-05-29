@@ -14,7 +14,7 @@ type floatLessThan struct {
 }
 
 // SupportedKinds returns all the kinds the float less than matcher supports
-func (m *floatLessThan) SupportedKinds() map[reflect.Kind]struct{} {
+func (floatLessThan) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
 		reflect.Float32: {},
 		reflect.Float64: {},

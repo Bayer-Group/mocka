@@ -15,7 +15,7 @@ type typeOf struct {
 }
 
 // SupportedKinds returns all the kinds the type of matcher supports
-func (m *typeOf) SupportedKinds() map[reflect.Kind]struct{} {
+func (typeOf) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
 		reflect.Bool:          {},
 		reflect.Int:           {},

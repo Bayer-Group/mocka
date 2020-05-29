@@ -15,7 +15,7 @@ type elementsContaining struct {
 }
 
 // SupportedKinds returns all the kinds the elements containing matcher supports
-func (m *elementsContaining) SupportedKinds() map[reflect.Kind]struct{} {
+func (elementsContaining) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
 		reflect.Slice: {},
 		reflect.Array: {},

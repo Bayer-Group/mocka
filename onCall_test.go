@@ -21,7 +21,6 @@ var _ = Describe("onCall", func() {
 			outParameters: []interface{}{42, nil},
 			execFunc:      func([]interface{}) {},
 		}
-
 	})
 
 	Describe("Return", func() {

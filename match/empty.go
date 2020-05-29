@@ -12,7 +12,7 @@ type empty struct {
 }
 
 // SupportedKinds returns all the kinds the empty matcher supports
-func (m *empty) SupportedKinds() map[reflect.Kind]struct{} {
+func (empty) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
 		reflect.Array:  {},
 		reflect.Map:    {},
@@ -22,7 +22,7 @@ func (m *empty) SupportedKinds() map[reflect.Kind]struct{} {
 }
 
 // Match return true if actual is an empty value; otherwise false
-func (m *empty) Match(value interface{}) bool {
+func (empty) Match(value interface{}) bool {
 	if value == nil {
 		return false
 	}

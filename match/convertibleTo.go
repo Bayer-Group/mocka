@@ -14,7 +14,7 @@ type convertibleTo struct {
 }
 
 // SupportedKinds returns all the kinds the convertible to matcher supports
-func (m *convertibleTo) SupportedKinds() map[reflect.Kind]struct{} {
+func (convertibleTo) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
 		reflect.Bool:          {},
 		reflect.Int:           {},

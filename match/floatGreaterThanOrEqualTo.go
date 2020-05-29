@@ -14,7 +14,7 @@ type floatGreaterThanOrEqualTo struct {
 }
 
 // SupportedKinds returns all the kinds the float greater than or equal to matcher supports
-func (m *floatGreaterThanOrEqualTo) SupportedKinds() map[reflect.Kind]struct{} {
+func (floatGreaterThanOrEqualTo) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
 		reflect.Float32: {},
 		reflect.Float64: {},

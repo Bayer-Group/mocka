@@ -12,7 +12,7 @@ type exactly struct {
 }
 
 // SupportedKinds returns the kinds the exactly matcher supports
-func (m *exactly) SupportedKinds() map[reflect.Kind]struct{} {
+func (exactly) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
 		reflect.Bool:          {},
 		reflect.Int:           {},

@@ -15,7 +15,7 @@ type stringPrefix struct {
 }
 
 // SupportedKinds returns all the kinds the string prefix matcher supports
-func (m *stringPrefix) SupportedKinds() map[reflect.Kind]struct{} {
+func (stringPrefix) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
 		reflect.String: {},
 	}

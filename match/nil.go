@@ -11,7 +11,7 @@ type nilMatcher struct {
 }
 
 // SupportedKinds returns all the kinds the nil matcher supports
-func (m *nilMatcher) SupportedKinds() map[reflect.Kind]struct{} {
+func (nilMatcher) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
 		reflect.Chan:      {},
 		reflect.Func:      {},
@@ -23,7 +23,7 @@ func (m *nilMatcher) SupportedKinds() map[reflect.Kind]struct{} {
 }
 
 // Match return true if the value is valid and nil
-func (m *nilMatcher) Match(value interface{}) bool {
+func (nilMatcher) Match(value interface{}) bool {
 	v := reflect.ValueOf(value)
 	return v.IsValid() && v.IsNil()
 }

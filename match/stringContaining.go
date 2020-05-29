@@ -15,7 +15,7 @@ type stringContaining struct {
 }
 
 // SupportedKinds returns all the kinds the string containing matcher supports
-func (m *stringContaining) SupportedKinds() map[reflect.Kind]struct{} {
+func (stringContaining) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
 		reflect.String: {},
 	}
