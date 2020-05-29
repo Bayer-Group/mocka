@@ -188,7 +188,7 @@ func getHighestPriority(customArgs []*customArguments, numArgs int) *customArgum
 	}
 
 	for i := 0; i < numArgs; i++ {
-		highestPriority := 0
+		var highestPriority float64
 		newCustomArgs := make([]*customArguments, 0)
 
 		for _, ca := range customArgs {
