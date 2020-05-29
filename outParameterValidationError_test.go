@@ -33,7 +33,7 @@ var _ = Describe("outParameterValidationError", func() {
 
 			result := err.String()
 
-			Expect(result).To(Equal("mocka: expected return values of type (int, error), but recieved (int, string)"))
+			Expect(result).To(Equal("mocka: expected return values of type (int, error), but received (int, string)"))
 		})
 
 	})
@@ -54,7 +54,7 @@ var _ = Describe("outParameterValidationError", func() {
 
 			result := err.Error()
 
-			Expect(result).To(Equal("mocka: expected return values of type (int, error), but recieved (int, string)"))
+			Expect(result).To(Equal("mocka: expected return values of type (int, error), but received (int, string)"))
 		})
 	})
 })

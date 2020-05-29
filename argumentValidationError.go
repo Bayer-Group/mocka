@@ -24,7 +24,7 @@ func (a *argumentValidationError) String() string {
 		real[i] = toFriendlyName(a.fnType.In(i))
 	}
 
-	return fmt.Sprintf("mocka: expected arguments of type (%v), but recieved (%v)", strings.Join(real, ", "), strings.Join(mapToTypeName(a.provided), ", "))
+	return fmt.Sprintf("mocka: expected arguments of type (%v), but received (%v)", strings.Join(real, ", "), strings.Join(mapToTypeName(a.provided), ", "))
 }
 
 // Error returns a string that represents an argument validation error.

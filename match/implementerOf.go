@@ -20,7 +20,7 @@ func (m *implementerOf) SupportedKinds() map[reflect.Kind]struct{} {
 	}
 }
 
-// Match returns true the value implements the provided interface; otherwise false.
+// Match returns true if the value implements the provided interface; otherwise false.
 // If provided value is nil or is not an interface the matcher will always return false
 func (m *implementerOf) Match(value interface{}) bool {
 	expectedValue := reflect.ValueOf(m.value)
