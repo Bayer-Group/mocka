@@ -13,7 +13,7 @@ type uintLessThanOrEqualTo struct {
 	value uint64
 }
 
-// SupportedKinds returns all the kinds the int less than or equal to matcher supports
+// SupportedKinds returns all the kinds the uint less than or equal to matcher supports
 func (uintLessThanOrEqualTo) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
 		reflect.Uint:   {},
@@ -24,7 +24,7 @@ func (uintLessThanOrEqualTo) SupportedKinds() map[reflect.Kind]struct{} {
 	}
 }
 
-// Match returns true if actual is an int less than or equal to the provided int
+// Match returns true if actual is an uint less than or equal to the provided uint
 func (m *uintLessThanOrEqualTo) Match(value interface{}) bool {
 	if value == nil {
 		return false

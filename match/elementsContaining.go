@@ -37,12 +37,8 @@ func (m *elementsContaining) Match(value interface{}) bool {
 			}
 
 			var found bool
-			for i := 0; i < v.Len(); i++ {
-				actual := v.Index(i)
-				if reflect.DeepEqual(e, actual.Interface()) {
-					found = true
-					break
-				}
+			for i := 0; !found && i < v.Len(); i++ {
+				found = reflect.DeepEqual(e, v.Index(i).Interface())
 			}
 
 			if !found {

@@ -362,7 +362,7 @@ var _ = Describe("customArguments", func() {
 		})
 	})
 
-	Describe("match", func() {
+	Describe("isMatch", func() {
 		It("returns false if any matcher panics", func() {
 			ca := newCustomArguments(mockFn, []interface{}{&panicMatcher{}, match.IntGreaterThan(10)})
 

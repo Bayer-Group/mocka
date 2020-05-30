@@ -13,7 +13,7 @@ type uintGreaterThan struct {
 	value uint64
 }
 
-// SupportedKinds returns all the kinds the int greater than matcher supports
+// SupportedKinds returns all the kinds the uint greater than matcher supports
 func (uintGreaterThan) SupportedKinds() map[reflect.Kind]struct{} {
 	return map[reflect.Kind]struct{}{
 		reflect.Uint:   {},
@@ -24,7 +24,7 @@ func (uintGreaterThan) SupportedKinds() map[reflect.Kind]struct{} {
 	}
 }
 
-// Match returns true if actual is an int greater than the provided int
+// Match returns true if actual is an uint greater than the provided uint
 func (m *uintGreaterThan) Match(value interface{}) bool {
 	if value == nil {
 		return false

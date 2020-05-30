@@ -7,6 +7,7 @@ import (
 	"github.com/MonsantoCo/mocka/match"
 )
 
+// newCustomArguments constructor function for customArguments
 func newCustomArguments(stub *mockFunction, arguments []interface{}) *customArguments {
 	if stub == nil || stub.toType().Kind() != reflect.Func {
 		return &customArguments{
@@ -35,6 +36,7 @@ func newCustomArguments(stub *mockFunction, arguments []interface{}) *customArgu
 	}
 }
 
+// getMatchers returns a slice of matchers based on the types and values of the provided arguments
 func getMatchers(functionType reflect.Type, arguments []interface{}) ([]match.SupportedKindsMatcher, error) {
 	matchers := make([]match.SupportedKindsMatcher, functionType.NumIn())
 	for i, arg := range arguments {
@@ -147,7 +149,7 @@ func (ca *customArguments) OnThirdCall() Returner {
 	return ca.OnCall(2)
 }
 
-// isMatch returns false if any of the argument matcher return false or
+// isMatch returns false if any of the argument matchers return false or
 // if there is a panic from inside a mather; otherwise true
 func (ca *customArguments) isMatch(arguments []interface{}) (isMatch bool) {
 	defer func() {
