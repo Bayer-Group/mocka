@@ -99,6 +99,7 @@ When working with matchers it is possible to have multiple custom arguments matc
 ## Exact Value Matchers
 
 ### Exactly
+---
 
 The `Exactly(interface{})` matcher will match only if the value is deep equal to the provided value.
 
@@ -113,6 +114,7 @@ match.Exactly([]int{1,2,3})
 Bool, Int, Int8, Int16, Int32, Int64, Uint, Uint8, Uint16, Uint32, Uint64, Uintptr, Float32, Float64, Complex64, Complex128, Array, Chan, Func, Interface, Map, Ptr, Slice, String, Struct, UnsafePointer
 
 ### Nil
+---
 
 The `Nil()` matcher will match any nil value.
 
@@ -125,6 +127,7 @@ Chan, Func, Interface, Map, Ptr, Slice
 ## Numeric Matchers
 
 ### Float Greater Than
+---
 
 The `FloatGreaterThan(float64)` matcher will match if the numeric value is greater than the provided value.
 
@@ -139,6 +142,7 @@ match.FloatGreaterThan(2)
 Float32, Float64
 
 ### Float Less Than
+---
 
 The `FloatLessThan(float64)` matcher will match if the numeric value is less than the provided value.
 
@@ -153,6 +157,7 @@ match.FloatLessThan(2)
 Float32, Float64
 
 ### Float Greater Than Or Equal To
+---
 
 The `FloatGreaterThanOrEqualTo(float64)` matcher will match if the numeric value is greater than or equal to the provided value.
 
@@ -167,6 +172,7 @@ match.FloatGreaterThanOrEqualTo(2)
 Float32, Float64
 
 ### Float Less Than Or Equal To
+---
 
 The `FloatLessThanOrEqualTo(float64)` matcher will match if the numeric value is less than or equal to the provided value.
 
@@ -181,6 +187,7 @@ match.FloatLessThanOrEqualTo(2)
 Float32, Float64
 
 ### Int Greater Than
+---
 
 The `IntGreaterThan(int64)` matcher will match if the numeric value is greater than the provided value.
 
@@ -195,6 +202,7 @@ match.IntGreaterThan(2)
 Int, Int8, Int16, Int32, Int64
 
 ### Int Less Than
+---
 
 The `IntLessThan(int64)` matcher will match if the numeric value is less than the provided value.
 
@@ -209,6 +217,7 @@ match.IntLessThan(2)
 Int, Int8, Int16, Int32, Int64
 
 ### Int Greater Than Or Equal To
+---
 
 The `IntGreaterThanOrEqualTo(int64)` matcher will match if the numeric value is greater than or equal to the provided value.
 
@@ -223,6 +232,7 @@ match.IntGreaterThanOrEqualTo(2)
 Int, Int8, Int16, Int32, Int64
 
 ### Int Less Than Or Equal To
+---
 
 The `IntLessThanOrEqualTo(int64)` matcher will match if the numeric value is less than or equal to the provided value.
 
@@ -237,6 +247,7 @@ match.IntLessThanOrEqualTo(2)
 Int, Int8, Int16, Int32, Int64
 
 ### Uint Greater Than
+---
 
 The `UintGreaterThan(uint64)` matcher will match if the numeric value is greater than the provided value.
 
@@ -251,6 +262,7 @@ match.UintGreaterThan(2)
 Uint, Uint8, Uint16, Uint32, Uint64
 
 ### Uint Less Than
+---
 
 The `UintLessThan(uint64)` matcher will match if the numeric value is less than the provided value.
 
@@ -265,6 +277,7 @@ match.UintLessThan(2)
 Uint, Uint8, Uint16, Uint32, Uint64
 
 ### Uint Greater Than Or Equal To
+---
 
 The `UintGreaterThanOrEqualTo(uint64)` matcher will match if the numeric value is greater than or equal to the provided value.
 
@@ -279,6 +292,8 @@ match.UintGreaterThanOrEqualTo(2)
 Uint, Uint8, Uint16, Uint32, Uint64
 
 ### Uint Less Than Or Equal To
+---
+
 The `UintLessThanOrEqualTo(uint64)` matcher will match if the numeric value is less than or equal to the provided value.
 
 For example
@@ -294,6 +309,7 @@ Uint, Uint8, Uint16, Uint32, Uint64
 ## String Matchers
 
 ### String Prefix
+---
 
 The `StringPrefix(string)` matcher will match a value if the string starts with the provided string.
 
@@ -308,6 +324,7 @@ match.StringPrefix("he")
 String
 
 ### String Suffix
+---
 
 The `StringSuffix(string)` matcher will match a value if the string ends with the provided string.
 
@@ -322,6 +339,7 @@ match.StringSuffix("ello")
 String
 
 ### String Containing
+---
 
 The `StringContaining(string)` matcher will match a value if the string contains the provided string.
 
@@ -338,6 +356,7 @@ String
 ## Multiple Purpose Matchers
 
 ### Length Of
+---
 
 The `LengthOf(int)` matcher will match a value if it's length matches the provided length.
 
@@ -352,6 +371,7 @@ match.LengthOf(12)
 Array, Map, Slice, String
 
 ### Empty
+---
 
 The `Empty()` matcher will match a value if it has a length of 0.
 
@@ -360,6 +380,7 @@ The `Empty()` matcher will match a value if it has a length of 0.
 Array, Map, Slice, String
 
 ### Keys Containing
+---
 
 The `KeysContaining(...interface{})` matcher will match a value if all elements exists are keys in the provided map.
   
@@ -374,6 +395,7 @@ match.KeysContaining("A", "B")
 Map
 
 ### Elements Containing
+---
 
 The `ElementsContaining(...interface{})` matcher will match a value if all elements are contained within the provided value.
 
@@ -390,6 +412,7 @@ Array, Slice
 ## Type Matchers
 
 ### Implementer Of
+---
 
 The `ImplementerOf(interface{})` matcher will match a value if it is a pointer that implements the provided interface type.
 
@@ -404,6 +427,7 @@ match.ImplementerOf(new(error))
 Ptr
 
 ### Convertible To
+---
 
 The `ConvertibleTo(interface{})` matcher will match a value if it's type can be converted to the provided type.
 
@@ -418,6 +442,7 @@ match.ConvertibleTo(new(int64))
 Bool, Int, Int8, Int16, Int32, Int64, Uint, Uint8, Uint16, Uint32, Uint64, Uintptr, Float32, Float64, Complex64, Complex128, Array, Chan, Func, Interface, Map, Ptr, Slice, String, Struct, UnsafePointer
 
 ### Type Of
+---
 
 The `TypeOf(string)` matcher will match a value if it's type is the same of the provided string.
 
@@ -432,6 +457,7 @@ match.TypeOf("int")
 Bool, Int, Int8, Int16, Int32, Int64, Uint, Uint8, Uint16, Uint32, Uint64, Uintptr, Float32, Float64, Complex64, Complex128, Array, Chan, Func, Interface, Map, Ptr, Slice, String, Struct, UnsafePointer
 
 ### Anything But Nil
+---
 
 The `AnythingButNil()` matcher will match any value except `nil`.
 
@@ -440,6 +466,7 @@ The `AnythingButNil()` matcher will match any value except `nil`.
 Chan, Func, Interface, Map, Ptr, Slice
 
 ### Anything
+---
 
 The `Anything()` matcher will match any value regardless of the value provided
 
