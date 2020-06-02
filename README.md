@@ -43,23 +43,24 @@ defer stub.Restore()
 
 ## Table of Contents <!-- omit in toc -->
 
-- [Public API](#Public-API)
-- [Mocking Files](#Mocking-Files)
-- [Stubbing Functions](#Stubbing-Functions)
-	- [Restoring a function's original functionality](#Restoring-a-functions-original-functionality)
-	- [Changing the return values of a Stub](#Changing-the-return-values-of-a-Stub)
-	- [Changing the return values of a stub based on the call index](#Changing-the-return-values-of-a-stub-based-on-the-call-index)
-	- [Changing the return values of a Stub based on the arguments](#Changing-the-return-values-of-a-Stub-based-on-the-arguments)
-		- [Changing the return values for a Stub based on the call index of specific arguments](#Changing-the-return-values-for-a-Stub-based-on-the-call-index-of-specific-arguments)
-	- [Retrieving the arguments and return values from a Stub](#Retrieving-the-arguments-and-return-values-from-a-Stub)
-		- [Retrieve how many times the function was called](#Retrieve-how-many-times-the-function-was-called)
-		- [Retrieve the arguments and return values for all calls against the original function](#Retrieve-the-arguments-and-return-values-for-all-calls-against-the-original-function)
-		- [Retrieve the arguments and return values for a specific call to the original function](#Retrieve-the-arguments-and-return-values-for-a-specific-call-to-the-original-function)
-	- [Executing a function when a stub is called](#Executing-a-function-when-a-stub-is-called)
-- [Creating Sandboxes](#Creating-Sandboxes)
-	- [Stubbing function](#Stubbing-function)
-	- [Restoring sandboxes](#Restoring-sandboxes)
-- [Example using Gomega and Ginkgo](#Example-using-Gomega-and-Ginkgo)
+- [Public API](#public-api)
+- [Mocking Files](#mocking-files)
+- [Stubbing Functions](#stubbing-functions)
+	- [Restoring a function's original functionality](#restoring-a-functions-original-functionality)
+	- [Changing the return values of a Stub](#changing-the-return-values-of-a-stub)
+	- [Changing the return values of a stub based on the call index](#changing-the-return-values-of-a-stub-based-on-the-call-index)
+	- [Changing the return values of a Stub based on the arguments](#changing-the-return-values-of-a-stub-based-on-the-arguments)
+		- [Changing the return values for a Stub based on the call index of specific arguments](#changing-the-return-values-for-a-stub-based-on-the-call-index-of-specific-arguments)
+		- [Changing the return values for a Stub based on argument matchers](#changing-the-return-values-for-a-stub-based-on-argument-matchers)
+	- [Retrieving the arguments and return values from a Stub](#retrieving-the-arguments-and-return-values-from-a-stub)
+		- [Retrieve how many times the function was called](#retrieve-how-many-times-the-function-was-called)
+		- [Retrieve the arguments and return values for all calls against the original function](#retrieve-the-arguments-and-return-values-for-all-calls-against-the-original-function)
+		- [Retrieve the arguments and return values for a specific call to the original function](#retrieve-the-arguments-and-return-values-for-a-specific-call-to-the-original-function)
+	- [Executing a function when a stub is called](#executing-a-function-when-a-stub-is-called)
+- [Creating Sandboxes](#creating-sandboxes)
+	- [Stubbing function](#stubbing-function)
+	- [Restoring sandboxes](#restoring-sandboxes)
+- [Example using Gomega and Ginkgo](#example-using-gomega-and-ginkgo)
 
 ## Public API
 
@@ -334,6 +335,38 @@ fmt.Println(fn("123"))
 ```
 
 mocka provides helper functions for accessing the first three times a function has been called. Instead of using the `OnCall` method the following methods can be used `OnFirstCall`, `OnSecondCall`, or `OnThirdCall`.
+
+#### Changing the return values for a Stub based on argument matchers
+
+mocka provides a powerful `match` package that can be used in conjunction with the `WithArgs` function. Sometimes you might not know the exact value a function is called with. This is a scenario where matchers can help navigate around that problem.
+
+Currently there are over 25 built in matchers you can use. More information can be found at [matcher descriptions](./MATCH.MD).
+
+For example
+
+```go
+var fn = func(ctx context.Context, str []string, n int) int {
+	// ...
+	return 0
+}
+
+stub, err := mocka.Function(&fn, 20)
+if err != nil {
+	log.Fatal(err.Error())
+}
+defer stub.Restore()
+
+if err = stub.WithArgs(match.Anything(), 2).Return(10); err != nil {
+	log.Fatal(err.Error())
+}
+
+fmt.Println(fn(context.TODO(), 5))
+fmt.Println(fn(context.Background(), 2))
+// Output: 20
+// 10
+```
+
+> The mocka/match package also provides the ability to create your own custom matchers.
 
 ### Retrieving the arguments and return values from a Stub
 

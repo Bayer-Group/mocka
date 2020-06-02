@@ -25,21 +25,21 @@ func (fileInfo mockFileInfo) Size() int64 {
 }
 
 // Mode is an implemented mock function for os.FileInfo
-func (fileInfo mockFileInfo) Mode() os.FileMode {
+func (mockFileInfo) Mode() os.FileMode {
 	return os.FileMode(0)
 }
 
 // ModTime is an implemented mock function for os.FileInfo
-func (fileInfo mockFileInfo) ModTime() time.Time {
+func (mockFileInfo) ModTime() time.Time {
 	return _timeNow()
 }
 
 // IsDir is an implemented mock function for os.FileInfo
-func (fileInfo mockFileInfo) IsDir() bool {
+func (mockFileInfo) IsDir() bool {
 	return false
 }
 
 // Sys is an implemented mock function for os.FileInfo
-func (fileInfo mockFileInfo) Sys() interface{} {
+func (mockFileInfo) Sys() interface{} {
 	return nil
 }

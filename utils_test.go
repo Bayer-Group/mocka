@@ -6,6 +6,7 @@ import (
 	"reflect"
 
 	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 )
 
@@ -94,37 +95,6 @@ var _ = Describe("utils", func() {
 
 			err := cloneValue(&aThing, bThing)
 			Expect(err).To(Equal(fmt.Errorf("mocka: expected destination value for clone to be a pointer, but it was a struct")))
-		})
-	})
-
-	Describe("validateArguments", func() {
-		var fn = func(str string, num int) (int, error) {
-			return len(str) + num, nil
-		}
-
-		It("returns false if the type is nil", func() {
-			result := validateArguments(nil, []interface{}{"Arg1", 42})
-			Expect(result).To(BeFalse())
-		})
-
-		It("returns false if the type is not a function", func() {
-			result := validateArguments(reflect.TypeOf("I am not a funciton"), []interface{}{"Arg1", 42})
-			Expect(result).To(BeFalse())
-		})
-
-		It("returns false of the number of arguments /= number of function arguments", func() {
-			result := validateArguments(reflect.TypeOf(fn), []interface{}{"Arg1", 42, true})
-			Expect(result).To(BeFalse())
-		})
-
-		It("returns false if one of the arguments type does not match", func() {
-			result := validateArguments(reflect.TypeOf(fn), []interface{}{"Arg1", "42"})
-			Expect(result).To(BeFalse())
-		})
-
-		It("returns true if all argument types match", func() {
-			result := validateArguments(reflect.TypeOf(fn), []interface{}{"Arg1", 42})
-			Expect(result).To(BeTrue())
 		})
 	})
 
@@ -246,4 +216,45 @@ var _ = Describe("utils", func() {
 			Expect(mapToTypeName(nil)).To(Equal([]string{}))
 		})
 	})
+
+	_readOnlyChan := func() <-chan int {
+		return make(chan int)
+	}
+
+	_sendOnlyChan := func() chan<- int {
+		return make(chan int)
+	}
+
+	DescribeTable("toFriendlyName returns a human readable type name",
+		func(value interface{}, name string) {
+			Expect(toFriendlyName(reflect.TypeOf(value))).To(Equal(name))
+		},
+		Entry("for Bool", true, "bool"),
+		Entry("for Int", int(0), "int"),
+		Entry("for Int8", int8(0), "int8"),
+		Entry("for Int16", int16(0), "int16"),
+		Entry("for Int32", int32(0), "int32"),
+		Entry("for Int64", int64(0), "int64"),
+		Entry("for Uint", uint(0), "uint"),
+		Entry("for Uint8", uint8(0), "uint8"),
+		Entry("for Uint16", uint16(0), "uint16"),
+		Entry("for Uint32", uint32(0), "uint32"),
+		Entry("for Uint64", uint64(0), "uint64"),
+		Entry("for Float32", float32(0), "float32"),
+		Entry("for Float64", float64(0), "float64"),
+		Entry("for Array", [3]string{}, "[3]string"),
+		Entry("for Chan", make(chan int), "chan int"),
+		Entry("for read-only Chan", _readOnlyChan(), "<-chan int"),
+		Entry("for send-only Chan", _sendOnlyChan(), "chan<- int"),
+		Entry("for Func with out parameters", func(_ int, _ string) (int, error) {
+			return 0, nil
+		}, "func(int, string) (int, error) {}"),
+		Entry("for Func without out parameters", func(_ int, _ string) {}, "func(int, string) {}"),
+		Entry("for Interface", new(Stub), "*Stub"),
+		Entry("for Map", map[int]string{}, "map[int]string"),
+		Entry("for Ptr", &mockFunction{}, "*mockFunction"),
+		Entry("for Slice", []int{1, 2, 3}, "[]int"),
+		Entry("for String", "hello", "string"),
+		Entry("for Struct", mockFunction{}, "mockFunction"),
+	)
 })

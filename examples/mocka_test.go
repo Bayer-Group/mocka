@@ -1,4 +1,4 @@
-package mocka_test
+package examples
 
 import (
 	"fmt"

@@ -16,7 +16,7 @@ type mockFile struct {
 }
 
 // Close is an implemented mock function for io.Closer
-func (f *mockFile) Close() error {
+func (*mockFile) Close() error {
 	return nil
 }
 

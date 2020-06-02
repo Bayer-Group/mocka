@@ -3,6 +3,7 @@ package mocka
 import (
 	"fmt"
 	"reflect"
+	"strings"
 )
 
 // mapToInterfaces maps a slice of reflection values to interface values
@@ -52,26 +53,6 @@ func cloneValue(source interface{}, destin interface{}) error {
 	return nil
 }
 
-// validateArguments validates that the arguments provided match the argument types.
-func validateArguments(functionType reflect.Type, arguments []interface{}) bool {
-	if functionType == nil || functionType.Kind() != reflect.Func {
-		return false
-	}
-
-	argumentCount := functionType.NumIn()
-	if len(arguments) != argumentCount {
-		return false
-	}
-
-	isValid := true
-	for i := 0; isValid && i < argumentCount; i++ {
-		argumentType := functionType.In(i)
-		isValid = areTypeAndValueEquivalent(argumentType, arguments[i])
-	}
-
-	return isValid
-}
-
 // validateOutParameters validates that the arguments provided match the argument types.
 func validateOutParameters(functionType reflect.Type, outParameters []interface{}) bool {
 	if functionType == nil || functionType.Kind() != reflect.Func {
@@ -112,26 +93,85 @@ func areTypeAndValueEquivalent(originalType reflect.Type, val interface{}) bool 
 
 		return reflect.TypeOf(val).Implements(originalType)
 	default:
-		return originalKind == reflect.TypeOf(val).Kind()
+		v := reflect.ValueOf(val)
+		if !v.IsValid() {
+			return false
+		}
+
+		return originalKind == v.Type().Kind()
 	}
 }
 
 // mapToTypeName maps a slice of interface values to their type names
 func mapToTypeName(interfaces []interface{}) []string {
 	names := make([]string, len(interfaces))
-	for i, inter := range interfaces {
-		if inter == nil {
-			names[i] = "<nil>"
-		} else {
-			t := reflect.TypeOf(inter)
-			switch t.Kind() {
-			case reflect.Ptr:
-				names[i] = "*" + t.Elem().Name()
-			default:
-				names[i] = t.Name()
-			}
-		}
+	for i, value := range interfaces {
+		names[i] = toFriendlyName(value)
 	}
 
 	return names
+}
+
+// toFriendlyName returns a type name is a more human readable string
+func toFriendlyName(value interface{}) string {
+	if value == nil {
+		return "<nil>"
+	}
+
+	switch t := getType(value); t.Kind() {
+	case reflect.Ptr:
+		return "*" + toFriendlyName(t.Elem())
+	case reflect.Slice:
+		return fmt.Sprintf("[]%v", toFriendlyName(t.Elem()))
+	case reflect.Array:
+		return fmt.Sprintf("[%v]%v", t.Len(), toFriendlyName(t.Elem()))
+	case reflect.Map:
+		return fmt.Sprintf("map[%v]%v", toFriendlyName(t.Key()), toFriendlyName(t.Elem()))
+	case reflect.Chan:
+		return toChannelFriendlyName(t)
+	case reflect.Func:
+		return toFunctionFriendlyName(t)
+	default:
+		return t.Name()
+	}
+}
+
+// toChannelFriendlyName returns the friendly name for a channel
+func toChannelFriendlyName(t reflect.Type) string {
+	switch t.ChanDir() {
+	case reflect.RecvDir:
+		return fmt.Sprintf("<-chan %v", toFriendlyName(t.Elem()))
+	case reflect.SendDir:
+		return fmt.Sprintf("chan<- %v", toFriendlyName(t.Elem()))
+	default:
+		return fmt.Sprintf("chan %v", toFriendlyName(t.Elem()))
+	}
+}
+
+// toFunctionFriendlyName returns the friendly name for a function
+func toFunctionFriendlyName(t reflect.Type) string {
+	args := make([]string, t.NumIn())
+	for i := 0; i < t.NumIn(); i++ {
+		args[i] = toFriendlyName(t.In(i))
+	}
+
+	if t.NumOut() > 0 {
+		out := make([]string, t.NumOut())
+		for i := 0; i < t.NumOut(); i++ {
+			out[i] = toFriendlyName(t.Out(i))
+		}
+		return fmt.Sprintf("func(%v) (%v) {}", strings.Join(args, ", "), strings.Join(out, ", "))
+	}
+
+	return fmt.Sprintf("func(%v) {}", strings.Join(args, ", "))
+}
+
+// getType returns the type of the argument
+func getType(value interface{}) reflect.Type {
+	switch value.(type) {
+	case reflect.Type:
+		return value.(reflect.Type)
+	default:
+		return reflect.TypeOf(value)
+	}
 }

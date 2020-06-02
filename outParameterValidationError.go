@@ -3,6 +3,7 @@ package mocka
 import (
 	"fmt"
 	"reflect"
+	"strings"
 )
 
 // outParameterValidationError custom error for a out
@@ -15,15 +16,15 @@ type outParameterValidationError struct {
 // String returns a string that represents an out parameter validation error.
 func (a *outParameterValidationError) String() string {
 	if a.fnType == nil {
-		return fmt.Sprintf("mocka: expected return values of %v to match function return values", mapToTypeName(a.provided))
+		return fmt.Sprintf("mocka: expected return values of (%v) to match function return values", strings.Join(mapToTypeName(a.provided), ", "))
 	}
 
 	real := make([]string, a.fnType.NumOut())
 	for i := 0; i < a.fnType.NumOut(); i++ {
-		real[i] = a.fnType.Out(i).Name()
+		real[i] = toFriendlyName(a.fnType.Out(i))
 	}
 
-	return fmt.Sprintf("mocka: expected return values of type %v, but recieved %v", real, mapToTypeName(a.provided))
+	return fmt.Sprintf("mocka: expected return values of type (%v), but received (%v)", strings.Join(real, ", "), strings.Join(mapToTypeName(a.provided), ", "))
 }
 
 // Error returns a string that represents an out parameter validation error.

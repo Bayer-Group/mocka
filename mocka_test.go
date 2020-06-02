@@ -89,7 +89,7 @@ var _ = Describe("mocka", func() {
 
 			Expect(stub).To(BeNil())
 			Expect(err).ToNot(BeNil())
-			Expect(err.Error()).To(Equal("mocka: expected return values of type [int error], but recieved [string <nil>]"))
+			Expect(err.Error()).To(Equal("mocka: expected return values of type (int, error), but received (string, <nil>)"))
 		})
 
 		It("returns error if cloneValue returns an error", func() {
@@ -105,7 +105,6 @@ var _ = Describe("mocka", func() {
 			Expect(stub).To(BeNil())
 			Expect(err).ToNot(BeNil())
 			Expect(err.Error()).To(Equal("mocka: could not clone function pointer to new memory address: Ope"))
-
 		})
 
 		It("returns a stub with a reference to the original function", func() {
