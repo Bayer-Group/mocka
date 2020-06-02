@@ -61,7 +61,7 @@ func (anything) Match(_ interface{}) bool {
 
 ## Built in Matchers<!-- omit in toc -->
 
-When working with matchers it is possible to have multiple custom arguments match for a set of values. In these scenarios mocka will use the following priority pick which matcher will be used.
+When working with matchers it is possible to have multiple custom arguments match for a set of values. In these scenarios mocka will use the following priority to pick which matcher will be used.
 
 | Matcher                                                           | Priority |
 | ----------------------------------------------------------------- | -------- |
