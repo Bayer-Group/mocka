@@ -150,7 +150,7 @@ func (ca *customArguments) OnThirdCall() Returner {
 }
 
 // isMatch returns false if any of the argument matchers return false or
-// if there is a panic from inside a mather; otherwise true
+// if there is a panic from inside a matcher; otherwise true
 func (ca *customArguments) isMatch(arguments []interface{}) (isMatch bool) {
 	defer func() {
 		if r := recover(); r != nil {
