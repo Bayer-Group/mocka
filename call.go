@@ -13,6 +13,9 @@ type call struct {
 
 // Arguments returns the arguments that stub was called with.
 func (c call) Arguments() []interface{} {
+	// TODO - callout if a function is variadic should the
+	// argument here be the variadic ones or the one that
+	// has the variadic list?
 	return c.args
 }
 

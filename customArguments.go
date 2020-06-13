@@ -18,6 +18,12 @@ func newCustomArguments(stub *mockFunction, arguments []interface{}) *customArgu
 	}
 
 	functionType := stub.toType()
+	// TODO - this check will need to change for variadic functions
+	// functionType.IsVariadic() will inform us if the function is variadic.
+	// The following check will still hold as long as the function is not variadic;
+	// however if it is, then we will need to check if the argument count is at least
+	// NumIn() -1. If the count is NumIn() or longer each argument must be of the
+	// same type.
 	if len(arguments) != functionType.NumIn() {
 		return &customArguments{
 			argValidationError: &argumentValidationError{
@@ -39,6 +45,12 @@ func newCustomArguments(stub *mockFunction, arguments []interface{}) *customArgu
 // getMatchers returns a slice of matchers based on the types and values of the provided arguments
 func getMatchers(functionType reflect.Type, arguments []interface{}) ([]match.SupportedKindsMatcher, error) {
 	matchers := make([]match.SupportedKindsMatcher, functionType.NumIn())
+	// TODO - we would need to range over functionType.NumIn() now
+	// If the function is variadic we will need to stop are the last argument
+	// to preform some checks
+	//   1. No more agruments supply a NilMatcher
+	//   2. One or more agruments supply an Exactly matcher of a slice of the requested type
+	//      - This can be done using reflect.MakeSlice(type, len, cap)
 	for i, arg := range arguments {
 		aType := functionType.In(i)
 
@@ -158,6 +170,9 @@ func (ca *customArguments) isMatch(arguments []interface{}) (isMatch bool) {
 		}
 	}()
 
+	// TODO - I don't believe this will need to change; however
+	// it is worth denoting that we need to check if this functionality
+	// will still work
 	for i, arg := range arguments {
 		if !ca.argMatchers[i].Match(arg) {
 			return false
