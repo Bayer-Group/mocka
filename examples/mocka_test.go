@@ -1,6 +1,7 @@
 package examples
 
 import (
+	"errors"
 	"fmt"
 	"log"
 
@@ -559,4 +560,70 @@ func ExampleStub_CalledThrice() {
 	fmt.Println(stub.CalledThrice())
 	// Output: false
 	// true
+}
+
+func ExampleStub_WithArgs_variadic_missing() {
+	var fn = func(str string, opts ...string) int {
+		return len(str) + len(opts)
+	}
+
+	stub, err := mocka.Function(&fn, 20)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	fmt.Println("here")
+	err = stub.WithArgs("A").Return(5)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	fmt.Println(fn("A", "B", "C"))
+	fmt.Println(fn("A"))
+	// Output: 20
+	// 5
+}
+
+func ExampleStub_WithArgs_variadic_supplied() {
+	var fn = func(str string, opts ...string) int {
+		return len(str) + len(opts)
+	}
+
+	stub, err := mocka.Function(&fn, 20)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	fmt.Println("here")
+	err = stub.WithArgs("A", "B", "C").Return(5)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	fmt.Println(fn("A", "B", "C"))
+	fmt.Println(fn("A"))
+	// Output: 5
+	// 20
+}
+
+func ExampleStub_WithArgs_variadic_of_interfaces() {
+	var fn = func(str string, opts ...interface{}) int {
+		return len(str) + len(opts)
+	}
+
+	stub, err := mocka.Function(&fn, 20)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	fmt.Println("here")
+	err = stub.WithArgs("A", "B", 1, errors.New("ope"), nil).Return(5)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	fmt.Println(fn("A", "B", 1, errors.New("ope"), nil))
+	fmt.Println(fn("A"))
+	// Output: 5
+	// 20
 }
