@@ -33,6 +33,7 @@
 package mocka
 
 import (
+	"fmt"
 	"io"
 )
 
@@ -48,7 +49,12 @@ import (
 //
 // The mock file should be able to be used in place of any implementation
 // that requires an os.File.
+//
+// Deprecated: mocka.File() has not completely worked since go 1.13.x was
+// released. File mocks will be removed in version 2. It is recommend
+// to refactor to use oi interfaces over file based mocks.
 func File(name string, body string) io.ReadWriteCloser {
+	fmt.Println("\nmocka.File() is deprecated and will be removed in v2. It is recommended to refactor to use io interfaces over file based mocks.")
 	return &mockFile{name: name, buf: []byte(body), offset: 0, base: 0, limit: int64(len(body))}
 }
 
