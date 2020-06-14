@@ -36,7 +36,7 @@ func newCustomArguments(stub *mockFunction, arguments []interface{}) *customArgu
 	}
 }
 
-// isArgumentLengthValid - returns whether or not the length of the provided arguments
+// isArgumentLengthValid returns whether or not the length of the provided arguments
 // are valid for the stub. Taking in variadic function into account.
 func isArgumentLengthValid(functionType reflect.Type, arguments []interface{}) bool {
 	if functionType.IsVariadic() {
@@ -52,7 +52,7 @@ func getMatchers(functionType reflect.Type, arguments []interface{}) ([]match.Su
 	for i := 0; i < functionType.NumIn(); i++ {
 		aType := functionType.In(i)
 
-		if isVariadicArgument(i, functionType) {
+		if isVariadicArgument(functionType, i) {
 			if len(arguments) == functionType.NumIn()-1 {
 				matchers[i] = match.Nil()
 				return matchers, nil

@@ -14,17 +14,15 @@ type Call interface {
 func newCall(functionType reflect.Type, args []interface{}, out []interface{}) call {
 	if functionType.IsVariadic() {
 		var vArgs []interface{}
-
 		for argIndex, arg := range args {
-			if isVariadicArgument(argIndex, functionType) {
+			if isVariadicArgument(functionType, argIndex) {
 				slice := reflect.ValueOf(arg)
 				for sliceIndex := 0; sliceIndex < slice.Len(); sliceIndex++ {
 					vArgs = append(vArgs, slice.Index(sliceIndex).Interface())
 				}
-				continue
+			} else {
+				vArgs = append(vArgs, arg)
 			}
-
-			vArgs = append(vArgs, arg)
 		}
 
 		return call{args: vArgs, out: out}

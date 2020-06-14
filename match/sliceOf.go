@@ -24,20 +24,12 @@ func (sliceOf) SupportedKinds() map[reflect.Kind]struct{} {
 // Match returns true when all value elements match their respective matchers
 func (m *sliceOf) Match(value interface{}) bool {
 	slice := reflect.ValueOf(value)
-	if _, exists := m.SupportedKinds()[slice.Kind()]; !exists {
-		return false
-	}
-
 	if len(m.matchers) != slice.Len() {
 		return false
 	}
 
 	for i, matcher := range m.matchers {
 		indexValue := slice.Index(i)
-		if _, exists := matcher.SupportedKinds()[indexValue.Kind()]; !exists {
-			return false
-		}
-
 		var v interface{}
 		if indexValue.IsValid() {
 			v = indexValue.Interface()
