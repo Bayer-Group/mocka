@@ -198,9 +198,6 @@ func (ca *customArguments) isMatch(arguments []interface{}) (isMatch bool) {
 		}
 	}()
 
-	// TODO - I don't believe this will need to change; however
-	// it is worth denoting that we need to check if this functionality
-	// will still work
 	for i, arg := range arguments {
 		if !ca.argMatchers[i].Match(arg) {
 			return false
