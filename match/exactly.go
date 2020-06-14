@@ -1,6 +1,8 @@
 package match
 
-import "reflect"
+import (
+	"reflect"
+)
 
 // Exactly returns a new matcher for matching exact values with reflect.DeepEqual
 func Exactly(value interface{}) SupportedKindsMatcher {

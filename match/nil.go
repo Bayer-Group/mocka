@@ -1,6 +1,8 @@
 package match
 
-import "reflect"
+import (
+	"reflect"
+)
 
 // Nil returns a new matcher that will only match nil
 func Nil() SupportedKindsMatcher {
@@ -24,6 +26,9 @@ func (nilMatcher) SupportedKinds() map[reflect.Kind]struct{} {
 
 // Match return true if the value is valid and nil
 func (nilMatcher) Match(value interface{}) bool {
+	if value == nil {
+		return true
+	}
 	v := reflect.ValueOf(value)
 	return v.IsValid() && v.IsNil()
 }

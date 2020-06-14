@@ -572,7 +572,6 @@ func ExampleStub_WithArgs_variadic_missing() {
 		log.Fatal(err.Error())
 	}
 
-	fmt.Println("here")
 	err = stub.WithArgs("A").Return(5)
 	if err != nil {
 		log.Fatal(err.Error())
@@ -591,13 +590,12 @@ func ExampleStub_WithArgs_variadic_supplied() {
 
 	stub, err := mocka.Function(&fn, 20)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Panic(err)
 	}
 
-	fmt.Println("here")
 	err = stub.WithArgs("A", "B", "C").Return(5)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Panic(err)
 	}
 
 	fmt.Println(fn("A", "B", "C"))
@@ -616,7 +614,6 @@ func ExampleStub_WithArgs_variadic_of_interfaces() {
 		log.Fatal(err.Error())
 	}
 
-	fmt.Println("here")
 	err = stub.WithArgs("A", "B", 1, errors.New("ope"), nil).Return(5)
 	if err != nil {
 		log.Fatal(err.Error())
