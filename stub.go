@@ -133,11 +133,7 @@ func (mf *mockFunction) implementation(arguments []reflect.Value) []reflect.Valu
 
 	mf.execFunc(argumentsAsInterfaces)
 
-	// TODO - update args here to be the variadic args and not the ending slice
-	mf.calls = append(mf.calls, call{
-		args: argumentsAsInterfaces,
-		out:  outParametersAsInterfaces,
-	})
+	mf.calls = append(mf.calls, newCall(functionType, argumentsAsInterfaces, outParametersAsInterfaces))
 
 	if maybeCustomArguments != nil {
 		maybeCustomArguments.callCount++

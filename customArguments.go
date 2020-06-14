@@ -90,12 +90,6 @@ func getMatchers(functionType reflect.Type, arguments []interface{}) ([]match.Su
 	return matchers, nil
 }
 
-// isVariadicArgument returns true if the function is variadic and the argument index
-// is the last argument in the function.
-func isVariadicArgument(argIndex int, functionType reflect.Type) bool {
-	return argIndex == functionType.NumIn()-1 && functionType.IsVariadic()
-}
-
 // getMatcher returns a matcher for the provided type and value
 func getMatcher(value interface{}, valueType reflect.Type) (match.SupportedKindsMatcher, bool) {
 	if matcher, ok := value.(match.SupportedKindsMatcher); ok {

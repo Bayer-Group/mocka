@@ -175,3 +175,9 @@ func getType(value interface{}) reflect.Type {
 		return reflect.TypeOf(value)
 	}
 }
+
+// isVariadicArgument returns true if the function is variadic and the argument index
+// is the last argument in the function.
+func isVariadicArgument(argIndex int, functionType reflect.Type) bool {
+	return argIndex == functionType.NumIn()-1 && functionType.IsVariadic()
+}
