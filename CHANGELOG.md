@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## Added
+- New `SliceOf()`matcher that allows matchers for specific slice elements
+
+## Changed
+- `WithArgs()` has been updated to take in variadic arguments the same as how functions take them 
+- `argumentValidaitonError` messages now show variadic arguments as `...type` instead of `[]type`
 
 ## [1.1.0]
 ## Added

@@ -50,6 +50,7 @@ defer stub.Restore()
 	- [Changing the return values of a Stub](#changing-the-return-values-of-a-stub)
 	- [Changing the return values of a stub based on the call index](#changing-the-return-values-of-a-stub-based-on-the-call-index)
 	- [Changing the return values of a Stub based on the arguments](#changing-the-return-values-of-a-stub-based-on-the-arguments)
+		- [Changing the return values for a Stub based on variadic arguments](#changing-the-return-values-for-a-stub-based-on-variadic-arguments)
 		- [Changing the return values for a Stub based on the call index of specific arguments](#changing-the-return-values-for-a-stub-based-on-the-call-index-of-specific-arguments)
 		- [Changing the return values for a Stub based on argument matchers](#changing-the-return-values-for-a-stub-based-on-argument-matchers)
 	- [Retrieving the arguments and return values from a Stub](#retrieving-the-arguments-and-return-values-from-a-stub)
@@ -296,6 +297,44 @@ fmt.Println(fn("123"))
 ```
 
 > If `Return` is not called on the `OnCallReturner` interface then it be ignored until `Return` is called.
+
+#### Changing the return values for a Stub based on variadic arguments
+
+mocka accepts variadic arguments for `WithArgs` the same as if you were calling the function itself.
+
+For example
+
+```go
+var fn = func(str string, opts ...string) int {
+	return len(str) + len(opts)
+}
+
+stub, err := mocka.Function(&fn, 20)
+if err != nil {
+	log.Panic(err)
+}
+
+// omitting the variadic arguments will match if function was called without them supplied
+err = stub.WithArgs("B").Return(10)
+if err != nil {
+	log.Panic(err)
+}
+
+// providing the variadic argumnets will match exactly what was provided
+err = stub.WithArgs("A", "B", "C").Return(5)
+if err != nil {
+	log.Panic(err)
+}
+
+fmt.Println(fn("A", "B", "C"))
+fmt.Println(fn("B"))
+fmt.Println(fn("A"))
+// Output: 5
+// 10
+// 20
+```
+
+> You can still pass in custom matchers from the `match` package for each element in the variadic list.
 
 #### Changing the return values for a Stub based on the call index of specific arguments
 
