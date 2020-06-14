@@ -19,10 +19,13 @@ func (a *argumentValidationError) String() string {
 		return fmt.Sprintf("mocka: expected arguments of (%v) to match function arguments", strings.Join(mapToTypeName(a.provided), ", "))
 	}
 
-	// TODO - for variadic function we will need to update the error to denote
-	// that the function is variadic
 	real := make([]string, a.fnType.NumIn())
 	for i := 0; i < a.fnType.NumIn(); i++ {
+		if isVariadicArgument(i, a.fnType) {
+			real[i] = fmt.Sprintf("...%v", toFriendlyName(a.fnType.In(i).Elem()))
+			continue
+		}
+
 		real[i] = toFriendlyName(a.fnType.In(i))
 	}
 
