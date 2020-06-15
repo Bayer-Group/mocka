@@ -169,7 +169,6 @@ var _ = Describe("customArguments", func() {
 					stub:        mockFn,
 					argMatchers: []match.SupportedKindsMatcher{match.Exactly("hi"), match.Nil()},
 				}))
-
 			})
 
 			It("returns a customArguments struct with a sliceOf matcher for variadic arguments", func() {

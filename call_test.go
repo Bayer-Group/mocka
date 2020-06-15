@@ -49,7 +49,6 @@ var _ = Describe("call", func() {
 					out:  out,
 				}))
 			})
-
 		})
 	})
 
