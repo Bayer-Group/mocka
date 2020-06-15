@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ## Added
-- New `SliceOf()`matcher that allows matchers for specific slice elements
+- New `SliceOf()` matcher that allows matchers for specific slice elements
 - Examples for variadic functions
 - Documentation to the README.md for variadic functions
 
