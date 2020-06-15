@@ -37,6 +37,7 @@ var _ = Describe("nil", func() {
 		func(value interface{}) {
 			Expect(Nil().Match(value)).To(BeTrue())
 		},
+		Entry("with nil", nil),
 		Entry("with nil chan", (chan int)(nil)),
 		Entry("with nil func", (func())(nil)),
 		Entry("with nil interface", (SupportedKindsMatcher)((*nilMatcher)(nil))),
