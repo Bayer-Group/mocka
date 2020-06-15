@@ -133,7 +133,7 @@ func (mf *mockFunction) implementation(arguments []reflect.Value) []reflect.Valu
 
 	mf.execFunc(argumentsAsInterfaces)
 
-	mf.calls = append(mf.calls, newCall(functionType, argumentsAsInterfaces, outParametersAsInterfaces))
+	mf.calls = append(mf.calls, call{args: argumentsAsInterfaces, out: outParametersAsInterfaces})
 
 	if maybeCustomArguments != nil {
 		maybeCustomArguments.callCount++
