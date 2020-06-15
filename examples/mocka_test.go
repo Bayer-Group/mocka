@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/MonsantoCo/mocka"
+	"github.com/MonsantoCo/mocka/match"
 )
 
 func ExampleFile() {
@@ -599,6 +600,27 @@ func ExampleStub_WithArgs_variadic_supplied() {
 	}
 
 	fmt.Println(fn("A", "B", "C"))
+	fmt.Println(fn("A"))
+	// Output: 5
+	// 20
+}
+
+func ExampleStub_WithArgs_variadic_matchers() {
+	var fn = func(str string, opts ...string) int {
+		return len(str) + len(opts)
+	}
+
+	stub, err := mocka.Function(&fn, 20)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	err = stub.WithArgs("A", match.Exactly("B"), match.Empty()).Return(5)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	fmt.Println(fn("A", "B", ""))
 	fmt.Println(fn("A"))
 	// Output: 5
 	// 20
