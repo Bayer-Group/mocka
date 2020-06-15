@@ -29,15 +29,7 @@ func (m *sliceOf) Match(value interface{}) bool {
 	}
 
 	for i, matcher := range m.matchers {
-		indexValue := slice.Index(i)
-		var v interface{}
-		if indexValue.IsValid() {
-			v = indexValue.Interface()
-		} else {
-			v = nil
-		}
-
-		if !matcher.Match(v) {
+		if !matcher.Match(slice.Index(i).Interface()) {
 			return false
 		}
 	}
