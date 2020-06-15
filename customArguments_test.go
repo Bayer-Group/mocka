@@ -149,6 +149,55 @@ var _ = Describe("customArguments", func() {
 				argMatchers: []match.SupportedKindsMatcher{match.Nil()},
 			}))
 		})
+
+		Context("variadic function", func() {
+			BeforeEach(func() {
+				var variadicFn func(string, ...interface{}) (int, error)
+				mockFn = &mockFunction{
+					originalFunc:  nil,
+					functionPtr:   &variadicFn,
+					outParameters: []interface{}{42, nil},
+					execFunc:      func([]interface{}) {},
+				}
+			})
+
+			It("returns a customArguments struct with a nil matcher for omitted variadic arguments", func() {
+				ca := newCustomArguments(mockFn, []interface{}{"hi"})
+
+				Expect(ca).ToNot(BeNil())
+				Expect(*ca).To(Equal(customArguments{
+					stub:        mockFn,
+					argMatchers: []match.SupportedKindsMatcher{match.Exactly("hi"), match.Nil()},
+				}))
+
+			})
+
+			It("returns a customArguments struct with a sliceOf matcher for variadic arguments", func() {
+				ca := newCustomArguments(mockFn, []interface{}{"hi", nil, "A", match.Anything()})
+
+				Expect(ca).ToNot(BeNil())
+				Expect(*ca).To(Equal(customArguments{
+					stub: mockFn,
+					argMatchers: []match.SupportedKindsMatcher{
+						match.Exactly("hi"),
+						match.SliceOf(match.Nil(), match.Exactly("A"), match.Anything())},
+				}))
+			})
+
+			It("returns an argument validation error if matcher does not suppor the variadic type", func() {
+				ca := newCustomArguments(mockFn, []interface{}{"hi", match.ElementsContaining("A")})
+
+				Expect(ca).ToNot(BeNil())
+				Expect(*ca).To(Equal(customArguments{
+					stub:        mockFn,
+					argMatchers: nil,
+					argValidationError: &argumentValidationError{
+						fnType:   mockFn.toType(),
+						provided: []interface{}{"hi", match.ElementsContaining("A")},
+					},
+				}))
+			})
+		})
 	})
 
 	Describe("Return", func() {
