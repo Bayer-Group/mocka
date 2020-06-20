@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Changed
 - `WithArgs()` has been updated to take in variadic arguments the same as how functions take them 
-- `argumentValidaitonError` messages now show variadic arguments as `...type` instead of `[]type`
+- `argumentValidationError` messages now show variadic arguments as `...type` instead of `[]type`
 
 ## [1.1.0]
 ## Added
