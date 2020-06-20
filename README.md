@@ -320,7 +320,7 @@ if err != nil {
 	log.Panic(err)
 }
 
-// providing the variadic argumnets will match exactly what was provided
+// providing the variadic arguments will match exactly what was provided
 err = stub.WithArgs("A", "B", "C").Return(5)
 if err != nil {
 	log.Panic(err)
