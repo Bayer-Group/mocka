@@ -32,26 +32,6 @@
 //
 package mocka
 
-import (
-	"io"
-)
-
-// File returns a structure that can be used to mock a os.File in go.
-// In order to be able to mock a os.File this structure implemented the
-// following interface:
-//
-// 		ReadWriteCloser interface {
-// 		    Reader
-// 		    Writer
-// 		    Closer
-// 		}
-//
-// The mock file should be able to be used in place of any implementation
-// that requires an os.File.
-func File(name string, body string) io.ReadWriteCloser {
-	return &mockFile{name: name, buf: []byte(body), offset: 0, base: 0, limit: int64(len(body))}
-}
-
 // Function replaces the provided function with a stubbed implementation. The
 // stub has the ability to change change the return values of the original function
 // in many different cases. The stub also provides the ability to get meta data
