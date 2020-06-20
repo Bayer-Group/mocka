@@ -14,7 +14,9 @@ func ExampleFile() {
 	f.Read(b)
 
 	fmt.Println(string(b))
-	// Output: This is the body
+	// Output:
+	// mocka.File() is deprecated and will be removed in v2. It is recommended to refactor to use io interfaces over file based mocks.
+	// This is the body
 }
 
 func ExampleFunction() {

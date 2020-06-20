@@ -131,6 +131,8 @@ type Stub interface {
 
 ## Mocking Files
 
+> Deprecated: mocka.File() has not completely worked since go 1.13.x was released. File mocks will be removed in version 2. It is recommend to refactor to use io interfaces over file based mocks.
+
 `mocka.File` returns a structure that can be used to mock a `os.File` in Go. In order to be able to mock a `os.File` this structure implements the following interface:
 
 ```go
