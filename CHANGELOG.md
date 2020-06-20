@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - `WithArgs()` has been updated to take in variadic arguments the same as how functions take them 
 - `argumentValidationError` messages now show variadic arguments as `...type` instead of `[]type`
 
+## Removed
+- Removed mocka.File()
+
 ## [1.1.0]
 ## Added
 - Revive for linting Go code

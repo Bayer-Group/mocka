@@ -2,49 +2,12 @@ package mocka
 
 import (
 	"errors"
-	"io"
-	"reflect"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("mocka", func() {
-	Describe("File", func() {
-		It("returns a io.ReadWriteCloser", func() {
-			file := File("text_file_name", "This is the body content")
-			mockFileType := reflect.TypeOf(file)
-			interfaceType := reflect.TypeOf((*io.ReadWriteCloser)(nil)).Elem()
-
-			Expect(mockFileType.Implements(interfaceType)).To(BeTrue())
-		})
-
-		It("assigns the name property", func() {
-			file := File("text_file_name", "This is the body content").(*mockFile)
-
-			Expect(file.name).To(Equal("text_file_name"))
-		})
-
-		It("assigns the body to the buffer", func() {
-			file := File("text_file_name", "This is the body content").(*mockFile)
-
-			Expect(file.buf).To(Equal([]byte("This is the body content")))
-		})
-
-		It("assigns offest and base to zero", func() {
-			file := File("text_file_name", "This is the body content").(*mockFile)
-
-			Expect(file.offset).To(Equal(int64(0)))
-			Expect(file.base).To(Equal(int64(0)))
-		})
-
-		It("assigns limit to the size of the body", func() {
-			file := File("text_file_name", "This is the body content").(*mockFile)
-
-			Expect(file.limit).To(Equal(int64(24)))
-		})
-	})
-
 	Describe("Function", func() {
 		var (
 			callCount int

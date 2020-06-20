@@ -9,16 +9,6 @@ import (
 	"github.com/MonsantoCo/mocka/match"
 )
 
-func ExampleFile() {
-	f := mocka.File("file_name", "This is the body")
-	b := make([]byte, 16)
-
-	f.Read(b)
-
-	fmt.Println(string(b))
-	// Output: This is the body
-}
-
 func ExampleFunction() {
 	var fn = func(str string) int {
 		return len(str)
