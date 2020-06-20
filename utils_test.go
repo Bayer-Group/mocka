@@ -257,4 +257,34 @@ var _ = Describe("utils", func() {
 		Entry("for String", "hello", "string"),
 		Entry("for Struct", mockFunction{}, "mockFunction"),
 	)
+
+	Describe("isVariadicArgument", func() {
+		var fnType reflect.Type
+
+		BeforeEach(func() {
+			var fn func(string, ...string) int
+			fnType = reflect.TypeOf(fn)
+		})
+
+		It("returns false if the function is not variadic", func() {
+			var fn func(string) int
+			fnType = reflect.TypeOf(fn)
+
+			actual := isVariadicArgument(fnType, 0)
+
+			Expect(actual).To(BeFalse())
+		})
+
+		It("returns false if the it is not the last argument", func() {
+			actual := isVariadicArgument(fnType, 0)
+
+			Expect(actual).To(BeFalse())
+		})
+
+		It("returns true if the index is the variadic argument index", func() {
+			actual := isVariadicArgument(fnType, 1)
+
+			Expect(actual).To(BeTrue())
+		})
+	})
 })

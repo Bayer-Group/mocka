@@ -21,6 +21,11 @@ func (a *argumentValidationError) String() string {
 
 	real := make([]string, a.fnType.NumIn())
 	for i := 0; i < a.fnType.NumIn(); i++ {
+		if isVariadicArgument(a.fnType, i) {
+			real[i] = fmt.Sprintf("...%v", toFriendlyName(a.fnType.In(i).Elem()))
+			continue
+		}
+
 		real[i] = toFriendlyName(a.fnType.In(i))
 	}
 

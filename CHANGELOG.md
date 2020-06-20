@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## Added
+- New `SliceOf()` matcher that allows matchers for specific slice elements
+- Examples for variadic functions
+- Documentation to the README.md for variadic functions
+
+## Changed
+- `WithArgs()` has been updated to take in variadic arguments the same as how functions take them 
+- `argumentValidationError` messages now show variadic arguments as `...type` instead of `[]type`
+
 ## Removed
 - Removed mocka.File()
 

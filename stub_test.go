@@ -343,6 +343,47 @@ var _ = Describe("stub", func() {
 
 			Expect(outInterfaces).To(Equal([]interface{}{42, nil}))
 		})
+
+		Context("variadic function", func() {
+			BeforeEach(func() {
+				fn := func(str string, opts ...string) (int, error) {
+					return len(str) + len(opts), nil
+				}
+
+				mockfn.functionPtr = &fn
+				Expect(cloneValue(&fn, &mockfn.originalFunc)).To(Succeed())
+				mockfn.outParameters = []interface{}{42, nil}
+				mockfn.calls = []call{}
+			})
+
+			It("appends the call meta data omitting the missing variadic arguments", func() {
+				args := []reflect.Value{reflect.ValueOf("Hello")}
+
+				Expect(mockfn.calls).To(HaveLen(0))
+
+				_ = mockfn.implementation(args)
+
+				Expect(mockfn.calls).To(HaveLen(1))
+
+				ca := mockfn.calls[0]
+
+				Expect(ca.args).To(Equal([]interface{}{"Hello"}))
+			})
+
+			It("appends the call meta data spreading the variadic arguments", func() {
+				args := []reflect.Value{reflect.ValueOf("Hello"), reflect.ValueOf("A"), reflect.ValueOf("B")}
+
+				Expect(mockfn.calls).To(HaveLen(0))
+
+				_ = mockfn.implementation(args)
+
+				Expect(mockfn.calls).To(HaveLen(1))
+
+				ca := mockfn.calls[0]
+
+				Expect(ca.args).To(Equal([]interface{}{"Hello", "A", "B"}))
+			})
+		})
 	})
 
 	Describe("Return", func() {

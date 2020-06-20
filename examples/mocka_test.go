@@ -1,10 +1,12 @@
 package examples
 
 import (
+	"errors"
 	"fmt"
 	"log"
 
 	"github.com/MonsantoCo/mocka"
+	"github.com/MonsantoCo/mocka/match"
 )
 
 func ExampleFunction() {
@@ -549,4 +551,88 @@ func ExampleStub_CalledThrice() {
 	fmt.Println(stub.CalledThrice())
 	// Output: false
 	// true
+}
+
+func ExampleStub_WithArgs_variadic_missing() {
+	var fn = func(str string, opts ...string) int {
+		return len(str) + len(opts)
+	}
+
+	stub, err := mocka.Function(&fn, 20)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	err = stub.WithArgs("A").Return(5)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	fmt.Println(fn("A", "B", "C"))
+	fmt.Println(fn("A"))
+	// Output: 20
+	// 5
+}
+
+func ExampleStub_WithArgs_variadic_supplied() {
+	var fn = func(str string, opts ...string) int {
+		return len(str) + len(opts)
+	}
+
+	stub, err := mocka.Function(&fn, 20)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	err = stub.WithArgs("A", "B", "C").Return(5)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	fmt.Println(fn("A", "B", "C"))
+	fmt.Println(fn("A"))
+	// Output: 5
+	// 20
+}
+
+func ExampleStub_WithArgs_variadic_matchers() {
+	var fn = func(str string, opts ...string) int {
+		return len(str) + len(opts)
+	}
+
+	stub, err := mocka.Function(&fn, 20)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	err = stub.WithArgs("A", match.Exactly("B"), match.Empty()).Return(5)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	fmt.Println(fn("A", "B", ""))
+	fmt.Println(fn("A"))
+	// Output: 5
+	// 20
+}
+
+func ExampleStub_WithArgs_variadic_of_interfaces() {
+	var fn = func(str string, opts ...interface{}) int {
+		return len(str) + len(opts)
+	}
+
+	stub, err := mocka.Function(&fn, 20)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	err = stub.WithArgs("A", "B", 1, errors.New("ope"), nil).Return(5)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	fmt.Println(fn("A", "B", 1, errors.New("ope"), nil))
+	fmt.Println(fn("A"))
+	// Output: 5
+	// 20
 }

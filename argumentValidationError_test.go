@@ -35,6 +35,19 @@ var _ = Describe("argumentValidationError", func() {
 
 			Expect(result).To(Equal("mocka: expected arguments of type (string, int), but received (int, string)"))
 		})
+
+		It("returns the error string using ... to denote variadic arguments", func() {
+			arguments := []interface{}{0, 0}
+			var fn = func(str string, opts ...string) int {
+				return len(str) + len(opts)
+			}
+			fnType = reflect.ValueOf(&fn).Elem().Type()
+
+			err := &argumentValidationError{fnType, arguments}
+			result := err.String()
+
+			Expect(result).To(Equal("mocka: expected arguments of type (string, ...string), but received (int, int)"))
+		})
 	})
 
 	Describe("Error", func() {
