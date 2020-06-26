@@ -8,7 +8,7 @@ import (
 var _ = Describe("call", func() {
 	Describe("Arguments", func() {
 		It("returns the arguments of the call", func() {
-			testCall := &call{
+			testCall := &Call{
 				args: []interface{}{42, "hello"},
 				out:  []interface{}{40, nil},
 			}
@@ -21,7 +21,7 @@ var _ = Describe("call", func() {
 
 	Describe("ReturnValues", func() {
 		It("returns the return values of the call", func() {
-			testCall := &call{
+			testCall := &Call{
 				args: []interface{}{42, "hello"},
 				out:  []interface{}{40, nil},
 			}

@@ -3,15 +3,10 @@ package mocka
 import "sync"
 
 // Sandbox describes an isolated environment that functions can be stubbed.
-type Sandbox interface {
-	StubFunction(interface{}, ...interface{}) (Stub, error)
-	Restore()
-}
-
-type sandbox struct {
+type Sandbox struct {
 	lock sync.Mutex
 
-	stubs []*mockFunction
+	stubs []*Stub
 }
 
 // StubFunction replaces the provided function with a stubbed implementation. The
@@ -21,7 +16,7 @@ type sandbox struct {
 //
 // StubFunction also returns an error if the replacement of the original function
 // with the stub failed.
-func (s *sandbox) StubFunction(originalFuncPtr interface{}, returnValues ...interface{}) (Stub, error) {
+func (s *Sandbox) StubFunction(originalFuncPtr interface{}, returnValues ...interface{}) (*Stub, error) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -37,7 +32,7 @@ func (s *sandbox) StubFunction(originalFuncPtr interface{}, returnValues ...inte
 
 // Restore restores all the function stubs that were created via this sandbox to
 // the original functionality they once held.
-func (s *sandbox) Restore() {
+func (s *Sandbox) Restore() {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 

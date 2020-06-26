@@ -5,17 +5,17 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("onCall", func() {
+var _ = Describe("OnCall", func() {
 	var (
-		fn     func(string, int) (int, error)
-		mockFn *mockFunction
+		fn   func(string, int) (int, error)
+		stub *Stub
 	)
 
 	BeforeEach(func() {
 		fn = func(str string, num int) (int, error) {
 			return len(str) + num, nil
 		}
-		mockFn = &mockFunction{
+		stub = &Stub{
 			originalFunc:  nil,
 			functionPtr:   &fn,
 			outParameters: []interface{}{42, nil},
@@ -25,7 +25,7 @@ var _ = Describe("onCall", func() {
 
 	Describe("Return", func() {
 		It("returns an error if the stub is nil", func() {
-			ca := &onCall{
+			ca := &OnCall{
 				index: 0,
 			}
 
@@ -36,8 +36,8 @@ var _ = Describe("onCall", func() {
 		})
 
 		It("returns an error if one out parameter type does not match", func() {
-			ca := &onCall{
-				stub:  mockFn,
+			ca := &OnCall{
+				stub:  stub,
 				index: 0,
 			}
 
@@ -48,8 +48,8 @@ var _ = Describe("onCall", func() {
 		})
 
 		It("assigns the OutParameters and returns nil if everything is valid", func() {
-			ca := &onCall{
-				stub:  mockFn,
+			ca := &OnCall{
+				stub:  stub,
 				index: 0,
 			}
 

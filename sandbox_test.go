@@ -13,11 +13,11 @@ var _ = Describe("sandbox", func() {
 		fn1         func(string, int) (int, error)
 		fn2         func(string) int
 		fn3         func(interface{}) error
-		testSandbox Sandbox
+		testSandbox *Sandbox
 	)
 
 	BeforeEach(func() {
-		testSandbox = &sandbox{}
+		testSandbox = &Sandbox{}
 		callCounts = map[string]int{"fn1": 0, "fn2": 0, "fn3": 0}
 		fn1 = func(str string, num int) (int, error) {
 			callCounts["fn1"]++
@@ -39,7 +39,7 @@ var _ = Describe("sandbox", func() {
 
 	AfterEach(func() {
 		// clear out slice, to prevent memory leaks
-		testSandbox.(*sandbox).stubs = nil
+		testSandbox.stubs = nil
 	})
 
 	Describe("StubFunction", func() {
@@ -97,11 +97,9 @@ var _ = Describe("sandbox", func() {
 			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
 
-			mockFn := stub.(*mockFunction)
+			Expect(stub.originalFunc).ToNot(BeNil())
 
-			Expect(mockFn.originalFunc).ToNot(BeNil())
-
-			_, _ = mockFn.originalFunc.(func(str string, num int) (int, error))("", 0)
+			_, _ = stub.originalFunc.(func(str string, num int) (int, error))("", 0)
 
 			Expect(callCounts["fn1"]).To(Equal(1))
 		})
@@ -111,11 +109,8 @@ var _ = Describe("sandbox", func() {
 
 			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
-
-			mockFn := stub.(*mockFunction)
-
-			Expect(mockFn.calls).To(BeNil())
-			Expect(mockFn.customArgs).To(BeNil())
+			Expect(stub.calls).To(BeNil())
+			Expect(stub.customArgs).To(BeNil())
 		})
 
 		It("returns a stub with outParameters as supplied", func() {
@@ -123,20 +118,17 @@ var _ = Describe("sandbox", func() {
 
 			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
-
-			mockFn := stub.(*mockFunction)
-
-			Expect(mockFn.outParameters).To(Equal([]interface{}{42, nil}))
+			Expect(stub.outParameters).To(Equal([]interface{}{42, nil}))
 		})
 
 		It("appends the stub into the sandbox if no error is returned", func() {
-			Expect(testSandbox.(*sandbox).stubs).To(HaveLen(0))
+			Expect(testSandbox.stubs).To(HaveLen(0))
 
 			stub, err := testSandbox.StubFunction(&fn1, 42, nil)
 
 			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
-			Expect(testSandbox.(*sandbox).stubs).To(HaveLen(1))
+			Expect(testSandbox.stubs).To(HaveLen(1))
 		})
 	})
 
@@ -173,12 +165,12 @@ var _ = Describe("sandbox", func() {
 			Expect(callCounts["fn3"]).To(Equal(1))
 		})
 
-		It("removes references to the created mockFunctions", func() {
-			Expect(testSandbox.(*sandbox).stubs).To(HaveLen(3))
+		It("removes references to the created Stubs", func() {
+			Expect(testSandbox.stubs).To(HaveLen(3))
 
 			testSandbox.Restore()
 
-			Expect(testSandbox.(*sandbox).stubs).To(HaveLen(0))
+			Expect(testSandbox.stubs).To(HaveLen(0))
 		})
 	})
 })

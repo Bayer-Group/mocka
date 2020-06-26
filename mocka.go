@@ -39,13 +39,13 @@ package mocka
 //
 // Function also returns an error if the replacement of the original function
 // with the stub failed.
-func Function(originalFuncPtr interface{}, returnValues ...interface{}) (Stub, error) {
+func Function(originalFuncPtr interface{}, returnValues ...interface{}) (*Stub, error) {
 	return newMockFunction(originalFuncPtr, returnValues)
 }
 
 // CreateSandbox returns an isolated sandbox from which functions can be stubbed. The
 // benefit you receive from using a sandbox is the ability to perform one call to Restore
 // for a collection of Stubs
-func CreateSandbox() Sandbox {
-	return &sandbox{}
+func CreateSandbox() *Sandbox {
+	return &Sandbox{}
 }

@@ -7,10 +7,10 @@ import (
 	"github.com/MonsantoCo/mocka/match"
 )
 
-// newCustomArguments constructor function for customArguments
-func newCustomArguments(stub *mockFunction, arguments []interface{}) *customArguments {
+// newCustomArguments constructor function for CustomArguments
+func newCustomArguments(stub *Stub, arguments []interface{}) *CustomArguments {
 	if stub == nil || stub.toType().Kind() != reflect.Func {
-		return &customArguments{
+		return &CustomArguments{
 			argValidationError: &argumentValidationError{
 				provided: arguments,
 			},
@@ -19,7 +19,7 @@ func newCustomArguments(stub *mockFunction, arguments []interface{}) *customArgu
 
 	functionType := stub.toType()
 	if isArgumentLengthValid(functionType, arguments) {
-		return &customArguments{
+		return &CustomArguments{
 			argValidationError: &argumentValidationError{
 				fnType:   functionType,
 				provided: arguments,
@@ -28,7 +28,7 @@ func newCustomArguments(stub *mockFunction, arguments []interface{}) *customArgu
 	}
 
 	matchers, err := getMatchers(functionType, arguments)
-	return &customArguments{
+	return &CustomArguments{
 		stub:               stub,
 		callCount:          0,
 		argMatchers:        matchers,
@@ -111,17 +111,19 @@ func getMatcher(value interface{}, valueType reflect.Type) (match.SupportedKinds
 	return match.Exactly(value), true
 }
 
-type customArguments struct {
-	stub               *mockFunction
+// CustomArguments represents a unique set of custom arguments in which
+// the stubbed function will have different return values for
+type CustomArguments struct {
+	stub               *Stub
 	argMatchers        []match.SupportedKindsMatcher
 	argValidationError error
 	out                []interface{}
-	onCalls            []*onCall
+	onCalls            []*OnCall
 	callCount          int
 }
 
 // Return sets the return values for this set of custom arguments
-func (ca *customArguments) Return(returnValues ...interface{}) error {
+func (ca *CustomArguments) Return(returnValues ...interface{}) error {
 	if ca.argValidationError != nil {
 		return ca.argValidationError
 	}
@@ -144,7 +146,7 @@ func (ca *customArguments) Return(returnValues ...interface{}) error {
 // OnCall returns an interface that allows for changing the
 // return values based on the call index for this specific set
 // of custom arguments.
-func (ca *customArguments) OnCall(callIndex int) Returner {
+func (ca *CustomArguments) OnCall(callIndex int) *OnCall {
 	// TODO - future story
 	// validate stub exists before using .lock
 	// change return to also return an error if stub does not exist
@@ -157,7 +159,7 @@ func (ca *customArguments) OnCall(callIndex int) Returner {
 		}
 	}
 
-	o := &onCall{index: callIndex, stub: ca.stub}
+	o := &OnCall{index: callIndex, stub: ca.stub}
 	ca.onCalls = append(ca.onCalls, o)
 	return o
 }
@@ -165,27 +167,27 @@ func (ca *customArguments) OnCall(callIndex int) Returner {
 // OnFirstCall returns an interface that allows for changing the
 // return values of the first call for this specific set
 // of custom arguments.
-func (ca *customArguments) OnFirstCall() Returner {
+func (ca *CustomArguments) OnFirstCall() *OnCall {
 	return ca.OnCall(0)
 }
 
 // OnSecondCall returns an interface that allows for changing the
 // return values of the second call for this specific set
 // of custom arguments.
-func (ca *customArguments) OnSecondCall() Returner {
+func (ca *CustomArguments) OnSecondCall() *OnCall {
 	return ca.OnCall(1)
 }
 
 // OnThirdCall returns an interface that allows for changing the
 // return values of the third call for this specific set
 // of custom arguments.
-func (ca *customArguments) OnThirdCall() Returner {
+func (ca *CustomArguments) OnThirdCall() *OnCall {
 	return ca.OnCall(2)
 }
 
 // isMatch returns false if any of the argument matchers return false or
 // if there is a panic from inside a matcher; otherwise true
-func (ca *customArguments) isMatch(arguments []interface{}) (isMatch bool) {
+func (ca *CustomArguments) isMatch(arguments []interface{}) (isMatch bool) {
 	defer func() {
 		if r := recover(); r != nil {
 			isMatch = false

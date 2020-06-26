@@ -252,10 +252,10 @@ var _ = Describe("utils", func() {
 		Entry("for Func without out parameters", func(_ int, _ string) {}, "func(int, string) {}"),
 		Entry("for Interface", new(Stub), "*Stub"),
 		Entry("for Map", map[int]string{}, "map[int]string"),
-		Entry("for Ptr", &mockFunction{}, "*mockFunction"),
+		Entry("for Ptr", &Stub{}, "*Stub"),
 		Entry("for Slice", []int{1, 2, 3}, "[]int"),
 		Entry("for String", "hello", "string"),
-		Entry("for Struct", mockFunction{}, "mockFunction"),
+		Entry("for Struct", Stub{}, "Stub"),
 	)
 
 	Describe("isVariadicArgument", func() {

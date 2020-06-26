@@ -76,11 +76,9 @@ var _ = Describe("mocka", func() {
 			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
 
-			mockFn := stub.(*mockFunction)
+			Expect(stub.originalFunc).ToNot(BeNil())
 
-			Expect(mockFn.originalFunc).ToNot(BeNil())
-
-			_, _ = mockFn.originalFunc.(func(str string, num int) (int, error))("", 0)
+			_, _ = stub.originalFunc.(func(str string, num int) (int, error))("", 0)
 
 			Expect(callCount).To(Equal(1))
 		})
@@ -90,11 +88,8 @@ var _ = Describe("mocka", func() {
 
 			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
-
-			mockFn := stub.(*mockFunction)
-
-			Expect(mockFn.calls).To(BeNil())
-			Expect(mockFn.customArgs).To(BeNil())
+			Expect(stub.calls).To(BeNil())
+			Expect(stub.customArgs).To(BeNil())
 		})
 
 		It("returns a stub with outParameters as supplied", func() {
@@ -102,10 +97,7 @@ var _ = Describe("mocka", func() {
 
 			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
-
-			mockFn := stub.(*mockFunction)
-
-			Expect(mockFn.outParameters).To(Equal([]interface{}{42, nil}))
+			Expect(stub.outParameters).To(Equal([]interface{}{42, nil}))
 		})
 	})
 
@@ -114,7 +106,7 @@ var _ = Describe("mocka", func() {
 			s := CreateSandbox()
 
 			Expect(s).ToNot(BeNil())
-			Expect(s.(*sandbox).stubs).To(BeNil())
+			Expect(s.stubs).To(BeNil())
 		})
 	})
 })

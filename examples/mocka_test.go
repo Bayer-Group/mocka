@@ -72,7 +72,7 @@ func ExampleCall_ReturnValues() {
 	// Output: [20]
 }
 
-func ExampleOnCallReturner_Return() {
+func ExampleStub_WithArgs_return() {
 	var fn = func(str []string, n int) int {
 		return len(str) + n
 	}
@@ -91,7 +91,7 @@ func ExampleOnCallReturner_Return() {
 	// Output: 5
 }
 
-func ExampleOnCallReturner_OnCall() {
+func ExampleStub_WithArgs_onCall() {
 	var fn = func(str string) int {
 		return len(str)
 	}
@@ -122,7 +122,7 @@ func ExampleOnCallReturner_OnCall() {
 	// 3
 }
 
-func ExampleOnCallReturner_OnFirstCall() {
+func ExampleStub_WithArgs_onFirstCall() {
 	var fn = func(str string) int {
 		return len(str)
 	}
@@ -147,7 +147,7 @@ func ExampleOnCallReturner_OnFirstCall() {
 	// 20
 }
 
-func ExampleOnCallReturner_OnSecondCall() {
+func ExampleStub_WithArgs_onSecondCall() {
 	var fn = func(str string) int {
 		return len(str)
 	}
@@ -172,7 +172,7 @@ func ExampleOnCallReturner_OnSecondCall() {
 	// 20
 }
 
-func ExampleOnCallReturner_OnThirdCall() {
+func ExampleStub_WithArgs_onThirdCall() {
 	var fn = func(str string) int {
 		return len(str)
 	}

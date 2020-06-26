@@ -2,22 +2,15 @@ package mocka
 
 import "errors"
 
-// OnCaller describes the functionality to set custom return value based on call index
-type OnCaller interface {
-	OnCall(int) Returner
-	OnFirstCall() Returner
-	OnSecondCall() Returner
-	OnThirdCall() Returner
-}
-
-type onCall struct {
-	stub  *mockFunction
+// OnCall describes the functionality to set custom return value based on call index
+type OnCall struct {
+	stub  *Stub
 	index int
 	out   []interface{}
 }
 
 // Return sets the return values for this set of custom arguments
-func (c *onCall) Return(returnValues ...interface{}) error {
+func (c *OnCall) Return(returnValues ...interface{}) error {
 	if c.stub == nil {
 		return errors.New("mocka: stub does not exist")
 	}
