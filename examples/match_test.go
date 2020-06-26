@@ -14,17 +14,14 @@ func ExampleAnything() {
 		return len(str) + n
 	}
 
-	stub, err := mocka.Function(t, &fn, 20)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 20)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.Anything(), 2).Return(10); err != nil {
+	if err := stub.WithArgs(match.Anything(), 2).Return(10); err != nil {
 		log.Fatal(err.Error())
 	}
 
-	if err = stub.WithArgs([]string{"123", "456"}, 2).Return(5); err != nil {
+	if err := stub.WithArgs([]string{"123", "456"}, 2).Return(5); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -41,17 +38,14 @@ func ExampleAnythingButNil() {
 		return len(str) + n
 	}
 
-	stub, err := mocka.Function(t, &fn, 20)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 20)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.AnythingButNil(), 2).Return(10); err != nil {
+	if err := stub.WithArgs(match.AnythingButNil(), 2).Return(10); err != nil {
 		log.Fatal(err.Error())
 	}
 
-	if err = stub.WithArgs([]string{"123", "456"}, 2).Return(5); err != nil {
+	if err := stub.WithArgs([]string{"123", "456"}, 2).Return(5); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -70,17 +64,14 @@ func ExampleConvertibleTo() {
 		return x + y
 	}
 
-	stub, err := mocka.Function(t, &fn, 20)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 20)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.ConvertibleTo(new(int64)), 2).Return(10); err != nil {
+	if err := stub.WithArgs(match.ConvertibleTo(new(int64)), 2).Return(10); err != nil {
 		log.Fatal(err.Error())
 	}
 
-	if err = stub.WithArgs(10, 2).Return(5); err != nil {
+	if err := stub.WithArgs(10, 2).Return(5); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -97,17 +88,14 @@ func ExampleElementsContaining() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.ElementsContaining("A", "B")).Return(30); err != nil {
+	if err := stub.WithArgs(match.ElementsContaining("A", "B")).Return(30); err != nil {
 		log.Fatal(err.Error())
 	}
 
-	if err = stub.WithArgs(match.ElementsContaining("A")).Return(20); err != nil {
+	if err := stub.WithArgs(match.ElementsContaining("A")).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -124,17 +112,14 @@ func ExampleEmpty() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.Empty(), match.Empty(), match.Empty()).Return(20); err != nil {
+	if err := stub.WithArgs(match.Empty(), match.Empty(), match.Empty()).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
-	if err = stub.WithArgs(match.Empty(), match.Empty(), "hello").Return(30); err != nil {
+	if err := stub.WithArgs(match.Empty(), match.Empty(), "hello").Return(30); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -151,17 +136,14 @@ func ExampleExactly() {
 		return x
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.Exactly(2)).Return(20); err != nil {
+	if err := stub.WithArgs(match.Exactly(2)).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
-	if err = stub.WithArgs(match.Exactly(10)).Return(30); err != nil {
+	if err := stub.WithArgs(match.Exactly(10)).Return(30); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -178,13 +160,10 @@ func ExampleFloatGreaterThan() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.FloatGreaterThan(2)).Return(20); err != nil {
+	if err := stub.WithArgs(match.FloatGreaterThan(2)).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -199,13 +178,10 @@ func ExampleFloatGreaterThanOrEqualTo() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.FloatGreaterThanOrEqualTo(2)).Return(20); err != nil {
+	if err := stub.WithArgs(match.FloatGreaterThanOrEqualTo(2)).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -222,13 +198,10 @@ func ExampleFloatLessThan() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.FloatLessThan(2)).Return(20); err != nil {
+	if err := stub.WithArgs(match.FloatLessThan(2)).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -243,13 +216,10 @@ func ExampleFloatLessThanOrEqualTo() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.FloatLessThanOrEqualTo(2)).Return(20); err != nil {
+	if err := stub.WithArgs(match.FloatLessThanOrEqualTo(2)).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -266,13 +236,10 @@ func ExampleIntGreaterThan() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.IntGreaterThan(2)).Return(20); err != nil {
+	if err := stub.WithArgs(match.IntGreaterThan(2)).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -287,13 +254,10 @@ func ExampleIntGreaterThanOrEqualTo() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.IntGreaterThanOrEqualTo(2)).Return(20); err != nil {
+	if err := stub.WithArgs(match.IntGreaterThanOrEqualTo(2)).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -310,13 +274,10 @@ func ExampleIntLessThan() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.IntLessThan(2)).Return(20); err != nil {
+	if err := stub.WithArgs(match.IntLessThan(2)).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -331,13 +292,10 @@ func ExampleIntLessThanOrEqualTo() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.IntLessThanOrEqualTo(2)).Return(20); err != nil {
+	if err := stub.WithArgs(match.IntLessThanOrEqualTo(2)).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -354,13 +312,10 @@ func ExampleUintGreaterThan() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.UintGreaterThan(2)).Return(20); err != nil {
+	if err := stub.WithArgs(match.UintGreaterThan(2)).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -375,13 +330,10 @@ func ExampleUintGreaterThanOrEqualTo() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.UintGreaterThanOrEqualTo(2)).Return(20); err != nil {
+	if err := stub.WithArgs(match.UintGreaterThanOrEqualTo(2)).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -398,13 +350,10 @@ func ExampleUintLessThan() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.UintLessThan(2)).Return(20); err != nil {
+	if err := stub.WithArgs(match.UintLessThan(2)).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -419,13 +368,10 @@ func ExampleUintLessThanOrEqualTo() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.UintLessThanOrEqualTo(2)).Return(20); err != nil {
+	if err := stub.WithArgs(match.UintLessThanOrEqualTo(2)).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -442,17 +388,14 @@ func ExampleKeysContaining() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.KeysContaining("A", "B")).Return(30); err != nil {
+	if err := stub.WithArgs(match.KeysContaining("A", "B")).Return(30); err != nil {
 		log.Fatal(err.Error())
 	}
 
-	if err = stub.WithArgs(match.KeysContaining("A")).Return(20); err != nil {
+	if err := stub.WithArgs(match.KeysContaining("A")).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -469,17 +412,14 @@ func ExampleLengthOf() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.LengthOf(1), match.LengthOf(1), match.LengthOf(1)).Return(20); err != nil {
+	if err := stub.WithArgs(match.LengthOf(1), match.LengthOf(1), match.LengthOf(1)).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
-	if err = stub.WithArgs(match.LengthOf(1), match.LengthOf(1), match.LengthOf(2)).Return(30); err != nil {
+	if err := stub.WithArgs(match.LengthOf(1), match.LengthOf(1), match.LengthOf(2)).Return(30); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -496,13 +436,10 @@ func ExampleNil() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.Nil()).Return(20); err != nil {
+	if err := stub.WithArgs(match.Nil()).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -517,13 +454,10 @@ func ExampleStringContaining() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.StringContaining("cream")).Return(20); err != nil {
+	if err := stub.WithArgs(match.StringContaining("cream")).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -538,13 +472,10 @@ func ExampleStringPrefix() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.StringPrefix("scr")).Return(20); err != nil {
+	if err := stub.WithArgs(match.StringPrefix("scr")).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -559,13 +490,10 @@ func ExampleStringSuffix() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.StringSuffix("ms")).Return(20); err != nil {
+	if err := stub.WithArgs(match.StringSuffix("ms")).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -580,17 +508,14 @@ func ExampleTypeOf() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.TypeOf("int")).Return(20); err != nil {
+	if err := stub.WithArgs(match.TypeOf("int")).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 
-	if err = stub.WithArgs(match.TypeOf("string")).Return(30); err != nil {
+	if err := stub.WithArgs(match.TypeOf("string")).Return(30); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -607,13 +532,10 @@ func ExampleImplementerOf() {
 		return 0
 	}
 
-	stub, err := mocka.Function(t, &fn, 10)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub := mocka.Function(t, &fn, 10)
 	defer stub.Restore()
 
-	if err = stub.WithArgs(match.ImplementerOf(new(match.SupportedKindsMatcher))).Return(20); err != nil {
+	if err := stub.WithArgs(match.ImplementerOf(new(match.SupportedKindsMatcher))).Return(20); err != nil {
 		log.Fatal(err.Error())
 	}
 

@@ -6,7 +6,6 @@ import (
 	"sync"
 
 	"github.com/MonsantoCo/mocka/match"
-	"github.com/pkg/errors"
 )
 
 // variables used for unit testing
@@ -27,23 +26,27 @@ type Stub struct {
 }
 
 // newStub creates a stub function and overrides the implementation of the original function.
-func newStub(testReporter TestReporter, originalFuncPtr interface{}, returnValues []interface{}) (*Stub, error) {
+func newStub(testReporter TestReporter, originalFuncPtr interface{}, returnValues []interface{}) *Stub {
 	if originalFuncPtr == nil {
-		return nil, errors.New("mocka: expected the first argument to be a pointer to a function, but received a nil")
+		testReporter.Errorf("mocka: expected the first argument to be a pointer to a function, but received a nil")
+		return nil
 	}
 
 	originalFuncValue := reflect.ValueOf(originalFuncPtr)
 	if originalFuncValue.Kind() != reflect.Ptr {
-		return nil, fmt.Errorf("mocka: expected the first argument to be a pointer to a function, but received a %v", originalFuncValue.Kind().String())
+		testReporter.Errorf("mocka: expected the first argument to be a pointer to a function, but received a %v", originalFuncValue.Kind().String())
+		return nil
 	}
 
 	originalFunc := originalFuncValue.Elem()
 	if originalFunc.Kind() != reflect.Func {
-		return nil, fmt.Errorf("mocka: expected the first argument to be a pointer to a function, but received a pointer to a %v", originalFunc.Kind().String())
+		testReporter.Errorf("mocka: expected the first argument to be a pointer to a function, but received a pointer to a %v", originalFunc.Kind().String())
+		return nil
 	}
 
 	if !validateOutParameters(originalFunc.Type(), returnValues) {
-		return nil, &outParameterValidationError{originalFunc.Type(), returnValues}
+		testReporter.Errorf("%v", &outParameterValidationError{originalFunc.Type(), returnValues})
+		return nil
 	}
 
 	stub := &Stub{
@@ -57,14 +60,15 @@ func newStub(testReporter TestReporter, originalFuncPtr interface{}, returnValue
 	// Need to perform a deep clone to get a new pointer and memory address
 	err := _cloneValue(originalFuncPtr, &stub.originalFunc)
 	if err != nil {
-		return nil, errors.Wrap(err, "mocka: could not clone function pointer to new memory address")
+		stub.testReporter.Errorf("mocka: could not clone function pointer to new memory address: %v", err)
+		return nil
 	}
 
 	// Replace the original function the mock function implementation
 	originalType := originalFunc.Type()
 	originalFunc.Set(reflect.MakeFunc(originalType, stub.implementation))
 
-	return stub, nil
+	return stub
 }
 
 // toType gets the reflection type from the mock function pointer

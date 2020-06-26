@@ -32,16 +32,13 @@
 //
 package mocka
 
-import (
-	"log"
-	"os"
-)
+import "log"
 
 // TestReporter is an interface used fail tests.
 // It is satisfied by the standard library testing.T and the
 // response from GinkgoT()
 type TestReporter interface {
-	Fatalf(string, ...interface{})
+	Errorf(string, ...interface{})
 }
 
 // Function replaces the provided function with a stubbed implementation. The
@@ -51,7 +48,7 @@ type TestReporter interface {
 //
 // Function also returns an error if the replacement of the original function
 // with the stub failed.
-func Function(testReporter TestReporter, originalFuncPtr interface{}, returnValues ...interface{}) (*Stub, error) {
+func Function(testReporter TestReporter, originalFuncPtr interface{}, returnValues ...interface{}) *Stub {
 	return newStub(ensureTestReporter(testReporter), originalFuncPtr, returnValues)
 }
 
@@ -65,8 +62,7 @@ func CreateSandbox(testReporter TestReporter) *Sandbox {
 // ensureTestReporter returns the existing test reporter or a new logger to Stderr
 func ensureTestReporter(testReporter TestReporter) TestReporter {
 	if testReporter == nil {
-		return log.New(os.Stderr, "", log.Llongfile)
+		log.Fatal("mocka: TODO")
 	}
-
 	return testReporter
 }

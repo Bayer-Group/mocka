@@ -17,18 +17,14 @@ type Sandbox struct {
 //
 // Function also returns an error if the replacement of the original function
 // with the stub failed.
-func (s *Sandbox) Function(originalFuncPtr interface{}, returnValues ...interface{}) (*Stub, error) {
+func (s *Sandbox) Function(originalFuncPtr interface{}, returnValues ...interface{}) *Stub {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	mockFn, err := newStub(s.testReporter, originalFuncPtr, returnValues)
-	if err != nil {
-		return nil, err
-	}
+	stub := newStub(s.testReporter, originalFuncPtr, returnValues)
+	s.stubs = append(s.stubs, stub)
 
-	s.stubs = append(s.stubs, mockFn)
-
-	return mockFn, nil
+	return stub
 }
 
 // Restore restores all the function stubs that were created via this sandbox to

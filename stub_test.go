@@ -42,7 +42,10 @@ var _ = Describe("stub", func() {
 	})
 
 	Describe("newStub", func() {
-		var callCount int
+		var (
+			callCount        int
+			failTestReporter *mockTestReporter
+		)
 
 		BeforeEach(func() {
 			callCount = 0
@@ -50,39 +53,44 @@ var _ = Describe("stub", func() {
 				callCount++
 				return len(str) + num, nil
 			}
+			failTestReporter = &mockTestReporter{}
 		})
 
 		It("returns error if passed a nil as the function pointer", func() {
-			stub, err := newStub(GinkgoT(), nil, nil)
+			stub := newStub(failTestReporter, nil, nil)
 
 			Expect(stub).To(BeNil())
-			Expect(err).ToNot(BeNil())
-			Expect(err.Error()).To(Equal("mocka: expected the first argument to be a pointer to a function, but received a nil"))
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: expected the first argument to be a pointer to a function, but received a nil",
+			}))
 		})
 
 		It("returns error if a non-pointer value is passed as the function pointer", func() {
-			stub, err := newStub(GinkgoT(), 42, nil)
+			stub := newStub(failTestReporter, 42, nil)
 
 			Expect(stub).To(BeNil())
-			Expect(err).ToNot(BeNil())
-			Expect(err.Error()).To(Equal("mocka: expected the first argument to be a pointer to a function, but received a int"))
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: expected the first argument to be a pointer to a function, but received a int",
+			}))
 		})
 
 		It("returns error if a non-function value is passed as the function pointer", func() {
 			num := 42
-			stub, err := newStub(GinkgoT(), &num, nil)
+			stub := newStub(failTestReporter, &num, nil)
 
 			Expect(stub).To(BeNil())
-			Expect(err).ToNot(BeNil())
-			Expect(err.Error()).To(Equal("mocka: expected the first argument to be a pointer to a function, but received a pointer to a int"))
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: expected the first argument to be a pointer to a function, but received a pointer to a int",
+			}))
 		})
 
 		It("returns error supplied out parameters are not of the same type", func() {
-			stub, err := newStub(GinkgoT(), &fn, []interface{}{"42", nil})
+			stub := newStub(failTestReporter, &fn, []interface{}{"42", nil})
 
 			Expect(stub).To(BeNil())
-			Expect(err).ToNot(BeNil())
-			Expect(err.Error()).To(Equal("mocka: expected return values of type (int, error), but received (string, <nil>)"))
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: expected return values of type (int, error), but received (string, <nil>)",
+			}))
 		})
 
 		It("returns error if cloneValue returns an error", func() {
@@ -93,17 +101,17 @@ var _ = Describe("stub", func() {
 				_cloneValue = cloneValue
 			}()
 
-			stub, err := newStub(GinkgoT(), &fn, []interface{}{42, nil})
+			stub := newStub(failTestReporter, &fn, []interface{}{42, nil})
 
 			Expect(stub).To(BeNil())
-			Expect(err).ToNot(BeNil())
-			Expect(err.Error()).To(Equal("mocka: could not clone function pointer to new memory address: Ope"))
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: could not clone function pointer to new memory address: Ope",
+			}))
 		})
 
 		It("returns a Stub with a reference to the original function", func() {
-			stub, err := newStub(GinkgoT(), &fn, []interface{}{42, nil})
+			stub := newStub(GinkgoT(), &fn, []interface{}{42, nil})
 
-			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
 			Expect(stub.originalFunc).ToNot(BeNil())
 
@@ -113,18 +121,16 @@ var _ = Describe("stub", func() {
 		})
 
 		It("returns a Stub with properties initialized with zero values", func() {
-			stub, err := newStub(GinkgoT(), &fn, []interface{}{42, nil})
+			stub := newStub(GinkgoT(), &fn, []interface{}{42, nil})
 
-			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
 			Expect(stub.calls).To(BeNil())
 			Expect(stub.customArgs).To(BeNil())
 		})
 
 		It("returns a Stub with outParameters as supplied", func() {
-			stub, err := newStub(GinkgoT(), &fn, []interface{}{42, nil})
+			stub := newStub(GinkgoT(), &fn, []interface{}{42, nil})
 
-			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
 			Expect(stub.outParameters).To(Equal([]interface{}{42, nil}))
 		})
