@@ -6,7 +6,8 @@ import "sync"
 type Sandbox struct {
 	lock sync.Mutex
 
-	stubs []*Stub
+	testReporter TestReporter
+	stubs        []*Stub
 }
 
 // Function replaces the provided function with a stubbed implementation. The
@@ -20,7 +21,7 @@ func (s *Sandbox) Function(originalFuncPtr interface{}, returnValues ...interfac
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	mockFn, err := newMockFunction(originalFuncPtr, returnValues)
+	mockFn, err := newStub(s.testReporter, originalFuncPtr, returnValues)
 	if err != nil {
 		return nil, err
 	}

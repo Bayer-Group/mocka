@@ -41,7 +41,7 @@ var _ = Describe("stub", func() {
 		stub = nil
 	})
 
-	Describe("newMockFunction", func() {
+	Describe("newStub", func() {
 		var callCount int
 
 		BeforeEach(func() {
@@ -53,7 +53,7 @@ var _ = Describe("stub", func() {
 		})
 
 		It("returns error if passed a nil as the function pointer", func() {
-			stub, err := newMockFunction(nil, nil)
+			stub, err := newStub(GinkgoT(), nil, nil)
 
 			Expect(stub).To(BeNil())
 			Expect(err).ToNot(BeNil())
@@ -61,7 +61,7 @@ var _ = Describe("stub", func() {
 		})
 
 		It("returns error if a non-pointer value is passed as the function pointer", func() {
-			stub, err := newMockFunction(42, nil)
+			stub, err := newStub(GinkgoT(), 42, nil)
 
 			Expect(stub).To(BeNil())
 			Expect(err).ToNot(BeNil())
@@ -70,7 +70,7 @@ var _ = Describe("stub", func() {
 
 		It("returns error if a non-function value is passed as the function pointer", func() {
 			num := 42
-			stub, err := newMockFunction(&num, nil)
+			stub, err := newStub(GinkgoT(), &num, nil)
 
 			Expect(stub).To(BeNil())
 			Expect(err).ToNot(BeNil())
@@ -78,7 +78,7 @@ var _ = Describe("stub", func() {
 		})
 
 		It("returns error supplied out parameters are not of the same type", func() {
-			stub, err := newMockFunction(&fn, []interface{}{"42", nil})
+			stub, err := newStub(GinkgoT(), &fn, []interface{}{"42", nil})
 
 			Expect(stub).To(BeNil())
 			Expect(err).ToNot(BeNil())
@@ -93,7 +93,7 @@ var _ = Describe("stub", func() {
 				_cloneValue = cloneValue
 			}()
 
-			stub, err := newMockFunction(&fn, []interface{}{42, nil})
+			stub, err := newStub(GinkgoT(), &fn, []interface{}{42, nil})
 
 			Expect(stub).To(BeNil())
 			Expect(err).ToNot(BeNil())
@@ -101,7 +101,7 @@ var _ = Describe("stub", func() {
 		})
 
 		It("returns a Stub with a reference to the original function", func() {
-			stub, err := newMockFunction(&fn, []interface{}{42, nil})
+			stub, err := newStub(GinkgoT(), &fn, []interface{}{42, nil})
 
 			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
@@ -113,7 +113,7 @@ var _ = Describe("stub", func() {
 		})
 
 		It("returns a Stub with properties initialized with zero values", func() {
-			stub, err := newMockFunction(&fn, []interface{}{42, nil})
+			stub, err := newStub(GinkgoT(), &fn, []interface{}{42, nil})
 
 			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
@@ -122,7 +122,7 @@ var _ = Describe("stub", func() {
 		})
 
 		It("returns a Stub with outParameters as supplied", func() {
-			stub, err := newMockFunction(&fn, []interface{}{42, nil})
+			stub, err := newStub(GinkgoT(), &fn, []interface{}{42, nil})
 
 			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())

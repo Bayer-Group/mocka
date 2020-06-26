@@ -14,7 +14,7 @@ func ExampleAnything() {
 		return len(str) + n
 	}
 
-	stub, err := mocka.Function(&fn, 20)
+	stub, err := mocka.Function(t, &fn, 20)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -41,7 +41,7 @@ func ExampleAnythingButNil() {
 		return len(str) + n
 	}
 
-	stub, err := mocka.Function(&fn, 20)
+	stub, err := mocka.Function(t, &fn, 20)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -70,7 +70,7 @@ func ExampleConvertibleTo() {
 		return x + y
 	}
 
-	stub, err := mocka.Function(&fn, 20)
+	stub, err := mocka.Function(t, &fn, 20)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -97,7 +97,7 @@ func ExampleElementsContaining() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -124,7 +124,7 @@ func ExampleEmpty() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -151,7 +151,7 @@ func ExampleExactly() {
 		return x
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -178,7 +178,7 @@ func ExampleFloatGreaterThan() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -199,7 +199,7 @@ func ExampleFloatGreaterThanOrEqualTo() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -222,7 +222,7 @@ func ExampleFloatLessThan() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -243,7 +243,7 @@ func ExampleFloatLessThanOrEqualTo() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -266,7 +266,7 @@ func ExampleIntGreaterThan() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -287,7 +287,7 @@ func ExampleIntGreaterThanOrEqualTo() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -310,7 +310,7 @@ func ExampleIntLessThan() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -331,7 +331,7 @@ func ExampleIntLessThanOrEqualTo() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -354,7 +354,7 @@ func ExampleUintGreaterThan() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -375,7 +375,7 @@ func ExampleUintGreaterThanOrEqualTo() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -398,7 +398,7 @@ func ExampleUintLessThan() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -419,7 +419,7 @@ func ExampleUintLessThanOrEqualTo() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -442,7 +442,7 @@ func ExampleKeysContaining() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -469,7 +469,7 @@ func ExampleLengthOf() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -496,7 +496,7 @@ func ExampleNil() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -517,7 +517,7 @@ func ExampleStringContaining() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -538,7 +538,7 @@ func ExampleStringPrefix() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -559,7 +559,7 @@ func ExampleStringSuffix() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -580,7 +580,7 @@ func ExampleTypeOf() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -607,7 +607,7 @@ func ExampleImplementerOf() {
 		return 0
 	}
 
-	stub, err := mocka.Function(&fn, 10)
+	stub, err := mocka.Function(t, &fn, 10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

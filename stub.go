@@ -16,6 +16,7 @@ var _cloneValue = cloneValue
 type Stub struct {
 	lock sync.RWMutex
 
+	testReporter  TestReporter
 	originalFunc  interface{}
 	functionPtr   interface{}
 	outParameters []interface{}
@@ -25,8 +26,8 @@ type Stub struct {
 	execFunc      func([]interface{})
 }
 
-// newMockFunction creates a new mock function and overrides the implementation of the original function.
-func newMockFunction(originalFuncPtr interface{}, returnValues []interface{}) (*Stub, error) {
+// newStub creates a stub function and overrides the implementation of the original function.
+func newStub(testReporter TestReporter, originalFuncPtr interface{}, returnValues []interface{}) (*Stub, error) {
 	if originalFuncPtr == nil {
 		return nil, errors.New("mocka: expected the first argument to be a pointer to a function, but received a nil")
 	}
@@ -47,6 +48,7 @@ func newMockFunction(originalFuncPtr interface{}, returnValues []interface{}) (*
 
 	stub := &Stub{
 		originalFunc:  nil,
+		testReporter:  testReporter,
 		functionPtr:   originalFuncPtr,
 		outParameters: returnValues,
 		execFunc:      func([]interface{}) {},

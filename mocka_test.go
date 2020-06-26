@@ -23,7 +23,7 @@ var _ = Describe("mocka", func() {
 		})
 
 		It("returns error if passed a nil as the function pointer", func() {
-			stub, err := Function(nil)
+			stub, err := Function(GinkgoT(), nil)
 
 			Expect(stub).To(BeNil())
 			Expect(err).ToNot(BeNil())
@@ -31,7 +31,7 @@ var _ = Describe("mocka", func() {
 		})
 
 		It("returns error if a non-pointer value is passed as the function pointer", func() {
-			stub, err := Function(42)
+			stub, err := Function(GinkgoT(), 42)
 
 			Expect(stub).To(BeNil())
 			Expect(err).ToNot(BeNil())
@@ -40,7 +40,7 @@ var _ = Describe("mocka", func() {
 
 		It("returns error if a non-function value is passed as the function pointer", func() {
 			num := 42
-			stub, err := Function(&num)
+			stub, err := Function(GinkgoT(), &num)
 
 			Expect(stub).To(BeNil())
 			Expect(err).ToNot(BeNil())
@@ -48,7 +48,7 @@ var _ = Describe("mocka", func() {
 		})
 
 		It("returns error supplied out parameters are not of the same type", func() {
-			stub, err := Function(&fn, "42", nil)
+			stub, err := Function(GinkgoT(), &fn, "42", nil)
 
 			Expect(stub).To(BeNil())
 			Expect(err).ToNot(BeNil())
@@ -63,7 +63,7 @@ var _ = Describe("mocka", func() {
 				_cloneValue = cloneValue
 			}()
 
-			stub, err := Function(&fn, 42, nil)
+			stub, err := Function(GinkgoT(), &fn, 42, nil)
 
 			Expect(stub).To(BeNil())
 			Expect(err).ToNot(BeNil())
@@ -71,7 +71,7 @@ var _ = Describe("mocka", func() {
 		})
 
 		It("returns a stub with a reference to the original function", func() {
-			stub, err := Function(&fn, 42, nil)
+			stub, err := Function(GinkgoT(), &fn, 42, nil)
 
 			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
@@ -84,7 +84,7 @@ var _ = Describe("mocka", func() {
 		})
 
 		It("returns a stub with properties initialized with zero values", func() {
-			stub, err := Function(&fn, 42, nil)
+			stub, err := Function(GinkgoT(), &fn, 42, nil)
 
 			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
@@ -93,7 +93,7 @@ var _ = Describe("mocka", func() {
 		})
 
 		It("returns a stub with outParameters as supplied", func() {
-			stub, err := Function(&fn, 42, nil)
+			stub, err := Function(GinkgoT(), &fn, 42, nil)
 
 			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
@@ -103,7 +103,7 @@ var _ = Describe("mocka", func() {
 
 	Describe("CreateSandbox", func() {
 		It("returns a sandbox with stub assigned as nil", func() {
-			s := CreateSandbox()
+			s := CreateSandbox(GinkgoT())
 
 			Expect(s).ToNot(BeNil())
 			Expect(s.stubs).To(BeNil())
