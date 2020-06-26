@@ -3,7 +3,6 @@ package examples
 import (
 	"errors"
 	"fmt"
-	"log"
 
 	"github.com/MonsantoCo/mocka"
 	"github.com/MonsantoCo/mocka/match"
@@ -71,9 +70,7 @@ func ExampleStub_WithArgs_return() {
 	stub := mocka.Function(t, &fn, 20)
 	defer stub.Restore()
 
-	if err := stub.WithArgs([]string{"123", "456"}, 2).Return(5); err != nil {
-		log.Fatal(err.Error())
-	}
+	stub.WithArgs([]string{"123", "456"}, 2).Return(5)
 
 	fmt.Println(fn([]string{"123", "456"}, 2))
 	// Output: 5
@@ -89,13 +86,8 @@ func ExampleStub_WithArgs_onCall() {
 
 	withArgs123 := stub.WithArgs("123")
 
-	if err := withArgs123.OnCall(1).Return(5); err != nil {
-		log.Fatal(err.Error())
-	}
-
-	if err := withArgs123.OnCall(3).Return(3); err != nil {
-		log.Fatal(err.Error())
-	}
+	withArgs123.OnCall(1).Return(5)
+	withArgs123.OnCall(3).Return(3)
 
 	fmt.Println(fn("123"))
 	fmt.Println(fn("123"))
@@ -117,9 +109,7 @@ func ExampleStub_WithArgs_onFirstCall() {
 
 	withArgs123 := stub.WithArgs("123")
 
-	if err := withArgs123.OnFirstCall().Return(5); err != nil {
-		log.Fatal(err.Error())
-	}
+	withArgs123.OnFirstCall().Return(5)
 
 	fmt.Println(fn("123"))
 	fmt.Println(fn("123"))
@@ -139,9 +129,7 @@ func ExampleStub_WithArgs_onSecondCall() {
 
 	withArgs123 := stub.WithArgs("123")
 
-	if err := withArgs123.OnSecondCall().Return(5); err != nil {
-		log.Fatal(err.Error())
-	}
+	withArgs123.OnSecondCall().Return(5)
 
 	fmt.Println(fn("123"))
 	fmt.Println(fn("123"))
@@ -161,9 +149,7 @@ func ExampleStub_WithArgs_onThirdCall() {
 
 	withArgs123 := stub.WithArgs("123")
 
-	if err := withArgs123.OnThirdCall().Return(5); err != nil {
-		log.Fatal(err.Error())
-	}
+	withArgs123.OnThirdCall().Return(5)
 
 	fmt.Println(fn("123"))
 	fmt.Println(fn("123"))
@@ -183,9 +169,7 @@ func ExampleStub_Return() {
 
 	fmt.Println(fn("123"))
 
-	if err := stub.Return(5); err != nil {
-		log.Fatal(err.Error())
-	}
+	stub.Return(5)
 
 	fmt.Println(fn("123"))
 	// Output: 20
@@ -200,13 +184,8 @@ func ExampleStub_OnCall() {
 	stub := mocka.Function(t, &fn, 20)
 	defer stub.Restore()
 
-	if err := stub.OnCall(1).Return(5); err != nil {
-		log.Fatal(err.Error())
-	}
-
-	if err := stub.OnCall(3).Return(3); err != nil {
-		log.Fatal(err.Error())
-	}
+	stub.OnCall(1).Return(5)
+	stub.OnCall(3).Return(3)
 
 	fmt.Println(fn("asdf"))
 	fmt.Println(fn("234"))
@@ -226,9 +205,7 @@ func ExampleStub_OnFirstCall() {
 	stub := mocka.Function(t, &fn, 20)
 	defer stub.Restore()
 
-	if err := stub.OnFirstCall().Return(5); err != nil {
-		log.Fatal(err.Error())
-	}
+	stub.OnFirstCall().Return(5)
 
 	fmt.Println(fn("123"))
 	fmt.Println(fn("123"))
@@ -246,9 +223,7 @@ func ExampleStub_OnSecondCall() {
 	stub := mocka.Function(t, &fn, 20)
 	defer stub.Restore()
 
-	if err := stub.OnSecondCall().Return(5); err != nil {
-		log.Fatal(err.Error())
-	}
+	stub.OnSecondCall().Return(5)
 
 	fmt.Println(fn("123"))
 	fmt.Println(fn("123"))
@@ -266,9 +241,7 @@ func ExampleStub_OnThirdCall() {
 	stub := mocka.Function(t, &fn, 20)
 	defer stub.Restore()
 
-	if err := stub.OnThirdCall().Return(5); err != nil {
-		log.Fatal(err.Error())
-	}
+	stub.OnThirdCall().Return(5)
 
 	fmt.Println(fn("123"))
 	fmt.Println(fn("123"))
@@ -487,10 +460,7 @@ func ExampleStub_WithArgs_variadic_missing() {
 	}
 
 	stub := mocka.Function(t, &fn, 20)
-	err := stub.WithArgs("A").Return(5)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub.WithArgs("A").Return(5)
 
 	fmt.Println(fn("A", "B", "C"))
 	fmt.Println(fn("A"))
@@ -504,10 +474,7 @@ func ExampleStub_WithArgs_variadic_supplied() {
 	}
 
 	stub := mocka.Function(t, &fn, 20)
-	err := stub.WithArgs("A", "B", "C").Return(5)
-	if err != nil {
-		log.Panic(err)
-	}
+	stub.WithArgs("A", "B", "C").Return(5)
 
 	fmt.Println(fn("A", "B", "C"))
 	fmt.Println(fn("A"))
@@ -521,10 +488,7 @@ func ExampleStub_WithArgs_variadic_matchers() {
 	}
 
 	stub := mocka.Function(t, &fn, 20)
-	err := stub.WithArgs("A", match.Exactly("B"), match.Empty()).Return(5)
-	if err != nil {
-		log.Panic(err)
-	}
+	stub.WithArgs("A", match.Exactly("B"), match.Empty()).Return(5)
 
 	fmt.Println(fn("A", "B", ""))
 	fmt.Println(fn("A"))
@@ -538,10 +502,7 @@ func ExampleStub_WithArgs_variadic_of_interfaces() {
 	}
 
 	stub := mocka.Function(t, &fn, 20)
-	err := stub.WithArgs("A", "B", 1, errors.New("ope"), nil).Return(5)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	stub.WithArgs("A", "B", 1, errors.New("ope"), nil).Return(5)
 
 	fmt.Println(fn("A", "B", 1, errors.New("ope"), nil))
 	fmt.Println(fn("A"))

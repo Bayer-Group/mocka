@@ -11,8 +11,9 @@ import (
 
 var _ = Describe("stub", func() {
 	var (
-		fn   func(string, int) (int, error)
-		stub *Stub
+		fn               func(string, int) (int, error)
+		stub             *Stub
+		failTestReporter *mockTestReporter
 	)
 
 	BeforeEach(func() {
@@ -21,6 +22,7 @@ var _ = Describe("stub", func() {
 		}
 
 		stub = &Stub{
+			testReporter:  GinkgoT(),
 			originalFunc:  nil,
 			functionPtr:   &fn,
 			outParameters: []interface{}{42, nil},
@@ -28,7 +30,8 @@ var _ = Describe("stub", func() {
 		}
 
 		err := cloneValue(&fn, &stub.originalFunc)
-		Expect(err).To(BeNil())
+		Expect(err).To(Succeed())
+		failTestReporter = &mockTestReporter{}
 	})
 
 	AfterEach(func() {
@@ -43,8 +46,7 @@ var _ = Describe("stub", func() {
 
 	Describe("newStub", func() {
 		var (
-			callCount        int
-			failTestReporter *mockTestReporter
+			callCount int
 		)
 
 		BeforeEach(func() {
@@ -53,7 +55,6 @@ var _ = Describe("stub", func() {
 				callCount++
 				return len(str) + num, nil
 			}
-			failTestReporter = &mockTestReporter{}
 		})
 
 		It("returns error if passed a nil as the function pointer", func() {
@@ -394,16 +395,18 @@ var _ = Describe("stub", func() {
 
 	Describe("Return", func() {
 		It("returns error if the out parameters are not valid", func() {
-			err := stub.Return(42, 42)
+			stub.testReporter = failTestReporter
 
-			Expect(err).ToNot(BeNil())
-			Expect(err.Error()).To(Equal("mocka: expected return values of type (int, error), but received (int, int)"))
+			stub.Return(42, 42)
+
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: expected return values of type (int, error), but received (int, int)",
+			}))
 		})
 
 		It("replaces the out parameters if they are valid", func() {
-			err := stub.Return(22, errors.New("I am new"))
+			stub.Return(22, errors.New("I am new"))
 
-			Expect(err).To(BeNil())
 			Expect(stub.outParameters).To(Equal([]interface{}{22, errors.New("I am new")}))
 		})
 	})
@@ -506,35 +509,23 @@ var _ = Describe("stub", func() {
 		})
 
 		It("panics if the call index is less than 0", func() {
-			defer func() {
-				r := recover()
-				if r == nil {
-					Fail("expected a panic")
-				}
-
-				err, ok := r.(error)
-				Expect(ok).To(BeTrue())
-				Expect(err.Error()).To(Equal("mocka: attempted to get CallMetaData for call -1, when the function has only been called 3 times"))
-			}()
+			stub.testReporter = failTestReporter
 
 			_ = stub.GetCall(-1)
-			Fail("expected test to panic")
+
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: attempted to get CallMetaData for call -1, when the function has only been called 3 times",
+			}))
 		})
 
 		It("panics if the call index is greater than the number of calls", func() {
-			defer func() {
-				r := recover()
-				if r == nil {
-					Fail("expected a panic")
-				}
-
-				err, ok := r.(error)
-				Expect(ok).To(BeTrue())
-				Expect(err.Error()).To(Equal("mocka: attempted to get CallMetaData for call 5, when the function has only been called 3 times"))
-			}()
+			stub.testReporter = failTestReporter
 
 			_ = stub.GetCall(5)
-			Fail("expected test to panic")
+
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: attempted to get CallMetaData for call 5, when the function has only been called 3 times",
+			}))
 		})
 
 		It("returns the call meta data for the specified call index", func() {
@@ -549,19 +540,13 @@ var _ = Describe("stub", func() {
 
 	Describe("GetFirstCall", func() {
 		It("panics if the stub has not been called once", func() {
-			defer func() {
-				r := recover()
-				if r == nil {
-					Fail("expected a panic")
-				}
-
-				err, ok := r.(error)
-				Expect(ok).To(BeTrue())
-				Expect(err.Error()).To(Equal("mocka: attempted to get CallMetaData for call 0, when the function has only been called 0 times"))
-			}()
+			stub.testReporter = failTestReporter
 
 			_ = stub.GetFirstCall()
-			Fail("expected test to panic")
+
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: attempted to get CallMetaData for call 0, when the function has only been called 0 times",
+			}))
 		})
 
 		It("returns the call meta data for the first call", func() {
@@ -591,19 +576,13 @@ var _ = Describe("stub", func() {
 
 	Describe("GetSecondCall", func() {
 		It("panics if the stub has not been called twice", func() {
-			defer func() {
-				r := recover()
-				if r == nil {
-					Fail("expected a panic")
-				}
-
-				err, ok := r.(error)
-				Expect(ok).To(BeTrue())
-				Expect(err.Error()).To(Equal("mocka: attempted to get CallMetaData for call 1, when the function has only been called 0 times"))
-			}()
+			stub.testReporter = failTestReporter
 
 			_ = stub.GetSecondCall()
-			Fail("expected test to panic")
+
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: attempted to get CallMetaData for call 1, when the function has only been called 0 times",
+			}))
 		})
 
 		It("returns the call meta data for the second call", func() {
@@ -633,19 +612,13 @@ var _ = Describe("stub", func() {
 
 	Describe("GetThirdCall", func() {
 		It("panics if the stub has not been called three times", func() {
-			defer func() {
-				r := recover()
-				if r == nil {
-					Fail("expected a panic")
-				}
-
-				err, ok := r.(error)
-				Expect(ok).To(BeTrue())
-				Expect(err.Error()).To(Equal("mocka: attempted to get CallMetaData for call 2, when the function has only been called 0 times"))
-			}()
+			stub.testReporter = failTestReporter
 
 			_ = stub.GetThirdCall()
-			Fail("expected test to panic")
+
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: attempted to get CallMetaData for call 2, when the function has only been called 0 times",
+			}))
 		})
 
 		It("returns the call meta data for the third call", func() {

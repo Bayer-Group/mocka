@@ -15,10 +15,6 @@ type argumentValidationError struct {
 
 // String returns a string that represents an argument validation error.
 func (a *argumentValidationError) String() string {
-	if a.fnType == nil {
-		return fmt.Sprintf("mocka: expected arguments of (%v) to match function arguments", strings.Join(mapToTypeName(a.provided), ", "))
-	}
-
 	real := make([]string, a.fnType.NumIn())
 	for i := 0; i < a.fnType.NumIn(); i++ {
 		if isVariadicArgument(a.fnType, i) {

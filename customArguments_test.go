@@ -11,8 +11,9 @@ import (
 
 var _ = Describe("CustomArguments", func() {
 	var (
-		fn   func(string, int) (int, error)
-		stub *Stub
+		fn               func(string, int) (int, error)
+		stub             *Stub
+		failTestReporter *mockTestReporter
 	)
 
 	BeforeEach(func() {
@@ -20,79 +21,48 @@ var _ = Describe("CustomArguments", func() {
 			return len(str) + num, nil
 		}
 		stub = &Stub{
+			testReporter:  GinkgoT(),
 			originalFunc:  nil,
 			functionPtr:   &fn,
 			outParameters: []interface{}{42, nil},
 			execFunc:      func([]interface{}) {},
 		}
+		failTestReporter = &mockTestReporter{}
 	})
 
 	Describe("newCustomArguments", func() {
-		It("returns with validation error when stub is nil", func() {
-			ca := newCustomArguments(nil, []interface{}{})
-
-			Expect(ca).ToNot(BeNil())
-			Expect(*ca).To(Equal(CustomArguments{
-				argValidationError: &argumentValidationError{
-					provided: []interface{}{},
-				},
-			}))
-		})
-
-		It("returns with validation error when stub is not a function type", func() {
-			stub := &Stub{functionPtr: &struct{}{}}
-			ca := newCustomArguments(stub, []interface{}{})
-
-			Expect(ca).ToNot(BeNil())
-			Expect(*ca).To(Equal(CustomArguments{
-				argValidationError: &argumentValidationError{
-					provided: []interface{}{},
-				},
-			}))
-		})
-
 		It("returns with validation error when provided arguments != stubbed function arguments length", func() {
-			ca := newCustomArguments(stub, []interface{}{})
+			stub.testReporter = failTestReporter
 
-			Expect(ca).ToNot(BeNil())
-			Expect(*ca).To(Equal(CustomArguments{
-				argValidationError: &argumentValidationError{
-					fnType:   stub.toType(),
-					provided: []interface{}{},
-				},
+			_ = newCustomArguments(stub, []interface{}{})
+
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: expected arguments of type (string, int), but received ()",
 			}))
 		})
 
 		It("returns with validation error if the provided matcher is not supported for the argument kind", func() {
+			stub.testReporter = failTestReporter
 			anything := match.Anything()
 			lengthOf10 := match.LengthOf(10)
-			ca := newCustomArguments(stub, []interface{}{
+
+			_ = newCustomArguments(stub, []interface{}{
 				anything,
 				lengthOf10,
 			})
 
-			Expect(ca).ToNot(BeNil())
-			Expect(*ca).To(Equal(CustomArguments{
-				stub:        stub,
-				argMatchers: nil,
-				argValidationError: &argumentValidationError{
-					fnType:   stub.toType(),
-					provided: []interface{}{anything, lengthOf10},
-				},
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: expected arguments of type (string, int), but received (*anything, *lengthOf)",
 			}))
 		})
 
 		It("returns with validation error if the provided argument is not of the correct type", func() {
-			ca := newCustomArguments(stub, []interface{}{"hi", "ope"})
+			stub.testReporter = failTestReporter
 
-			Expect(ca).ToNot(BeNil())
-			Expect(*ca).To(Equal(CustomArguments{
-				stub:        stub,
-				argMatchers: nil,
-				argValidationError: &argumentValidationError{
-					fnType:   stub.toType(),
-					provided: []interface{}{"hi", "ope"},
-				},
+			_ = newCustomArguments(stub, []interface{}{"hi", "ope"})
+
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: expected arguments of type (string, int), but received (string, string)",
 			}))
 		})
 
@@ -111,22 +81,17 @@ var _ = Describe("CustomArguments", func() {
 				return errors.New(msg)
 			}
 			stub = &Stub{
+				testReporter:  failTestReporter,
 				originalFunc:  nil,
 				functionPtr:   &fn,
 				outParameters: []interface{}{42, nil},
 				execFunc:      func([]interface{}) {},
 			}
 
-			ca := newCustomArguments(stub, []interface{}{nil})
+			_ = newCustomArguments(stub, []interface{}{nil})
 
-			Expect(ca).ToNot(BeNil())
-			Expect(*ca).To(Equal(CustomArguments{
-				stub:        stub,
-				argMatchers: nil,
-				argValidationError: &argumentValidationError{
-					fnType:   stub.toType(),
-					provided: []interface{}{nil},
-				},
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: expected arguments of type (string), but received (<nil>)",
 			}))
 		})
 
@@ -135,6 +100,7 @@ var _ = Describe("CustomArguments", func() {
 				return err
 			}
 			stub = &Stub{
+				testReporter:  GinkgoT(),
 				originalFunc:  nil,
 				functionPtr:   &fn,
 				outParameters: []interface{}{42, nil},
@@ -154,6 +120,7 @@ var _ = Describe("CustomArguments", func() {
 			BeforeEach(func() {
 				var variadicFn func(string, ...interface{}) (int, error)
 				stub = &Stub{
+					testReporter:  GinkgoT(),
 					originalFunc:  nil,
 					functionPtr:   &variadicFn,
 					outParameters: []interface{}{42, nil},
@@ -184,47 +151,20 @@ var _ = Describe("CustomArguments", func() {
 			})
 
 			It("returns an argument validation error if matcher does not suppor the variadic type", func() {
-				ca := newCustomArguments(stub, []interface{}{"hi", match.ElementsContaining("A")})
+				stub.testReporter = failTestReporter
 
-				Expect(ca).ToNot(BeNil())
-				Expect(*ca).To(Equal(CustomArguments{
-					stub:        stub,
-					argMatchers: nil,
-					argValidationError: &argumentValidationError{
-						fnType:   stub.toType(),
-						provided: []interface{}{"hi", match.ElementsContaining("A")},
-					},
+				_ = newCustomArguments(stub, []interface{}{"hi", match.ElementsContaining("A")})
+
+				Expect(failTestReporter.messages).To(Equal([]string{
+					"mocka: expected arguments of type (string, ...), but received (string, *elementsContaining)",
 				}))
 			})
 		})
 	})
 
 	Describe("Return", func() {
-		It("returns an error if the stub is nil", func() {
-			ca := &CustomArguments{}
-
-			err := ca.Return(42, "nil")
-
-			Expect(err).Should(HaveOccurred())
-			Expect(err.Error()).To(Equal("mocka: stub does not exist"))
-		})
-
-		It("returns an error if there is an argument validation error", func() {
-			ca := &CustomArguments{
-				stub: stub,
-				argValidationError: &argumentValidationError{
-					fnType:   stub.toType(),
-					provided: []interface{}{10, 10},
-				},
-			}
-
-			err := ca.Return(42, "nil")
-
-			Expect(err).Should(HaveOccurred())
-			Expect(err.Error()).To(Equal("mocka: expected arguments of type (string, int), but received (int, int)"))
-		})
-
 		It("returns an error if one or more of the return values are not valid", func() {
+			stub.testReporter = failTestReporter
 			ca := &CustomArguments{
 				stub: stub,
 				argMatchers: []match.SupportedKindsMatcher{
@@ -232,10 +172,11 @@ var _ = Describe("CustomArguments", func() {
 				},
 			}
 
-			err := ca.Return("", 42)
+			ca.Return("", 42)
 
-			Expect(err).Should(HaveOccurred())
-			Expect(err.Error()).To(Equal("mocka: expected return values of type (int, error), but received (string, int)"))
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: expected return values of type (int, error), but received (string, int)",
+			}))
 		})
 
 		It("assigns the OutParameters and returns nil if everything is valid", func() {
@@ -246,9 +187,8 @@ var _ = Describe("CustomArguments", func() {
 				},
 			}
 
-			err := ca.Return(42, nil)
+			ca.Return(42, nil)
 
-			Expect(err).ShouldNot(HaveOccurred())
 			Expect(ca.out).To(Equal([]interface{}{42, nil}))
 		})
 	})

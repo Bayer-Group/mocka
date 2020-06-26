@@ -18,15 +18,6 @@ var _ = Describe("argumentValidationError", func() {
 	})
 
 	Describe("String", func() {
-		It("returns a less descriptive error if fnType is nil", func() {
-			arguments := []interface{}{0, ""}
-			err := &argumentValidationError{nil, arguments}
-
-			result := err.String()
-
-			Expect(result).To(Equal("mocka: expected arguments of (int, string) to match function arguments"))
-		})
-
 		It("returns the error string with the type names of the expected and actual arguments", func() {
 			arguments := []interface{}{0, ""}
 			err := &argumentValidationError{fnType, arguments}
@@ -51,15 +42,6 @@ var _ = Describe("argumentValidationError", func() {
 	})
 
 	Describe("Error", func() {
-		It("returns a less descriptive error if fnType is nil", func() {
-			arguments := []interface{}{0, ""}
-			err := &argumentValidationError{nil, arguments}
-
-			result := err.String()
-
-			Expect(result).To(Equal("mocka: expected arguments of (int, string) to match function arguments"))
-		})
-
 		It("returns the error string with the type names of the expected and actual arguments", func() {
 			arguments := []interface{}{0, ""}
 			err := &argumentValidationError{fnType, arguments}

@@ -1,7 +1,6 @@
 package mocka
 
 import (
-	"fmt"
 	"reflect"
 	"sync"
 
@@ -196,16 +195,16 @@ func getPossible(customArgs []*CustomArguments, arguments []interface{}) (possib
 
 // Return updates the default out parameters returned when
 // the mock function is called
-func (stub *Stub) Return(returnValues ...interface{}) error {
+func (stub *Stub) Return(returnValues ...interface{}) {
 	stub.lock.Lock()
 	defer stub.lock.Unlock()
 
 	if !validateOutParameters(stub.toType(), returnValues) {
-		return &outParameterValidationError{stub.toType(), returnValues}
+		stub.testReporter.Errorf("%v", &outParameterValidationError{stub.toType(), returnValues})
+		return
 	}
 
 	stub.outParameters = returnValues
-	return nil
 }
 
 // WithArgs returns a StubWithArgs that can change the out parameters
@@ -264,7 +263,8 @@ func (stub *Stub) GetCall(callIndex int) Call {
 	defer stub.lock.RUnlock()
 
 	if callIndex < 0 || callIndex >= stub.CallCount() {
-		panic(fmt.Errorf("mocka: attempted to get CallMetaData for call %v, when the function has only been called %v times", callIndex, len(stub.calls)))
+		stub.testReporter.Errorf("mocka: attempted to get CallMetaData for call %v, when the function has only been called %v times", callIndex, len(stub.calls))
+		return Call{}
 	}
 
 	return stub.calls[callIndex]
