@@ -436,9 +436,9 @@ fn("123")
 
 ### Stubbing function
 
-`StubFunction` replaces the provided function with a stubbed implementation. The stub has the ability to change change the return values of the original function in many different cases. The stub also provides the ability to get metadata associated to any call against the original function.
+`Function` replaces the provided function with a stubbed implementation. The stub has the ability to change change the return values of the original function in many different cases. The stub also provides the ability to get metadata associated to any call against the original function.
 
-`StubFunction` also returns an error if the replacement of the original function with the stub failed.
+`Function` also returns an error if the replacement of the original function with the stub failed.
 
 For example
 
@@ -450,7 +450,7 @@ var fn = func(str string) int {
 sandbox := mocka.CreateSandbox()
 defer sandbox.Restore()
 
-sandbox.StubFunction(&fn, 20)
+sandbox.Function(&fn, 20)
 
 fmt.Println(fn("1"))
 // Output: 20

@@ -32,7 +32,7 @@ func ExampleCreateSandbox() {
 	sandbox := mocka.CreateSandbox()
 	defer sandbox.Restore()
 
-	sandbox.StubFunction(&fn, 20)
+	sandbox.Function(&fn, 20)
 
 	fmt.Println(fn("1"))
 	// Output: 20

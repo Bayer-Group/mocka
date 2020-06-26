@@ -9,14 +9,14 @@ type Sandbox struct {
 	stubs []*Stub
 }
 
-// StubFunction replaces the provided function with a stubbed implementation. The
+// Function replaces the provided function with a stubbed implementation. The
 // stub has the ability to change the return values of the original function
 // in many different cases. The stub also provides the ability to get meta data
 // associated to any call against the original function.
 //
-// StubFunction also returns an error if the replacement of the original function
+// Function also returns an error if the replacement of the original function
 // with the stub failed.
-func (s *Sandbox) StubFunction(originalFuncPtr interface{}, returnValues ...interface{}) (*Stub, error) {
+func (s *Sandbox) Function(originalFuncPtr interface{}, returnValues ...interface{}) (*Stub, error) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 

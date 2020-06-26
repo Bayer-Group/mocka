@@ -42,9 +42,9 @@ var _ = Describe("sandbox", func() {
 		testSandbox.stubs = nil
 	})
 
-	Describe("StubFunction", func() {
+	Describe("Function", func() {
 		It("returns error if passed a nil as the function pointer", func() {
-			stub, err := testSandbox.StubFunction(nil)
+			stub, err := testSandbox.Function(nil)
 
 			Expect(stub).To(BeNil())
 			Expect(err).ToNot(BeNil())
@@ -52,7 +52,7 @@ var _ = Describe("sandbox", func() {
 		})
 
 		It("returns error if a non-pointer value is passed as the function pointer", func() {
-			stub, err := testSandbox.StubFunction(42)
+			stub, err := testSandbox.Function(42)
 
 			Expect(stub).To(BeNil())
 			Expect(err).ToNot(BeNil())
@@ -61,7 +61,7 @@ var _ = Describe("sandbox", func() {
 
 		It("returns error if a non-function value is passed as the function pointer", func() {
 			num := 42
-			stub, err := testSandbox.StubFunction(&num)
+			stub, err := testSandbox.Function(&num)
 
 			Expect(stub).To(BeNil())
 			Expect(err).ToNot(BeNil())
@@ -69,7 +69,7 @@ var _ = Describe("sandbox", func() {
 		})
 
 		It("returns error supplied out parameters are not of the same type", func() {
-			stub, err := testSandbox.StubFunction(&fn1, "42", nil)
+			stub, err := testSandbox.Function(&fn1, "42", nil)
 
 			Expect(stub).To(BeNil())
 			Expect(err).ToNot(BeNil())
@@ -84,7 +84,7 @@ var _ = Describe("sandbox", func() {
 				_cloneValue = cloneValue
 			}()
 
-			stub, err := testSandbox.StubFunction(&fn1, 42, nil)
+			stub, err := testSandbox.Function(&fn1, 42, nil)
 
 			Expect(stub).To(BeNil())
 			Expect(err).ToNot(BeNil())
@@ -92,7 +92,7 @@ var _ = Describe("sandbox", func() {
 		})
 
 		It("returns a stub with a reference to the original function", func() {
-			stub, err := testSandbox.StubFunction(&fn1, 42, nil)
+			stub, err := testSandbox.Function(&fn1, 42, nil)
 
 			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
@@ -105,7 +105,7 @@ var _ = Describe("sandbox", func() {
 		})
 
 		It("returns a stub with properties initialized with zero values", func() {
-			stub, err := testSandbox.StubFunction(&fn1, 42, nil)
+			stub, err := testSandbox.Function(&fn1, 42, nil)
 
 			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
@@ -114,7 +114,7 @@ var _ = Describe("sandbox", func() {
 		})
 
 		It("returns a stub with outParameters as supplied", func() {
-			stub, err := testSandbox.StubFunction(&fn1, 42, nil)
+			stub, err := testSandbox.Function(&fn1, 42, nil)
 
 			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
@@ -124,7 +124,7 @@ var _ = Describe("sandbox", func() {
 		It("appends the stub into the sandbox if no error is returned", func() {
 			Expect(testSandbox.stubs).To(HaveLen(0))
 
-			stub, err := testSandbox.StubFunction(&fn1, 42, nil)
+			stub, err := testSandbox.Function(&fn1, 42, nil)
 
 			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
@@ -135,13 +135,13 @@ var _ = Describe("sandbox", func() {
 	Describe("Restore", func() {
 		BeforeEach(func() {
 			var err error
-			_, err = testSandbox.StubFunction(&fn1, 42, nil)
+			_, err = testSandbox.Function(&fn1, 42, nil)
 			Expect(err).To(BeNil())
 
-			_, err = testSandbox.StubFunction(&fn2, 42)
+			_, err = testSandbox.Function(&fn2, 42)
 			Expect(err).To(BeNil())
 
-			_, err = testSandbox.StubFunction(&fn3, nil)
+			_, err = testSandbox.Function(&fn3, nil)
 			Expect(err).To(BeNil())
 		})
 
