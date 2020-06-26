@@ -32,6 +32,11 @@
 //
 package mocka
 
+import (
+	"log"
+	"os"
+)
+
 // TestReporter is an interface used fail tests.
 // It is satisfied by the standard library testing.T and the
 // response from GinkgoT()
@@ -47,12 +52,21 @@ type TestReporter interface {
 // Function also returns an error if the replacement of the original function
 // with the stub failed.
 func Function(testReporter TestReporter, originalFuncPtr interface{}, returnValues ...interface{}) (*Stub, error) {
-	return newStub(testReporter, originalFuncPtr, returnValues)
+	return newStub(ensureTestReporter(testReporter), originalFuncPtr, returnValues)
 }
 
 // CreateSandbox returns an isolated sandbox from which functions can be stubbed. The
 // benefit you receive from using a sandbox is the ability to perform one call to Restore
 // for a collection of Stubs
 func CreateSandbox(testReporter TestReporter) *Sandbox {
-	return &Sandbox{testReporter: testReporter}
+	return &Sandbox{testReporter: ensureTestReporter(testReporter)}
+}
+
+// ensureTestReporter returns the existing test reporter or a new logger to Stderr
+func ensureTestReporter(testReporter TestReporter) TestReporter {
+	if testReporter == nil {
+		return log.New(os.Stderr, "", log.Llongfile)
+	}
+
+	return testReporter
 }
