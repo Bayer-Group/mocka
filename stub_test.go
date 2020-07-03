@@ -62,7 +62,7 @@ var _ = Describe("stub", func() {
 
 			Expect(stub).To(BeNil())
 			Expect(failTestReporter.messages).To(Equal([]string{
-				"mocka: expected the first argument to be a pointer to a function, but received a nil",
+				"mocka: expected the second argument to be a pointer to a function, but received a nil",
 			}))
 		})
 
@@ -71,7 +71,7 @@ var _ = Describe("stub", func() {
 
 			Expect(stub).To(BeNil())
 			Expect(failTestReporter.messages).To(Equal([]string{
-				"mocka: expected the first argument to be a pointer to a function, but received a int",
+				"mocka: expected the second argument to be a pointer to a function, but received a int",
 			}))
 		})
 
@@ -81,7 +81,7 @@ var _ = Describe("stub", func() {
 
 			Expect(stub).To(BeNil())
 			Expect(failTestReporter.messages).To(Equal([]string{
-				"mocka: expected the first argument to be a pointer to a function, but received a pointer to a int",
+				"mocka: expected the second argument to be a pointer to a function, but received a pointer to a int",
 			}))
 		})
 
@@ -514,7 +514,7 @@ var _ = Describe("stub", func() {
 			_ = stub.GetCall(-1)
 
 			Expect(failTestReporter.messages).To(Equal([]string{
-				"mocka: attempted to get CallMetaData for call -1, when the function has only been called 3 times",
+				"mocka: attempted to get Call for invocation -1, when the function has only been called 3 times",
 			}))
 		})
 
@@ -524,7 +524,7 @@ var _ = Describe("stub", func() {
 			_ = stub.GetCall(5)
 
 			Expect(failTestReporter.messages).To(Equal([]string{
-				"mocka: attempted to get CallMetaData for call 5, when the function has only been called 3 times",
+				"mocka: attempted to get Call for invocation 5, when the function has only been called 3 times",
 			}))
 		})
 
@@ -545,7 +545,7 @@ var _ = Describe("stub", func() {
 			_ = stub.GetFirstCall()
 
 			Expect(failTestReporter.messages).To(Equal([]string{
-				"mocka: attempted to get CallMetaData for call 0, when the function has only been called 0 times",
+				"mocka: attempted to get Call for invocation 0, when the function has only been called 0 times",
 			}))
 		})
 
@@ -581,7 +581,7 @@ var _ = Describe("stub", func() {
 			_ = stub.GetSecondCall()
 
 			Expect(failTestReporter.messages).To(Equal([]string{
-				"mocka: attempted to get CallMetaData for call 1, when the function has only been called 0 times",
+				"mocka: attempted to get Call for invocation 1, when the function has only been called 0 times",
 			}))
 		})
 
@@ -617,7 +617,7 @@ var _ = Describe("stub", func() {
 			_ = stub.GetThirdCall()
 
 			Expect(failTestReporter.messages).To(Equal([]string{
-				"mocka: attempted to get CallMetaData for call 2, when the function has only been called 0 times",
+				"mocka: attempted to get Call for invocation 2, when the function has only been called 0 times",
 			}))
 		})
 

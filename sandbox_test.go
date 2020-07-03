@@ -51,7 +51,7 @@ var _ = Describe("sandbox", func() {
 
 			Expect(stub).To(BeNil())
 			Expect(failTestReporter.messages).To(Equal([]string{
-				"mocka: expected the first argument to be a pointer to a function, but received a nil",
+				"mocka: expected the second argument to be a pointer to a function, but received a nil",
 			}))
 		})
 
@@ -61,7 +61,7 @@ var _ = Describe("sandbox", func() {
 
 			Expect(stub).To(BeNil())
 			Expect(failTestReporter.messages).To(Equal([]string{
-				"mocka: expected the first argument to be a pointer to a function, but received a int",
+				"mocka: expected the second argument to be a pointer to a function, but received a int",
 			}))
 		})
 
@@ -72,7 +72,7 @@ var _ = Describe("sandbox", func() {
 
 			Expect(stub).To(BeNil())
 			Expect(failTestReporter.messages).To(Equal([]string{
-				"mocka: expected the first argument to be a pointer to a function, but received a pointer to a int",
+				"mocka: expected the second argument to be a pointer to a function, but received a pointer to a int",
 			}))
 		})
 

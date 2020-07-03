@@ -27,24 +27,24 @@ type Stub struct {
 // newStub creates a stub function and overrides the implementation of the original function.
 func newStub(testReporter TestReporter, originalFuncPtr interface{}, returnValues []interface{}) *Stub {
 	if originalFuncPtr == nil {
-		testReporter.Errorf("mocka: expected the first argument to be a pointer to a function, but received a nil")
+		testReporter.Errorf("mocka: expected the second argument to be a pointer to a function, but received a nil")
 		return nil
 	}
 
 	originalFuncValue := reflect.ValueOf(originalFuncPtr)
 	if originalFuncValue.Kind() != reflect.Ptr {
-		testReporter.Errorf("mocka: expected the first argument to be a pointer to a function, but received a %v", originalFuncValue.Kind().String())
+		testReporter.Errorf("mocka: expected the second argument to be a pointer to a function, but received a %v", originalFuncValue.Kind().String())
 		return nil
 	}
 
 	originalFunc := originalFuncValue.Elem()
 	if originalFunc.Kind() != reflect.Func {
-		testReporter.Errorf("mocka: expected the first argument to be a pointer to a function, but received a pointer to a %v", originalFunc.Kind().String())
+		testReporter.Errorf("mocka: expected the second argument to be a pointer to a function, but received a pointer to a %v", originalFunc.Kind().String())
 		return nil
 	}
 
 	if !validateOutParameters(originalFunc.Type(), returnValues) {
-		testReporter.Errorf("%v", &outParameterValidationError{originalFunc.Type(), returnValues})
+		reportInvalidOutParameters(testReporter, originalFunc.Type(), returnValues)
 		return nil
 	}
 
@@ -200,7 +200,7 @@ func (stub *Stub) Return(returnValues ...interface{}) {
 	defer stub.lock.Unlock()
 
 	if !validateOutParameters(stub.toType(), returnValues) {
-		stub.testReporter.Errorf("%v", &outParameterValidationError{stub.toType(), returnValues})
+		reportInvalidOutParameters(stub.testReporter, stub.toType(), returnValues)
 		return
 	}
 
@@ -263,7 +263,7 @@ func (stub *Stub) GetCall(callIndex int) Call {
 	defer stub.lock.RUnlock()
 
 	if callIndex < 0 || callIndex >= stub.CallCount() {
-		stub.testReporter.Errorf("mocka: attempted to get CallMetaData for call %v, when the function has only been called %v times", callIndex, len(stub.calls))
+		stub.testReporter.Errorf("mocka: attempted to get Call for invocation %v, when the function has only been called %v times", callIndex, len(stub.calls))
 		return Call{}
 	}
 

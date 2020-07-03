@@ -10,21 +10,17 @@ import (
 func newCustomArguments(stub *Stub, arguments []interface{}) *CustomArguments {
 	functionType := stub.toType()
 	if isArgumentLengthValid(functionType, arguments) {
-		stub.testReporter.Errorf("%v", &argumentValidationError{fnType: functionType, provided: arguments})
+		reportInvalidArguments(stub.testReporter, functionType, arguments)
 		return nil
 	}
 
-	matchers, err := getMatchers(functionType, arguments)
-	if err != nil {
-		stub.testReporter.Errorf("%v", err)
+	matchers := getMatchers(functionType, arguments)
+	if matchers == nil {
+		reportInvalidArguments(stub.testReporter, functionType, arguments)
 		return nil
 	}
 
-	return &CustomArguments{
-		stub:        stub,
-		callCount:   0,
-		argMatchers: matchers,
-	}
+	return &CustomArguments{stub: stub, callCount: 0, argMatchers: matchers}
 }
 
 // isArgumentLengthValid returns whether or not the length of the provided arguments
@@ -38,7 +34,7 @@ func isArgumentLengthValid(functionType reflect.Type, arguments []interface{}) b
 }
 
 // getMatchers returns a slice of matchers based on the types and values of the provided arguments
-func getMatchers(functionType reflect.Type, arguments []interface{}) ([]match.SupportedKindsMatcher, error) {
+func getMatchers(functionType reflect.Type, arguments []interface{}) []match.SupportedKindsMatcher {
 	matchers := make([]match.SupportedKindsMatcher, functionType.NumIn())
 	for i := 0; i < functionType.NumIn(); i++ {
 		aType := functionType.In(i)
@@ -46,7 +42,7 @@ func getMatchers(functionType reflect.Type, arguments []interface{}) ([]match.Su
 		if isVariadicArgument(functionType, i) {
 			if len(arguments) == functionType.NumIn()-1 {
 				matchers[i] = match.Nil()
-				return matchers, nil
+				return matchers
 			}
 
 			variadicArguments := arguments[i:]
@@ -54,31 +50,25 @@ func getMatchers(functionType reflect.Type, arguments []interface{}) ([]match.Su
 			for sliceIndex, arg := range variadicArguments {
 				m, found := getMatcher(arg, aType.Elem())
 				if !found {
-					return nil, &argumentValidationError{
-						fnType:   functionType,
-						provided: arguments,
-					}
+					return nil
 				}
 
 				variadicMatchers[sliceIndex] = m
 			}
 
 			matchers[i] = match.SliceOf(variadicMatchers...)
-			return matchers, nil
+			return matchers
 		}
 
 		m, found := getMatcher(arguments[i], aType)
 		if !found {
-			return nil, &argumentValidationError{
-				fnType:   functionType,
-				provided: arguments,
-			}
+			return nil
 		}
 
 		matchers[i] = m
 	}
 
-	return matchers, nil
+	return matchers
 }
 
 // getMatcher returns a matcher for the provided type and value
@@ -114,13 +104,13 @@ type CustomArguments struct {
 
 // Return sets the return values for this set of custom arguments
 func (ca *CustomArguments) Return(returnValues ...interface{}) {
-	if !validateOutParameters(ca.stub.toType(), returnValues) {
-		ca.stub.testReporter.Errorf("%v", &outParameterValidationError{ca.stub.toType(), returnValues})
-		return
-	}
-
 	ca.stub.lock.Lock()
 	defer ca.stub.lock.Unlock()
+
+	if !validateOutParameters(ca.stub.toType(), returnValues) {
+		reportInvalidOutParameters(ca.stub.testReporter, ca.stub.toType(), returnValues)
+		return
+	}
 
 	ca.out = returnValues
 }
@@ -129,14 +119,14 @@ func (ca *CustomArguments) Return(returnValues ...interface{}) {
 // return values based on the call index for this specific set
 // of custom arguments.
 func (ca *CustomArguments) OnCall(callIndex int) *OnCall {
+	ca.stub.lock.Lock()
+	defer ca.stub.lock.Unlock()
+
 	for _, o := range ca.onCalls {
 		if o.index == callIndex {
 			return o
 		}
 	}
-
-	ca.stub.lock.Lock()
-	defer ca.stub.lock.Unlock()
 
 	o := &OnCall{index: callIndex, stub: ca.stub}
 	ca.onCalls = append(ca.onCalls, o)

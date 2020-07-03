@@ -10,7 +10,7 @@ type OnCall struct {
 // Return sets the return values for this set of custom arguments
 func (c *OnCall) Return(returnValues ...interface{}) {
 	if !validateOutParameters(c.stub.toType(), returnValues) {
-		c.stub.testReporter.Errorf("%v", &outParameterValidationError{c.stub.toType(), returnValues})
+		reportInvalidOutParameters(c.stub.testReporter, c.stub.toType(), returnValues)
 		return
 	}
 

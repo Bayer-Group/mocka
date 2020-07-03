@@ -62,7 +62,7 @@ func CreateSandbox(testReporter TestReporter) *Sandbox {
 // ensureTestReporter returns the existing test reporter or a new logger to Stderr
 func ensureTestReporter(testReporter TestReporter) TestReporter {
 	if testReporter == nil {
-		log.Fatal("mocka: TODO")
+		log.Fatal("mocka: test reporter required to fail tests")
 	}
 	return testReporter
 }
