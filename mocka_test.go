@@ -2,6 +2,7 @@ package mocka
 
 import (
 	"errors"
+	"log"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -111,6 +112,31 @@ var _ = Describe("mocka", func() {
 
 			Expect(s).ToNot(BeNil())
 			Expect(s.stubs).To(BeNil())
+		})
+	})
+
+	Describe("ensureTestReporter", func() {
+		It("calls exit if testReporter is nil", func() {
+			var message string
+			exitFn := func(args ...interface{}) {
+				Expect(args).To(HaveLen(1))
+				msg, ok := args[0].(string)
+				Expect(ok).To(BeTrue())
+				message = msg
+			}
+
+			actual := ensureTestReporter(nil, exitFn)
+
+			Expect(actual).To(BeNil())
+			Expect(message).To(Equal("mocka: test reporter required to fail tests"))
+		})
+
+		It("returns the provided testReporter", func() {
+			expected := GinkgoT()
+
+			actual := ensureTestReporter(expected, log.Fatal)
+
+			Expect(actual).To(Equal(expected))
 		})
 	})
 })
