@@ -9,13 +9,13 @@ type OnCall struct {
 
 // Return sets the return values for this set of custom arguments
 func (c *OnCall) Return(returnValues ...interface{}) {
+	c.stub.lock.Lock()
+	defer c.stub.lock.Unlock()
+
 	if !validateOutParameters(c.stub.toType(), returnValues) {
 		reportInvalidOutParameters(c.stub.testReporter, c.stub.toType(), returnValues)
 		return
 	}
-
-	c.stub.lock.Lock()
-	defer c.stub.lock.Unlock()
 
 	c.out = returnValues
 }

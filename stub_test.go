@@ -45,9 +45,7 @@ var _ = Describe("stub", func() {
 	})
 
 	Describe("newStub", func() {
-		var (
-			callCount int
-		)
+		var callCount int
 
 		BeforeEach(func() {
 			callCount = 0

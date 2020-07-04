@@ -34,7 +34,7 @@ package mocka
 
 import "log"
 
-// TestReporter is an interface used fail tests.
+// TestReporter is an interface used to fail tests.
 // It is satisfied by the standard library testing.T and the
 // response from GinkgoT()
 type TestReporter interface {
@@ -59,7 +59,7 @@ func CreateSandbox(testReporter TestReporter) *Sandbox {
 	return &Sandbox{testReporter: ensureTestReporter(testReporter, log.Fatal)}
 }
 
-// ensureTestReporter returns the existing test reporter or a new logger to Stderr
+// ensureTestReporter returns the existing test reporter or calls exit
 func ensureTestReporter(testReporter TestReporter, exit func(...interface{})) TestReporter {
 	if testReporter == nil {
 		exit("mocka: test reporter required to fail tests")
