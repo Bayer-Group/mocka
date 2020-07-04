@@ -1,4 +1,4 @@
-# mocka <!-- omit in toc -->
+# mocka [![Build Status][build-badge]][build-ci] [![gopherbadger-tag-do-not-edit][coverage-badge]][coverage] [![GoDoc][godoc-badge]][godoc]  <!-- omit in toc -->
 
 The package mocka provides a simple mocking and stubbing library to assist with writing unit tests in go.
 
@@ -43,23 +43,22 @@ defer stub.Restore()
 
 ## Table of Contents <!-- omit in toc -->
 
-- [Public API](#public-api)
 - [Stubbing Functions](#stubbing-functions)
-	- [Restoring a function's original functionality](#restoring-a-functions-original-functionality)
-	- [Changing the return values of a Stub](#changing-the-return-values-of-a-stub)
-	- [Changing the return values of a stub based on the call index](#changing-the-return-values-of-a-stub-based-on-the-call-index)
-	- [Changing the return values of a Stub based on the arguments](#changing-the-return-values-of-a-stub-based-on-the-arguments)
-		- [Changing the return values for a Stub based on variadic arguments](#changing-the-return-values-for-a-stub-based-on-variadic-arguments)
-		- [Changing the return values for a Stub based on the call index of specific arguments](#changing-the-return-values-for-a-stub-based-on-the-call-index-of-specific-arguments)
-		- [Changing the return values for a Stub based on argument matchers](#changing-the-return-values-for-a-stub-based-on-argument-matchers)
-	- [Retrieving the arguments and return values from a Stub](#retrieving-the-arguments-and-return-values-from-a-stub)
-		- [Retrieve how many times the function was called](#retrieve-how-many-times-the-function-was-called)
-		- [Retrieve the arguments and return values for all calls against the original function](#retrieve-the-arguments-and-return-values-for-all-calls-against-the-original-function)
-		- [Retrieve the arguments and return values for a specific call to the original function](#retrieve-the-arguments-and-return-values-for-a-specific-call-to-the-original-function)
-	- [Executing a function when a stub is called](#executing-a-function-when-a-stub-is-called)
+  - [Restoring a function's original functionality](#restoring-a-functions-original-functionality)
+  - [Changing the return values of a Stub](#changing-the-return-values-of-a-stub)
+  - [Changing the return values of a stub based on the call index](#changing-the-return-values-of-a-stub-based-on-the-call-index)
+  - [Changing the return values of a Stub based on the arguments](#changing-the-return-values-of-a-stub-based-on-the-arguments)
+    - [Changing the return values for a Stub based on variadic arguments](#changing-the-return-values-for-a-stub-based-on-variadic-arguments)
+    - [Changing the return values for a Stub based on the call index of specific arguments](#changing-the-return-values-for-a-stub-based-on-the-call-index-of-specific-arguments)
+    - [Changing the return values for a Stub based on argument matchers](#changing-the-return-values-for-a-stub-based-on-argument-matchers)
+  - [Retrieving the arguments and return values from a Stub](#retrieving-the-arguments-and-return-values-from-a-stub)
+    - [Retrieve how many times the function was called](#retrieve-how-many-times-the-function-was-called)
+    - [Retrieve the arguments and return values for all calls against the original function](#retrieve-the-arguments-and-return-values-for-all-calls-against-the-original-function)
+    - [Retrieve the arguments and return values for a specific call to the original function](#retrieve-the-arguments-and-return-values-for-a-specific-call-to-the-original-function)
+  - [Executing a function when a stub is called](#executing-a-function-when-a-stub-is-called)
 - [Creating Sandboxes](#creating-sandboxes)
-	- [Stubbing function](#stubbing-function)
-	- [Restoring sandboxes](#restoring-sandboxes)
+  - [Stubbing function](#stubbing-function)
+  - [Restoring sandboxes](#restoring-sandboxes)
 
 ## Stubbing Functions
 
@@ -470,3 +469,12 @@ var fn = func(str string) int {
 sandbox := mocka.CreateSandbox()
 defer sandbox.Restore()
 ```
+
+[coverage]: https://github.com/jpoles1/gopherbadger
+[coverage-badge]: https://img.shields.io/badge/Go%20Coverage-100%25-brightgreen.svg?longCache=true&style=flat
+[golang]:          http://golang.org/
+[golang-install]:  http://golang.org/doc/install.html#releases
+[build-badge]: https://github.com/MonsantoCo/mocka/workflows/build/badge.svg?branch=master
+[build-ci]:       https://github.com/MonsantoCo/mocka/actions?query=workflow%3A%22build%22
+[godoc-badge]:     https://godoc.org/github.com/MonsantoCo/mocka?status.svg
+[godoc]:           https://pkg.go.dev/github.com/MonsantoCo/mocka?tab=doc
