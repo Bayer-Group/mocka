@@ -1,8 +1,18 @@
-# mocka [![Build Status][build-badge]][build-ci] [![gopherbadger-tag-do-not-edit][coverage-badge]][coverage] [![GoDoc][godoc-badge]][godoc]  <!-- omit in toc -->
+# mocka [![Build Status][build-badge]][build-ci] [![gopherbadger-tag-do-not-edit][coverage-badge]][coverage] [![GoDoc][godoc-badge]][godoc]
 
-The package mocka provides a simple mocking and stubbing library to assist with writing unit tests in go.
+```go
+import "github.com/MonsantoCo/mocka"
+```
 
-All changes will be reflected in the [CHANGELOG](https://github.com/MonsantoCo/mocka/blob/master/CHANGELOG.md)
+Mocka is a simple mocking and stubbing library for the [Go programming language][golang]. It is used to assist with writing unit tests around third-party functions.
+
+All changes will be reflected in the [CHANGELOG][changelog].
+
+## Overview
+
+## Test Reporter
+
+## Function Stubs
 
 Currently if you would want to stub a function in go it would be akin to
 
@@ -40,25 +50,6 @@ var jsonMarshal = json.Marshal
 stub := mocka.Function(&jsonMarshal, []byte("value"), nil)
 defer stub.Restore()
 ```
-
-## Table of Contents <!-- omit in toc -->
-
-- [Stubbing Functions](#stubbing-functions)
-  - [Restoring a function's original functionality](#restoring-a-functions-original-functionality)
-  - [Changing the return values of a Stub](#changing-the-return-values-of-a-stub)
-  - [Changing the return values of a stub based on the call index](#changing-the-return-values-of-a-stub-based-on-the-call-index)
-  - [Changing the return values of a Stub based on the arguments](#changing-the-return-values-of-a-stub-based-on-the-arguments)
-    - [Changing the return values for a Stub based on variadic arguments](#changing-the-return-values-for-a-stub-based-on-variadic-arguments)
-    - [Changing the return values for a Stub based on the call index of specific arguments](#changing-the-return-values-for-a-stub-based-on-the-call-index-of-specific-arguments)
-    - [Changing the return values for a Stub based on argument matchers](#changing-the-return-values-for-a-stub-based-on-argument-matchers)
-  - [Retrieving the arguments and return values from a Stub](#retrieving-the-arguments-and-return-values-from-a-stub)
-    - [Retrieve how many times the function was called](#retrieve-how-many-times-the-function-was-called)
-    - [Retrieve the arguments and return values for all calls against the original function](#retrieve-the-arguments-and-return-values-for-all-calls-against-the-original-function)
-    - [Retrieve the arguments and return values for a specific call to the original function](#retrieve-the-arguments-and-return-values-for-a-specific-call-to-the-original-function)
-  - [Executing a function when a stub is called](#executing-a-function-when-a-stub-is-called)
-- [Creating Sandboxes](#creating-sandboxes)
-  - [Stubbing function](#stubbing-function)
-  - [Restoring sandboxes](#restoring-sandboxes)
 
 ## Stubbing Functions
 
@@ -429,52 +420,63 @@ fn("123")
 // Output: [123]
 ```
 
-## Creating Sandboxes
+## Sandboxes
 
-`CreateSandbox` returns an isolated sandbox from which functions can be stubbed. The benefit you receive from using a sandbox is the ability to perform one call to `Restore` for a collection of `Stub`s.
+In many cases you might need to stub out many functions in a single test file. A `Sandbox` allows you to simplify the restoration of many stubbed functions. You can create one `Sandbox` where you can only call `.Restore()` once for all stubbed functions. 
 
-### Stubbing function
+To create a `Sandbox` call `mocka.CreateSandbox` passing in a [test reporter](#test-reporter). The test reporter will be used to fail any tests where a stubbing error occurs. All stubs created from the `Sandbox` will use the same test reporter.
 
-`Function` replaces the provided function with a stubbed implementation. The stub has the ability to change change the return values of the original function in many different cases. The stub also provides the ability to get metadata associated to any call against the original function.
+<details>
+<summary>API</summary>
 
-`Function` also returns an error if the replacement of the original function with the stub failed.
+### `Sandbox.Function(functionPointer interface{}, defaultReturnValues ...interface{})`
 
-For example
+`Sandbox.Function` behaves the same as `mocka.Function`. It replaces the provided function with a stubbed implementation. The stub has the ability to change change the return values of the original function in many different cases. The stub also provides the ability to get metadata associated to any call against the original function.
 
-```go
-var fn = func(str string) int {
-    return len(str)
-}
+### `Sandbox.Restore()`
 
-sandbox := mocka.CreateSandbox()
-defer sandbox.Restore()
+`Sandbox.Restore` will call `.Restore()` on all stubs that have been created from the sandbox. Once the stubs have been restored they are removed from the sandbox. To ensure no other tests are effected by the stubs created from a `Sandbox`, restore it after every test. 
 
-sandbox.Function(&fn, 20)
+It is recommended to call `Sandbox.Restore` in a _defer_ directly after the sandboxes creation. If you are using a different testing package like [Ginkgo][ginkgo] then placing the restoration call in the `AfterEach(func())` will work as well.
+</details>
 
-fmt.Println(fn("1"))
-// Output: 20
-```
-
-### Restoring sandboxes
-
-After creating a `Sandbox` it is recommended to _defer_ the sandboxes recovery. This is to ensure that the `Stub`s are returned the original functionality. To restore a `Sandbox` call the `Restore` function.
-
-For example:
+<details>
+<summary>Example</summary>
 
 ```go
-var fn = func(str string) int {
-    return len(str)
+package main
+
+import (
+	"testing"
+
+	"github.com/MonsantoCo/mocka"
+)
+
+func TestSandbox(t *testing.T) {
+	fn := func(str string) int {
+		return len(str)
+	}
+
+	sandbox := mocka.CreateSandbox(t)
+	defer sandbox.Restore()
+
+	sandbox.Function(&fn, 20)
+
+	actual := fn("1")
+	if actual != 20 {
+		t.Errorf("expected 20 but got %v", actual)
+	}
 }
-
-sandbox := mocka.CreateSandbox()
-defer sandbox.Restore()
 ```
+</details>
 
+[changelog]: https://github.com/MonsantoCo/mocka/blob/master/CHANGELOG.md
 [coverage]: https://github.com/jpoles1/gopherbadger
 [coverage-badge]: https://img.shields.io/badge/Go%20Coverage-100%25-brightgreen.svg?longCache=true&style=flat
 [golang]:          http://golang.org/
 [golang-install]:  http://golang.org/doc/install.html#releases
-[build-badge]: https://github.com/MonsantoCo/mocka/workflows/build/badge.svg?branch=master
+[build-badge]: https://github.com/MonsantoCo/mocka/workflows/build/badge.svg
 [build-ci]:       https://github.com/MonsantoCo/mocka/actions?query=workflow%3A%22build%22
 [godoc-badge]:     https://godoc.org/github.com/MonsantoCo/mocka?status.svg
 [godoc]:           https://pkg.go.dev/github.com/MonsantoCo/mocka?tab=doc
+[ginkgo]: https://github.com/onsi/ginkgo
