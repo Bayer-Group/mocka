@@ -31,7 +31,7 @@ var _ = Describe("CustomArguments", func() {
 	})
 
 	Describe("newCustomArguments", func() {
-		It("returns with validation error when provided arguments != stubbed function arguments length", func() {
+		It("reports error when provided arguments != stubbed function arguments length", func() {
 			stub.testReporter = failTestReporter
 
 			_ = newCustomArguments(stub, []interface{}{})
@@ -41,7 +41,7 @@ var _ = Describe("CustomArguments", func() {
 			}))
 		})
 
-		It("returns with validation error if the provided matcher is not supported for the argument kind", func() {
+		It("reports error if the provided matcher is not supported for the argument kind", func() {
 			stub.testReporter = failTestReporter
 			anything := match.Anything()
 			lengthOf10 := match.LengthOf(10)
@@ -56,7 +56,7 @@ var _ = Describe("CustomArguments", func() {
 			}))
 		})
 
-		It("returns with validation error if the provided argument is not of the correct type", func() {
+		It("reports error if the provided argument is not of the correct type", func() {
 			stub.testReporter = failTestReporter
 
 			_ = newCustomArguments(stub, []interface{}{"hi", "ope"})
@@ -76,7 +76,7 @@ var _ = Describe("CustomArguments", func() {
 			}))
 		})
 
-		It("returns with validation error if the provided nil does not match the correct type", func() {
+		It("reports error if the provided nil does not match the correct type", func() {
 			fn := func(msg string) error {
 				return errors.New(msg)
 			}
@@ -150,7 +150,7 @@ var _ = Describe("CustomArguments", func() {
 				}))
 			})
 
-			It("returns an argument validation error if matcher does not suppor the variadic type", func() {
+			It("reports error if matcher does not suppor the variadic type", func() {
 				stub.testReporter = failTestReporter
 
 				_ = newCustomArguments(stub, []interface{}{"hi", match.ElementsContaining("A")})
