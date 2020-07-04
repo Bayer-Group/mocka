@@ -13,9 +13,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Changed
 - `WithArgs()` has been updated to take in variadic arguments the same as how functions take them 
 - `argumentValidationError` messages now show variadic arguments as `...type` instead of `[]type`
+- `mocka.Function` now takes in a `TestReporter` to fail tests internally inside of mocka
+- `mocka.CreateSandbox` now takes in a `TestReporter` to fail tests internally inside of mocka
+- `Sandbox.StubFunction` was renamed to `Sandbox.Function` for consistency
+- `mocka.Function` and `mocka.CreateSandbox` will call `log.Fatal` if a `TestReporter` is not provided
+- Exposed internal types to remove the need to unnecessary interfaces
+- `Stub.Return` no longers returns an error, but instead fails the test internally
+- `Stub.GetCall` no longer panics, but instead fails the test internally
+- Updated documentation to reflect public API changes
 
 ## Removed
 - Removed mocka.File()
+- `argumentValidationError`
+- `outParameterValidationError`
+- All public interfaces that were only used for defining the API
 
 ## [1.1.0]
 ## Added
