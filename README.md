@@ -10,7 +10,7 @@ All changes will be reflected in the [CHANGELOG][changelog].
 
 ## Why Mocka?
 
-There are times when you would want to control the output of a third-party function in testing. Sometimes making an wrapper around that package/function is more than what you are wanting to do. Mocka is here to solve that problem. It allows you to control the output of functions without needing to write any additional code. 
+There are times when you would want to control the output of a third-party function in testing. Sometimes making a wrapper around that package/function is more effort than it is worth. Mocka is here to solve that problem. It allows you to control the output of functions without needing to write any additional code. 
 
 Currently if you would want to control the output of a function in go it would be akin to
 
@@ -33,7 +33,7 @@ func TestMarshal(t *testing.T) {
         return []byte("value"), nil
     }
     defer func() {
-        jsonMarshal	= jsonMarshalOriginal
+        jsonMarshal = jsonMarshalOriginal
     }()
     
     // Your test code
@@ -72,7 +72,7 @@ There are some cases when interacting with a stub where errors can occur. Mocka 
 
 ```go
 type TestReporter interface {
-	Errorf(string, ...interface{})
+    Errorf(string, ...interface{})
 }
 ```
 
@@ -104,9 +104,9 @@ After creating a `Stub` it is recommended to `defer` it's restoration. This is t
 package main
 
 import (
-	"testing"
+    "testing"
 
-	"github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka"
 )
 
 func TestMocka(t *testing.T) {
@@ -117,10 +117,10 @@ func TestMocka(t *testing.T) {
     stub := mocka.Function(t, &fn, 20)
     defer stub.Restore()
 
-	actual := fn("1")
-	if actual != 20 {
-		t.Errorf("expected 20 but got %v", actual)
-	}
+    actual := fn("1")
+    if actual != 20 {
+        t.Errorf("expected 20 but got %v", actual)
+    }
 }
 ```
 
@@ -137,9 +137,9 @@ Mocka allows for the return values of a `Stub` to be changed at any time and in 
 package main
 
 import (
-	"testing"
+    "testing"
 
-	"github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka"
 )
 
 func TestMocka(t *testing.T) {
@@ -150,15 +150,15 @@ func TestMocka(t *testing.T) {
     stub := mocka.Function(t, &fn, 20)
     defer stub.Restore()
 
-	if actual := fn("123"); actual != 20 {
-		t.Errorf("expected 20 but got %v", actual)
-	}
+    if actual := fn("123"); actual != 20 {
+        t.Errorf("expected 20 but got %v", actual)
+    }
 
     stub.Return(5)
 
-	if actual := fn("123"); actual != 5 {
-		t.Errorf("expected 5 but got %v", actual)
-	}
+    if actual := fn("123"); actual != 5 {
+        t.Errorf("expected 5 but got %v", actual)
+    }
 }
 ```
 
@@ -179,39 +179,39 @@ Mocka provides helper functions for accessing the first three times a function h
 package main
 
 import (
-	"testing"
+    "testing"
 
-	"github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka"
 )
 
 func TestMocka(t *testing.T) {
-	fn := func(str string) int {
-		return len(str)
-	}
+    fn := func(str string) int {
+        return len(str)
+    }
 
-	stub := mocka.Function(t, &fn, 20)
-	defer stub.Restore()
+    stub := mocka.Function(t, &fn, 20)
+    defer stub.Restore()
 
-	withArgs123 := stub.WithArgs("123")
+    withArgs123 := stub.WithArgs("123")
 
-	withArgs123.OnCall(1).Return(5)
+    withArgs123.OnCall(1).Return(5)
     withArgs123.OnCall(3).Return(3)
     
     if actual := fn("123"); actual != 20 {
-		t.Errorf("expected 20 but got %v", actual)
+        t.Errorf("expected 20 but got %v", actual)
     }
     
     if actual := fn("123"); actual != 5 {
-		t.Errorf("expected 5 but got %v", actual)
+        t.Errorf("expected 5 but got %v", actual)
     }
     
     if actual := fn("123"); actual != 20 {
-		t.Errorf("expected 20 but got %v", actual)
+        t.Errorf("expected 20 but got %v", actual)
     }
     
     if actual := fn("123"); actual != 3 {
-		t.Errorf("expected 3 but got %v", actual)
-	}
+        t.Errorf("expected 3 but got %v", actual)
+    }
 }
 ```
 
@@ -230,25 +230,25 @@ Mocka allows for return values to be changed based on the arguments provided to 
 package main
 
 import (
-	"testing"
+    "testing"
 
-	"github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka"
 )
 
 func TestMocka(t *testing.T) {
-	fn := func(str []string, n int) int {
-		return len(str) + n
-	}
+    fn := func(str []string, n int) int {
+        return len(str) + n
+    }
 
-	stub := mocka.Function(t, &fn, 20)
-	defer stub.Restore()
+    stub := mocka.Function(t, &fn, 20)
+    defer stub.Restore()
 
-	stub.WithArgs([]string{"123", "456"}, 2).Return(5)
+    stub.WithArgs([]string{"123", "456"}, 2).Return(5)
 
-	fmt.Println(fn([]string{"123", "456"}, 2))
+    fmt.Println(fn([]string{"123", "456"}, 2))
 
     if actual := fn([]string{"123", "456"}, 2); actual != 5 {
-		t.Errorf("expected 5 but got %v", actual)
+        t.Errorf("expected 5 but got %v", actual)
     }
 }
 ```
@@ -268,25 +268,25 @@ mocka accepts variadic arguments for `WithArgs` the same as if you were calling 
 package main
 
 import (
-	"testing"
+    "testing"
 
-	"github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka"
 )
 
 func TestMocka(t *testing.T) {
-	fn := func(str string, opts ...string) int {
-		return len(str) + len(opts)
-	}
+    fn := func(str string, opts ...string) int {
+        return len(str) + len(opts)
+    }
 
-	stub := mocka.Function(t, &fn, 20)
-	stub.WithArgs("A", "B", "C").Return(5)
+    stub := mocka.Function(t, &fn, 20)
+    stub.WithArgs("A", "B", "C").Return(5)
 
     if actual := fn("A", "B", "C"); actual != 5 {
-		t.Errorf("expected 5 but got %v", actual)
+        t.Errorf("expected 5 but got %v", actual)
     }
     
     if actual := fn("A"); actual != 20 {
-		t.Errorf("expected 20 but got %v", actual)
+        t.Errorf("expected 20 but got %v", actual)
     }
 }
 ```
@@ -306,39 +306,39 @@ mocka provides helper functions for accessing the first three times a function h
 package main
 
 import (
-	"testing"
+    "testing"
 
-	"github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka"
 )
 
 func TestMocka(t *testing.T) {
-	fn := func(str string) int {
-		return len(str)
-	}
+    fn := func(str string) int {
+        return len(str)
+    }
 
-	stub := mocka.Function(t, &fn, 20)
-	defer stub.Restore()
+    stub := mocka.Function(t, &fn, 20)
+    defer stub.Restore()
 
-	withArgs123 := stub.WithArgs("123")
+    withArgs123 := stub.WithArgs("123")
 
-	withArgs123.OnCall(1).Return(5)
-	withArgs123.OnCall(3).Return(3)
+    withArgs123.OnCall(1).Return(5)
+    withArgs123.OnCall(3).Return(3)
     
     if actual := fn("123"); actual != 20 {
-		t.Errorf("expected 20 but got %v", actual)
+        t.Errorf("expected 20 but got %v", actual)
     }
     
     if actual := fn("123"); actual != 5 {
-		t.Errorf("expected 5 but got %v", actual)
+        t.Errorf("expected 5 but got %v", actual)
     }
     
     if actual := fn("123"); actual != 20 {
-		t.Errorf("expected 20 but got %v", actual)
+        t.Errorf("expected 20 but got %v", actual)
     }
     
     if actual := fn("123"); actual != 3 {
-		t.Errorf("expected 3 but got %v", actual)
-	}
+        t.Errorf("expected 3 but got %v", actual)
+    }
 }
 ```
 
@@ -359,32 +359,32 @@ Currently there are over 25 built in matchers you can use. More information can 
 package main
 
 import (
-	"testing"
+    "testing"
 
-	"github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka"
 )
 
 func TestMocka(t *testing.T) {
     fn := func(str []string, n int) int {
-		return len(str) + n
-	}
+        return len(str) + n
+    }
 
-	stub := mocka.Function(t, &fn, 20)
-	defer stub.Restore()
+    stub := mocka.Function(t, &fn, 20)
+    defer stub.Restore()
 
-	stub.WithArgs(match.Anything(), 2).Return(10)
-	stub.WithArgs([]string{"123", "456"}, 2).Return(5)
+    stub.WithArgs(match.Anything(), 2).Return(10)
+    stub.WithArgs([]string{"123", "456"}, 2).Return(5)
 
     if actual := fn([]string{"hello"}, 5); actual != 20 {
-		t.Errorf("expected 20 but got %v", actual)
+        t.Errorf("expected 20 but got %v", actual)
     }
     
     if actual := fn([]string{"mocka"}, 2); actual != 10 {
-		t.Errorf("expected 10 but got %v", actual)
-	}
+        t.Errorf("expected 10 but got %v", actual)
+    }
     
     if actual := fn([]string{"123", "456"}, 2); actual != 5 {
-		t.Errorf("expected 5 but got %v", actual)
+        t.Errorf("expected 5 but got %v", actual)
     }
 }
 ```
@@ -408,25 +408,25 @@ mocka provides helper functions for checking if a `Stub` has been called at leas
 package main
 
 import (
-	"testing"
+    "testing"
 
-	"github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka"
 )
 
 func TestMocka(t *testing.T) {
-	fn := func(str string) int {
-		return len(str)
-	}
+    fn := func(str string) int {
+        return len(str)
+    }
 
-	stub := mocka.Function(t, &fn, 20)
-	defer stub.Restore()
+    stub := mocka.Function(t, &fn, 20)
+    defer stub.Restore()
 
-	fn("first call")
-	fn("second call")
+    fn("first call")
+    fn("second call")
     fn("third call")
 
     if actual := stub.CallCount(); actual != 3 {
-		t.Errorf("expected 3 but got %v", actual)
+        t.Errorf("expected 3 but got %v", actual)
     }
 }
 ```
@@ -444,9 +444,9 @@ func TestMocka(t *testing.T) {
 package main
 
 import (
-	"testing"
+    "testing"
 
-	"github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka"
 )
 
 type test struct {
@@ -455,20 +455,20 @@ type test struct {
 }
 
 func TestMocka(t *testing.T) {
-	fn := func(str string) int {
-		return len(str)
-	}
+    fn := func(str string) int {
+        return len(str)
+    }
 
-	stub := mocka.Function(t, &fn, 20)
-	defer stub.Restore()
+    stub := mocka.Function(t, &fn, 20)
+    defer stub.Restore()
 
-	fn("first call")
-	fn("second call")
-	fn("third call")
+    fn("first call")
+    fn("second call")
+    fn("third call")
 
     calls := stub.GetCalls()
     if len(calls) != 3 {
-		t.Fatalf("expected 3 but got %v", actual)
+        t.Fatalf("expected 3 but got %v", actual)
     }
     
     tests := []test{
@@ -509,22 +509,22 @@ mocka provides helper functions for retrieving the arguments and return values f
 package main
 
 import (
-	"testing"
+    "testing"
 
-	"github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka"
 )
 
 func TestMocka(t *testing.T) {
-	fn := func(str string) int {
-		return len(str)
-	}
+    fn := func(str string) int {
+        return len(str)
+    }
 
-	stub := mocka.Function(t, &fn, 20)
-	defer stub.Restore()
+    stub := mocka.Function(t, &fn, 20)
+    defer stub.Restore()
 
-	fn("first call")
-	fn("second call")
-	fn("third call")
+    fn("first call")
+    fn("second call")
+    fn("third call")
 
     call := stub.GetCall(2)
     if !reflect.DeepEqual([]interface{}{"third call"}, call.Arguments()) {
@@ -551,31 +551,31 @@ In some special cases code will need to be run when the original function is cal
 package main
 
 import (
-	"testing"
+    "testing"
 
-	"github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka"
 )
 
 func TestMocka(t *testing.T) {
-	fn := func(in <-chan int) <-chan int {
-		out := make(chan int, 1)
-		go func() {
-			out <- <-in
-		}()
-		return out
-	}
+    fn := func(in <-chan int) <-chan int {
+        out := make(chan int, 1)
+        go func() {
+            out <- <-in
+        }()
+        return out
+    }
 
-	out := make(chan int, 1)
-	stub := mocka.Function(t, &fn, out)
-	defer stub.Restore()
+    out := make(chan int, 1)
+    stub := mocka.Function(t, &fn, out)
+    defer stub.Restore()
 
-	stub.ExecOnCall(func(args []interface{}) {
-		c := args[0].(<-chan int)
-		out <- <-c
-	})
+    stub.ExecOnCall(func(args []interface{}) {
+        c := args[0].(<-chan int)
+        out <- <-c
+    })
 
-	in := make(chan int, 1)
-	in <- 10
+    in := make(chan int, 1)
+    in <- 10
     if actual := <-fn(in); actual != 10 {
         t.Fatalf("expected: 10 got: %v", actual)
     }
@@ -618,25 +618,25 @@ It is recommended to call `Sandbox.Restore` in a _defer_ directly after the sand
 package main
 
 import (
-	"testing"
+    "testing"
 
-	"github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka"
 )
 
 func TestSandbox(t *testing.T) {
-	fn := func(str string) int {
-		return len(str)
-	}
+    fn := func(str string) int {
+        return len(str)
+    }
 
-	sandbox := mocka.CreateSandbox(t)
-	defer sandbox.Restore()
+    sandbox := mocka.CreateSandbox(t)
+    defer sandbox.Restore()
 
-	sandbox.Function(&fn, 20)
+    sandbox.Function(&fn, 20)
 
-	actual := fn("1")
-	if actual != 20 {
-		t.Errorf("expected 20 but got %v", actual)
-	}
+    actual := fn("1")
+    if actual != 20 {
+        t.Errorf("expected 20 but got %v", actual)
+    }
 }
 ```
 </details>
