@@ -25,7 +25,7 @@ var _ = Describe("mocka", func() {
 			}
 		})
 
-		It("returns error if passed a nil as the function pointer", func() {
+		It("reports an error if passed a nil as the function pointer", func() {
 			stub := Function(failTestReporter, nil)
 
 			Expect(stub).To(BeNil())
@@ -34,7 +34,7 @@ var _ = Describe("mocka", func() {
 			}))
 		})
 
-		It("returns error if a non-pointer value is passed as the function pointer", func() {
+		It("reports an error if a non-pointer value is passed as the function pointer", func() {
 			stub := Function(failTestReporter, 42)
 
 			Expect(stub).To(BeNil())
@@ -43,7 +43,7 @@ var _ = Describe("mocka", func() {
 			}))
 		})
 
-		It("returns error if a non-function value is passed as the function pointer", func() {
+		It("reports an error if a non-function value is passed as the function pointer", func() {
 			num := 42
 			stub := Function(failTestReporter, &num)
 
@@ -53,7 +53,7 @@ var _ = Describe("mocka", func() {
 			}))
 		})
 
-		It("returns error supplied out parameters are not of the same type", func() {
+		It("reports an error supplied out parameters are not of the same type", func() {
 			stub := Function(failTestReporter, &fn, "42", nil)
 
 			Expect(stub).To(BeNil())
@@ -62,7 +62,7 @@ var _ = Describe("mocka", func() {
 			}))
 		})
 
-		It("returns error if cloneValue returns an error", func() {
+		It("reports an error if cloneValue returns an error", func() {
 			_cloneValue = func(interface{}, interface{}) error {
 				return errors.New("Ope")
 			}

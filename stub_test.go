@@ -55,7 +55,7 @@ var _ = Describe("stub", func() {
 			}
 		})
 
-		It("returns error if passed a nil as the function pointer", func() {
+		It("reports an error if passed a nil as the function pointer", func() {
 			stub := newStub(failTestReporter, nil, nil)
 
 			Expect(stub).To(BeNil())
@@ -64,7 +64,7 @@ var _ = Describe("stub", func() {
 			}))
 		})
 
-		It("returns error if a non-pointer value is passed as the function pointer", func() {
+		It("reports an error if a non-pointer value is passed as the function pointer", func() {
 			stub := newStub(failTestReporter, 42, nil)
 
 			Expect(stub).To(BeNil())
@@ -73,7 +73,7 @@ var _ = Describe("stub", func() {
 			}))
 		})
 
-		It("returns error if a non-function value is passed as the function pointer", func() {
+		It("reports an error if a non-function value is passed as the function pointer", func() {
 			num := 42
 			stub := newStub(failTestReporter, &num, nil)
 
@@ -83,7 +83,7 @@ var _ = Describe("stub", func() {
 			}))
 		})
 
-		It("returns error supplied out parameters are not of the same type", func() {
+		It("reports an error supplied out parameters are not of the same type", func() {
 			stub := newStub(failTestReporter, &fn, []interface{}{"42", nil})
 
 			Expect(stub).To(BeNil())
@@ -92,7 +92,7 @@ var _ = Describe("stub", func() {
 			}))
 		})
 
-		It("returns error if cloneValue returns an error", func() {
+		It("reports an error if cloneValue returns an error", func() {
 			_cloneValue = func(interface{}, interface{}) error {
 				return errors.New("Ope")
 			}
@@ -392,7 +392,7 @@ var _ = Describe("stub", func() {
 	})
 
 	Describe("Return", func() {
-		It("returns error if the out parameters are not valid", func() {
+		It("reports an error if the out parameters are not valid", func() {
 			stub.testReporter = failTestReporter
 
 			stub.Return(42, 42)

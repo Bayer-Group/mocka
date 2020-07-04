@@ -45,7 +45,7 @@ var _ = Describe("sandbox", func() {
 	})
 
 	Describe("Function", func() {
-		It("returns error if passed a nil as the function pointer", func() {
+		It("reports an error if passed a nil as the function pointer", func() {
 			testSandbox.testReporter = failTestReporter
 			stub := testSandbox.Function(nil)
 
@@ -55,7 +55,7 @@ var _ = Describe("sandbox", func() {
 			}))
 		})
 
-		It("returns error if a non-pointer value is passed as the function pointer", func() {
+		It("reports an error if a non-pointer value is passed as the function pointer", func() {
 			testSandbox.testReporter = failTestReporter
 			stub := testSandbox.Function(42)
 
@@ -65,7 +65,7 @@ var _ = Describe("sandbox", func() {
 			}))
 		})
 
-		It("returns error if a non-function value is passed as the function pointer", func() {
+		It("reports an error if a non-function value is passed as the function pointer", func() {
 			testSandbox.testReporter = failTestReporter
 			num := 42
 			stub := testSandbox.Function(&num)
@@ -76,7 +76,7 @@ var _ = Describe("sandbox", func() {
 			}))
 		})
 
-		It("returns error supplied out parameters are not of the same type", func() {
+		It("reports an error supplied out parameters are not of the same type", func() {
 			testSandbox.testReporter = failTestReporter
 			stub := testSandbox.Function(&fn1, "42", nil)
 
@@ -86,7 +86,7 @@ var _ = Describe("sandbox", func() {
 			}))
 		})
 
-		It("returns error if cloneValue returns an error", func() {
+		It("reports an error if cloneValue returns an error", func() {
 			testSandbox.testReporter = failTestReporter
 			_cloneValue = func(interface{}, interface{}) error {
 				return errors.New("Ope")

@@ -1,6 +1,10 @@
-# mocka/match <!-- omit in toc -->
+# mocka/match
 
-The package mocka/match provides a powerful suite of matchers that can be used in conjunction with the `WithArgs` function for a mocka Stub.
+```go
+import "github.com/MonsantoCo/mocka/match"
+```
+
+The package match provides a powerful suite of matchers that can be used in conjunction with the `WithArgs` function for a mocka Stub.
 
 A matcher is defined by implementing the following interface.
 
@@ -15,7 +19,8 @@ type SupportedKindsMatcher interface {
 }
 ```
 
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 type anything struct {
@@ -58,8 +63,9 @@ func (anything) Match(_ interface{}) bool {
 	return true
 }
 ```
+</details>
 
-## Built in Matchers<!-- omit in toc -->
+## Built in Matchers
 
 When working with matchers it is possible to have multiple custom arguments match for a set of values. In these scenarios mocka will use the following priority to pick which matcher will be used.
 
@@ -103,13 +109,18 @@ When working with matchers it is possible to have multiple custom arguments matc
 
 The `Exactly(interface{})` matcher will match only if the value is deep equal to the provided value.
 
+> `Exactly` is the default matcher for all values provided to `WithArgs` if a matcher is not supplied, unless the value is `nil`.
+
+<details>
+<summary>Example</summary>
+
 ```go
 match.Exactly([]int{1,2,3})
 ```
 
-> `Exactly` is the default matcher for all values provided to `WithArgs` if a matcher is not supplied, unless the value is `nil`.
+</details>
 
-#### Supported Kinds  <!-- omit in toc -->
+#### Supported Kinds
 
 Bool, Int, Int8, Int16, Int32, Int64, Uint, Uint8, Uint16, Uint32, Uint64, Uintptr, Float32, Float64, Complex64, Complex128, Array, Chan, Func, Interface, Map, Ptr, Slice, String, Struct, UnsafePointer
 
@@ -120,7 +131,7 @@ The `Nil()` matcher will match any nil value.
 
 > `Nil` is the default matcher for `nil` values provided to `WithArgs`.
 
-#### Supported Kinds  <!-- omit in toc -->
+#### Supported Kinds
 
 Chan, Func, Interface, Map, Ptr, Slice
 
@@ -131,13 +142,16 @@ Chan, Func, Interface, Map, Ptr, Slice
 
 The `FloatGreaterThan(float64)` matcher will match if the numeric value is greater than the provided value.
 
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 match.FloatGreaterThan(2)
 ```
 
-#### Supported Kinds  <!-- omit in toc -->
+</details>
+
+#### Supported Kinds
 
 Float32, Float64
 
@@ -146,13 +160,16 @@ Float32, Float64
 
 The `FloatLessThan(float64)` matcher will match if the numeric value is less than the provided value.
 
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 match.FloatLessThan(2)
 ```
 
-#### Supported Kinds  <!-- omit in toc -->
+</details>
+
+#### Supported Kinds
 
 Float32, Float64
 
@@ -161,13 +178,16 @@ Float32, Float64
 
 The `FloatGreaterThanOrEqualTo(float64)` matcher will match if the numeric value is greater than or equal to the provided value.
 
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 match.FloatGreaterThanOrEqualTo(2)
 ```
 
-#### Supported Kinds  <!-- omit in toc -->
+</details>
+
+#### Supported Kinds
 
 Float32, Float64
 
@@ -176,13 +196,16 @@ Float32, Float64
 
 The `FloatLessThanOrEqualTo(float64)` matcher will match if the numeric value is less than or equal to the provided value.
 
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 match.FloatLessThanOrEqualTo(2)
 ```
 
-#### Supported Kinds  <!-- omit in toc -->
+</details>
+
+#### Supported Kinds
 
 Float32, Float64
 
@@ -191,13 +214,16 @@ Float32, Float64
 
 The `IntGreaterThan(int64)` matcher will match if the numeric value is greater than the provided value.
 
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 match.IntGreaterThan(2)
 ```
 
-#### Supported Kinds  <!-- omit in toc -->
+</details>
+
+#### Supported Kinds
 
 Int, Int8, Int16, Int32, Int64
 
@@ -206,13 +232,16 @@ Int, Int8, Int16, Int32, Int64
 
 The `IntLessThan(int64)` matcher will match if the numeric value is less than the provided value.
 
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 match.IntLessThan(2)
 ```
 
-#### Supported Kinds  <!-- omit in toc -->
+</details>
+
+#### Supported Kinds
 
 Int, Int8, Int16, Int32, Int64
 
@@ -221,13 +250,16 @@ Int, Int8, Int16, Int32, Int64
 
 The `IntGreaterThanOrEqualTo(int64)` matcher will match if the numeric value is greater than or equal to the provided value.
 
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 match.IntGreaterThanOrEqualTo(2)
 ```
 
-#### Supported Kinds  <!-- omit in toc -->
+</details>
+
+#### Supported Kinds
 
 Int, Int8, Int16, Int32, Int64
 
@@ -236,13 +268,16 @@ Int, Int8, Int16, Int32, Int64
 
 The `IntLessThanOrEqualTo(int64)` matcher will match if the numeric value is less than or equal to the provided value.
 
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 match.IntLessThanOrEqualTo(2)
 ```
 
-#### Supported Kinds  <!-- omit in toc -->
+</details>
+
+#### Supported Kinds
 
 Int, Int8, Int16, Int32, Int64
 
@@ -251,13 +286,16 @@ Int, Int8, Int16, Int32, Int64
 
 The `UintGreaterThan(uint64)` matcher will match if the numeric value is greater than the provided value.
 
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 match.UintGreaterThan(2)
 ```
 
-#### Supported Kinds  <!-- omit in toc -->
+</details>
+
+#### Supported Kinds
 
 Uint, Uint8, Uint16, Uint32, Uint64
 
@@ -266,13 +304,16 @@ Uint, Uint8, Uint16, Uint32, Uint64
 
 The `UintLessThan(uint64)` matcher will match if the numeric value is less than the provided value.
 
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 match.UintLessThan(2)
 ```
 
-#### Supported Kinds  <!-- omit in toc -->
+</details>
+
+#### Supported Kinds
 
 Uint, Uint8, Uint16, Uint32, Uint64
 
@@ -281,13 +322,16 @@ Uint, Uint8, Uint16, Uint32, Uint64
 
 The `UintGreaterThanOrEqualTo(uint64)` matcher will match if the numeric value is greater than or equal to the provided value.
 
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 match.UintGreaterThanOrEqualTo(2)
 ```
 
-#### Supported Kinds  <!-- omit in toc -->
+</details>
+
+#### Supported Kinds
 
 Uint, Uint8, Uint16, Uint32, Uint64
 
@@ -296,13 +340,16 @@ Uint, Uint8, Uint16, Uint32, Uint64
 
 The `UintLessThanOrEqualTo(uint64)` matcher will match if the numeric value is less than or equal to the provided value.
 
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 match.UintLessThanOrEqualTo(2)
 ```
 
-#### Supported Kinds  <!-- omit in toc -->
+</details>
+
+#### Supported Kinds
 
 Uint, Uint8, Uint16, Uint32, Uint64
 
@@ -313,13 +360,16 @@ Uint, Uint8, Uint16, Uint32, Uint64
 
 The `StringPrefix(string)` matcher will match a value if the string starts with the provided string.
 
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 match.StringPrefix("he")
 ```
 
-#### Supported Kinds  <!-- omit in toc -->
+</details>
+
+#### Supported Kinds
 
 String
 
@@ -328,13 +378,16 @@ String
 
 The `StringSuffix(string)` matcher will match a value if the string ends with the provided string.
 
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 match.StringSuffix("ello")
 ```
 
-#### Supported Kinds  <!-- omit in toc -->
+</details>
+
+#### Supported Kinds
 
 String
 
@@ -343,13 +396,16 @@ String
 
 The `StringContaining(string)` matcher will match a value if the string contains the provided string.
 
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 match.StringContaining("ello")
 ```
 
-#### Supported Kinds  <!-- omit in toc -->
+</details>
+
+#### Supported Kinds
 
 String
 
@@ -360,13 +416,16 @@ String
 
 The `LengthOf(int)` matcher will match a value if it's length matches the provided length.
 
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 match.LengthOf(12)
 ```
 
-#### Supported Kinds  <!-- omit in toc -->
+</details>
+
+#### Supported Kinds
 
 Array, Map, Slice, String
 
@@ -375,7 +434,7 @@ Array, Map, Slice, String
 
 The `Empty()` matcher will match a value if it has a length of 0.
 
-#### Supported Kinds  <!-- omit in toc -->
+#### Supported Kinds
 
 Array, Map, Slice, String
 
@@ -384,13 +443,16 @@ Array, Map, Slice, String
 
 The `KeysContaining(...interface{})` matcher will match a value if all elements exists are keys in the provided map.
   
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 match.KeysContaining("A", "B")
 ```
 
-#### Supported Kinds  <!-- omit in toc -->
+</details>
+
+#### Supported Kinds
 
 Map
 
@@ -399,13 +461,16 @@ Map
 
 The `ElementsContaining(...interface{})` matcher will match a value if all elements are contained within the provided value.
 
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 match.ElementsContaining("A", "B")
 ```
 
-#### Supported Kinds  <!-- omit in toc -->
+</details>
+
+#### Supported Kinds
 
 Array, Slice
 
@@ -416,13 +481,16 @@ Array, Slice
 
 The `ImplementerOf(interface{})` matcher will match a value if it is a pointer that implements the provided interface type.
 
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 match.ImplementerOf(new(error))
 ```
 
-#### Supported Kinds  <!-- omit in toc -->
+</details>
+
+#### Supported Kinds
 
 Ptr
 
@@ -431,13 +499,16 @@ Ptr
 
 The `ConvertibleTo(interface{})` matcher will match a value if it's type can be converted to the provided type.
 
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 match.ConvertibleTo(new(int64))
 ```
 
-#### Supported Kinds  <!-- omit in toc -->
+</details>
+
+#### Supported Kinds
 
 Bool, Int, Int8, Int16, Int32, Int64, Uint, Uint8, Uint16, Uint32, Uint64, Uintptr, Float32, Float64, Complex64, Complex128, Array, Chan, Func, Interface, Map, Ptr, Slice, String, Struct, UnsafePointer
 
@@ -446,13 +517,16 @@ Bool, Int, Int8, Int16, Int32, Int64, Uint, Uint8, Uint16, Uint32, Uint64, Uintp
 
 The `TypeOf(string)` matcher will match a value if it's type is the same of the provided string.
 
-For example
+<details>
+<summary>Example</summary>
 
 ```go
 match.TypeOf("int")
 ```
 
-#### Supported Kinds  <!-- omit in toc -->
+</details>
+
+#### Supported Kinds
 
 Bool, Int, Int8, Int16, Int32, Int64, Uint, Uint8, Uint16, Uint32, Uint64, Uintptr, Float32, Float64, Complex64, Complex128, Array, Chan, Func, Interface, Map, Ptr, Slice, String, Struct, UnsafePointer
 
@@ -461,7 +535,7 @@ Bool, Int, Int8, Int16, Int32, Int64, Uint, Uint8, Uint16, Uint32, Uint64, Uintp
 
 The `AnythingButNil()` matcher will match any value except `nil`.
 
-#### Supported Kinds  <!-- omit in toc -->
+#### Supported Kinds
 
 Chan, Func, Interface, Map, Ptr, Slice
 
@@ -470,6 +544,6 @@ Chan, Func, Interface, Map, Ptr, Slice
 
 The `Anything()` matcher will match any value regardless of the value provided
 
-#### Supported Kinds  <!-- omit in toc -->
+#### Supported Kinds
 
 Bool, Int, Int8, Int16, Int32, Int64, Uint, Uint8, Uint16, Uint32, Uint64, Uintptr, Float32, Float64, Complex64, Complex128, Array, Chan, Func, Interface, Map, Ptr, Slice, String, Struct, UnsafePointer
