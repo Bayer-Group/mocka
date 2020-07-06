@@ -4,6 +4,8 @@ The package mocka provides a simple mocking and stubbing library to assist with 
 
 All changes will be reflected in the [CHANGELOG](https://github.com/MonsantoCo/mocka/blob/master/CHANGELOG.md)
 
+> If you are looking to migrate from **v1** to **v2** check out the [migration guide][migrationGuide].
+
 Currently if you would want to stub a function in go it would be akin to
 
 ```go
@@ -45,21 +47,21 @@ defer stub.Restore()
 
 - [Public API](#public-api)
 - [Stubbing Functions](#stubbing-functions)
-	- [Restoring a function's original functionality](#restoring-a-functions-original-functionality)
-	- [Changing the return values of a Stub](#changing-the-return-values-of-a-stub)
-	- [Changing the return values of a stub based on the call index](#changing-the-return-values-of-a-stub-based-on-the-call-index)
-	- [Changing the return values of a Stub based on the arguments](#changing-the-return-values-of-a-stub-based-on-the-arguments)
-		- [Changing the return values for a Stub based on variadic arguments](#changing-the-return-values-for-a-stub-based-on-variadic-arguments)
-		- [Changing the return values for a Stub based on the call index of specific arguments](#changing-the-return-values-for-a-stub-based-on-the-call-index-of-specific-arguments)
-		- [Changing the return values for a Stub based on argument matchers](#changing-the-return-values-for-a-stub-based-on-argument-matchers)
-	- [Retrieving the arguments and return values from a Stub](#retrieving-the-arguments-and-return-values-from-a-stub)
-		- [Retrieve how many times the function was called](#retrieve-how-many-times-the-function-was-called)
-		- [Retrieve the arguments and return values for all calls against the original function](#retrieve-the-arguments-and-return-values-for-all-calls-against-the-original-function)
-		- [Retrieve the arguments and return values for a specific call to the original function](#retrieve-the-arguments-and-return-values-for-a-specific-call-to-the-original-function)
-	- [Executing a function when a stub is called](#executing-a-function-when-a-stub-is-called)
+  - [Restoring a function's original functionality](#restoring-a-functions-original-functionality)
+  - [Changing the return values of a Stub](#changing-the-return-values-of-a-stub)
+  - [Changing the return values of a stub based on the call index](#changing-the-return-values-of-a-stub-based-on-the-call-index)
+  - [Changing the return values of a Stub based on the arguments](#changing-the-return-values-of-a-stub-based-on-the-arguments)
+    - [Changing the return values for a Stub based on variadic arguments](#changing-the-return-values-for-a-stub-based-on-variadic-arguments)
+    - [Changing the return values for a Stub based on the call index of specific arguments](#changing-the-return-values-for-a-stub-based-on-the-call-index-of-specific-arguments)
+    - [Changing the return values for a Stub based on argument matchers](#changing-the-return-values-for-a-stub-based-on-argument-matchers)
+  - [Retrieving the arguments and return values from a Stub](#retrieving-the-arguments-and-return-values-from-a-stub)
+    - [Retrieve how many times the function was called](#retrieve-how-many-times-the-function-was-called)
+    - [Retrieve the arguments and return values for all calls against the original function](#retrieve-the-arguments-and-return-values-for-all-calls-against-the-original-function)
+    - [Retrieve the arguments and return values for a specific call to the original function](#retrieve-the-arguments-and-return-values-for-a-specific-call-to-the-original-function)
+  - [Executing a function when a stub is called](#executing-a-function-when-a-stub-is-called)
 - [Creating Sandboxes](#creating-sandboxes)
-	- [Stubbing function](#stubbing-function)
-	- [Restoring sandboxes](#restoring-sandboxes)
+  - [Stubbing function](#stubbing-function)
+  - [Restoring sandboxes](#restoring-sandboxes)
 
 ## Public API
 
@@ -537,3 +539,5 @@ var fn = func(str string) int {
 sandbox := mocka.CreateSandbox()
 defer sandbox.Restore()
 ```
+
+[migrationGuide]: https://github.com/MonsantoCo/mocka/blob/master/MIGRATE_TO_V2.md
