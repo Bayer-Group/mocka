@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - `Stub.Return` no longers returns an error, but instead fails the test internally
 - `Stub.GetCall` no longer panics, but instead fails the test internally
 - Updated documentation to reflect public API changes
+- Module is now updated to have v2 suffix
+- All internal imports reference mocka/v2
 
 ## Removed
 - Removed mocka.File()
