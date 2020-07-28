@@ -1,7 +1,7 @@
 # mocka [![Build Status][build-badge]][build-ci] [![gopherbadger-tag-do-not-edit][coverage-badge]][coverage] [![GoDoc][godoc-badge]][godoc]
 
 ```go
-import "github.com/MonsantoCo/mocka"
+import "github.com/MonsantoCo/mocka/v2"
 ```
 
 Mocka is a simple mocking and stubbing library for the [Go programming language][golang]. It is used to assist with writing unit tests around third-party functions.
@@ -106,7 +106,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka/v2"
 )
 
 func TestMocka(t *testing.T) {
@@ -139,7 +139,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka/v2"
 )
 
 func TestMocka(t *testing.T) {
@@ -181,7 +181,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka/v2"
 )
 
 func TestMocka(t *testing.T) {
@@ -232,7 +232,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka/v2"
 )
 
 func TestMocka(t *testing.T) {
@@ -270,7 +270,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka/v2"
 )
 
 func TestMocka(t *testing.T) {
@@ -308,7 +308,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka/v2"
 )
 
 func TestMocka(t *testing.T) {
@@ -361,7 +361,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka/v2"
 )
 
 func TestMocka(t *testing.T) {
@@ -410,7 +410,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka/v2"
 )
 
 func TestMocka(t *testing.T) {
@@ -446,7 +446,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka/v2"
 )
 
 type test struct {
@@ -511,7 +511,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka/v2"
 )
 
 func TestMocka(t *testing.T) {
@@ -553,7 +553,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka/v2"
 )
 
 func TestMocka(t *testing.T) {
@@ -620,7 +620,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka"
+    "github.com/MonsantoCo/mocka/v2"
 )
 
 func TestSandbox(t *testing.T) {

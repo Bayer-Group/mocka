@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/MonsantoCo/mocka"
-	"github.com/MonsantoCo/mocka/match"
+	"github.com/MonsantoCo/mocka/v2"
+	"github.com/MonsantoCo/mocka/v2/match"
 )
 
 func ExampleFunction() {

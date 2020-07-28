@@ -1,4 +1,4 @@
-module github.com/MonsantoCo/mocka
+module github.com/MonsantoCo/mocka/v2
 
 go 1.12
 

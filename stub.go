@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/MonsantoCo/mocka/match"
+	"github.com/MonsantoCo/mocka/v2/match"
 )
 
 // variables used for unit testing

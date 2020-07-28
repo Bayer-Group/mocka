@@ -4,7 +4,7 @@ import (
 	"errors"
 	"reflect"
 
-	"github.com/MonsantoCo/mocka/match"
+	"github.com/MonsantoCo/mocka/v2/match"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -273,7 +273,7 @@ var _ = Describe("CustomArguments", func() {
 			result := ca.OnSecondCall()
 
 			Expect(ca.onCalls).To(HaveLen(3))
-			Expect(result).To(Equal(&OnCall{stub: stub, index: 1}))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 1}))
 		})
 
 		It("returns the existing second call", func() {

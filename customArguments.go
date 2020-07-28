@@ -3,7 +3,7 @@ package mocka
 import (
 	"reflect"
 
-	"github.com/MonsantoCo/mocka/match"
+	"github.com/MonsantoCo/mocka/v2/match"
 )
 
 // newCustomArguments constructor function for CustomArguments
