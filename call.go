@@ -1,22 +1,17 @@
 package mocka
 
-// Call describes a specific call the to the stub function
-type Call interface {
-	Arguments() []interface{}
-	ReturnValues() []interface{}
-}
-
-type call struct {
+// Call represents the information for a specific call invocation of the stubbed function
+type Call struct {
 	args []interface{}
 	out  []interface{}
 }
 
 // Arguments returns the arguments that stub was called with.
-func (c call) Arguments() []interface{} {
+func (c Call) Arguments() []interface{} {
 	return c.args
 }
 
 // ReturnValues returns the return values that the stubbed implementation returned.
-func (c call) ReturnValues() []interface{} {
+func (c Call) ReturnValues() []interface{} {
 	return c.out
 }

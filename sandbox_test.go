@@ -9,15 +9,17 @@ import (
 
 var _ = Describe("sandbox", func() {
 	var (
-		callCounts  map[string]int
-		fn1         func(string, int) (int, error)
-		fn2         func(string) int
-		fn3         func(interface{}) error
-		testSandbox Sandbox
+		callCounts       map[string]int
+		fn1              func(string, int) (int, error)
+		fn2              func(string) int
+		fn3              func(interface{}) error
+		testSandbox      *Sandbox
+		failTestReporter *mockTestReporter
 	)
 
 	BeforeEach(func() {
-		testSandbox = &sandbox{}
+		failTestReporter = &mockTestReporter{}
+		testSandbox = &Sandbox{testReporter: GinkgoT()}
 		callCounts = map[string]int{"fn1": 0, "fn2": 0, "fn3": 0}
 		fn1 = func(str string, num int) (int, error) {
 			callCounts["fn1"]++
@@ -39,44 +41,53 @@ var _ = Describe("sandbox", func() {
 
 	AfterEach(func() {
 		// clear out slice, to prevent memory leaks
-		testSandbox.(*sandbox).stubs = nil
+		testSandbox.stubs = nil
 	})
 
-	Describe("StubFunction", func() {
-		It("returns error if passed a nil as the function pointer", func() {
-			stub, err := testSandbox.StubFunction(nil)
+	Describe("Function", func() {
+		It("reports an error if passed a nil as the function pointer", func() {
+			testSandbox.testReporter = failTestReporter
+			stub := testSandbox.Function(nil)
 
 			Expect(stub).To(BeNil())
-			Expect(err).ToNot(BeNil())
-			Expect(err.Error()).To(Equal("mocka: expected the first argument to be a pointer to a function, but received a nil"))
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: expected the second argument to be a pointer to a function, but received a nil",
+			}))
 		})
 
-		It("returns error if a non-pointer value is passed as the function pointer", func() {
-			stub, err := testSandbox.StubFunction(42)
+		It("reports an error if a non-pointer value is passed as the function pointer", func() {
+			testSandbox.testReporter = failTestReporter
+			stub := testSandbox.Function(42)
 
 			Expect(stub).To(BeNil())
-			Expect(err).ToNot(BeNil())
-			Expect(err.Error()).To(Equal("mocka: expected the first argument to be a pointer to a function, but received a int"))
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: expected the second argument to be a pointer to a function, but received a int",
+			}))
 		})
 
-		It("returns error if a non-function value is passed as the function pointer", func() {
+		It("reports an error if a non-function value is passed as the function pointer", func() {
+			testSandbox.testReporter = failTestReporter
 			num := 42
-			stub, err := testSandbox.StubFunction(&num)
+			stub := testSandbox.Function(&num)
 
 			Expect(stub).To(BeNil())
-			Expect(err).ToNot(BeNil())
-			Expect(err.Error()).To(Equal("mocka: expected the first argument to be a pointer to a function, but received a pointer to a int"))
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: expected the second argument to be a pointer to a function, but received a pointer to a int",
+			}))
 		})
 
-		It("returns error supplied out parameters are not of the same type", func() {
-			stub, err := testSandbox.StubFunction(&fn1, "42", nil)
+		It("reports an error supplied out parameters are not of the same type", func() {
+			testSandbox.testReporter = failTestReporter
+			stub := testSandbox.Function(&fn1, "42", nil)
 
 			Expect(stub).To(BeNil())
-			Expect(err).ToNot(BeNil())
-			Expect(err.Error()).To(Equal("mocka: expected return values of type (int, error), but received (string, <nil>)"))
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: expected return values of type (int, error), but received (string, <nil>)",
+			}))
 		})
 
-		It("returns error if cloneValue returns an error", func() {
+		It("reports an error if cloneValue returns an error", func() {
+			testSandbox.testReporter = failTestReporter
 			_cloneValue = func(interface{}, interface{}) error {
 				return errors.New("Ope")
 			}
@@ -84,73 +95,56 @@ var _ = Describe("sandbox", func() {
 				_cloneValue = cloneValue
 			}()
 
-			stub, err := testSandbox.StubFunction(&fn1, 42, nil)
+			stub := testSandbox.Function(&fn1, 42, nil)
 
 			Expect(stub).To(BeNil())
-			Expect(err).ToNot(BeNil())
-			Expect(err.Error()).To(Equal("mocka: could not clone function pointer to new memory address: Ope"))
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: could not clone function pointer to new memory address: Ope",
+			}))
 		})
 
 		It("returns a stub with a reference to the original function", func() {
-			stub, err := testSandbox.StubFunction(&fn1, 42, nil)
+			stub := testSandbox.Function(&fn1, 42, nil)
 
-			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
 
-			mockFn := stub.(*mockFunction)
+			Expect(stub.originalFunc).ToNot(BeNil())
 
-			Expect(mockFn.originalFunc).ToNot(BeNil())
-
-			_, _ = mockFn.originalFunc.(func(str string, num int) (int, error))("", 0)
+			_, _ = stub.originalFunc.(func(str string, num int) (int, error))("", 0)
 
 			Expect(callCounts["fn1"]).To(Equal(1))
 		})
 
 		It("returns a stub with properties initialized with zero values", func() {
-			stub, err := testSandbox.StubFunction(&fn1, 42, nil)
+			stub := testSandbox.Function(&fn1, 42, nil)
 
-			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
-
-			mockFn := stub.(*mockFunction)
-
-			Expect(mockFn.calls).To(BeNil())
-			Expect(mockFn.customArgs).To(BeNil())
+			Expect(stub.calls).To(BeNil())
+			Expect(stub.customArgs).To(BeNil())
 		})
 
 		It("returns a stub with outParameters as supplied", func() {
-			stub, err := testSandbox.StubFunction(&fn1, 42, nil)
+			stub := testSandbox.Function(&fn1, 42, nil)
 
-			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
-
-			mockFn := stub.(*mockFunction)
-
-			Expect(mockFn.outParameters).To(Equal([]interface{}{42, nil}))
+			Expect(stub.outParameters).To(Equal([]interface{}{42, nil}))
 		})
 
 		It("appends the stub into the sandbox if no error is returned", func() {
-			Expect(testSandbox.(*sandbox).stubs).To(HaveLen(0))
+			Expect(testSandbox.stubs).To(HaveLen(0))
 
-			stub, err := testSandbox.StubFunction(&fn1, 42, nil)
+			stub := testSandbox.Function(&fn1, 42, nil)
 
-			Expect(err).To(BeNil())
 			Expect(stub).ToNot(BeNil())
-			Expect(testSandbox.(*sandbox).stubs).To(HaveLen(1))
+			Expect(testSandbox.stubs).To(HaveLen(1))
 		})
 	})
 
 	Describe("Restore", func() {
 		BeforeEach(func() {
-			var err error
-			_, err = testSandbox.StubFunction(&fn1, 42, nil)
-			Expect(err).To(BeNil())
-
-			_, err = testSandbox.StubFunction(&fn2, 42)
-			Expect(err).To(BeNil())
-
-			_, err = testSandbox.StubFunction(&fn3, nil)
-			Expect(err).To(BeNil())
+			_ = testSandbox.Function(&fn1, 42, nil)
+			_ = testSandbox.Function(&fn2, 42)
+			_ = testSandbox.Function(&fn3, nil)
 		})
 
 		It("restores each function back to it's original functionality", func() {
@@ -173,12 +167,12 @@ var _ = Describe("sandbox", func() {
 			Expect(callCounts["fn3"]).To(Equal(1))
 		})
 
-		It("removes references to the created mockFunctions", func() {
-			Expect(testSandbox.(*sandbox).stubs).To(HaveLen(3))
+		It("removes references to the created Stubs", func() {
+			Expect(testSandbox.stubs).To(HaveLen(3))
 
 			testSandbox.Restore()
 
-			Expect(testSandbox.(*sandbox).stubs).To(HaveLen(0))
+			Expect(testSandbox.stubs).To(HaveLen(0))
 		})
 	})
 })

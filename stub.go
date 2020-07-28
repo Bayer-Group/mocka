@@ -1,85 +1,56 @@
 package mocka
 
 import (
-	"fmt"
 	"reflect"
 	"sync"
 
-	"github.com/MonsantoCo/mocka/match"
-	"github.com/pkg/errors"
+	"github.com/MonsantoCo/mocka/v2/match"
 )
 
 // variables used for unit testing
 var _cloneValue = cloneValue
 
-// Returner describes the functionality to update the return values to the stub
-type Returner interface {
-	Return(...interface{}) error
-}
-
-// GetCaller describes the functionality to get information for a specific call to the stub
-type GetCaller interface {
-	GetCalls() []Call
-	GetCall(int) Call
-	GetFirstCall() Call
-	GetSecondCall() Call
-	GetThirdCall() Call
-	CallCount() int
-	CalledOnce() bool
-	CalledTwice() bool
-	CalledThrice() bool
-}
-
-// OnCallReturner describes the functionality to update the return values itself of based on the call index
-type OnCallReturner interface {
-	OnCaller
-	Returner
-}
-
-// Stub describes the functionality related to the stub replacement of a function
-type Stub interface {
-	Returner
-	GetCaller
-	OnCaller
-	WithArgs(...interface{}) OnCallReturner
-	ExecOnCall(func([]interface{}))
-	Restore()
-}
-
-type mockFunction struct {
+// Stub represents the stub for a function
+type Stub struct {
 	lock sync.RWMutex
 
+	testReporter  TestReporter
 	originalFunc  interface{}
 	functionPtr   interface{}
 	outParameters []interface{}
-	calls         []call
-	customArgs    []*customArguments
-	onCalls       []*onCall
+	calls         []Call
+	customArgs    []*CustomArguments
+	onCalls       []*OnCall
 	execFunc      func([]interface{})
 }
 
-// newMockFunction creates a new mock function and overrides the implementation of the original function.
-func newMockFunction(originalFuncPtr interface{}, returnValues []interface{}) (*mockFunction, error) {
+// newStub creates a stub function and overrides the implementation of the original function.
+func newStub(testReporter TestReporter, originalFuncPtr interface{}, returnValues []interface{}) *Stub {
 	if originalFuncPtr == nil {
-		return nil, errors.New("mocka: expected the first argument to be a pointer to a function, but received a nil")
+		testReporter.Errorf("mocka: expected the second argument to be a pointer to a function, but received a nil")
+		return nil
 	}
 
 	originalFuncValue := reflect.ValueOf(originalFuncPtr)
 	if originalFuncValue.Kind() != reflect.Ptr {
-		return nil, fmt.Errorf("mocka: expected the first argument to be a pointer to a function, but received a %v", originalFuncValue.Kind().String())
+		testReporter.Errorf("mocka: expected the second argument to be a pointer to a function, but received a %v", originalFuncValue.Kind().String())
+		return nil
 	}
 
 	originalFunc := originalFuncValue.Elem()
 	if originalFunc.Kind() != reflect.Func {
-		return nil, fmt.Errorf("mocka: expected the first argument to be a pointer to a function, but received a pointer to a %v", originalFunc.Kind().String())
+		testReporter.Errorf("mocka: expected the second argument to be a pointer to a function, but received a pointer to a %v", originalFunc.Kind().String())
+		return nil
 	}
 
 	if !validateOutParameters(originalFunc.Type(), returnValues) {
-		return nil, &outParameterValidationError{originalFunc.Type(), returnValues}
+		reportInvalidOutParameters(testReporter, originalFunc.Type(), returnValues)
+		return nil
 	}
 
-	stub := &mockFunction{
+	stub := &Stub{
 		originalFunc:  nil,
+		testReporter:  testReporter,
 		functionPtr:   originalFuncPtr,
 		outParameters: returnValues,
 		execFunc:      func([]interface{}) {},
@@ -88,30 +59,31 @@ func newMockFunction(originalFuncPtr interface{}, returnValues []interface{}) (*
 	// Need to perform a deep clone to get a new pointer and memory address
 	err := _cloneValue(originalFuncPtr, &stub.originalFunc)
 	if err != nil {
-		return nil, errors.Wrap(err, "mocka: could not clone function pointer to new memory address")
+		stub.testReporter.Errorf("mocka: could not clone function pointer to new memory address: %v", err)
+		return nil
 	}
 
 	// Replace the original function the mock function implementation
 	originalType := originalFunc.Type()
 	originalFunc.Set(reflect.MakeFunc(originalType, stub.implementation))
 
-	return stub, nil
+	return stub
 }
 
 // toType gets the reflection type from the mock function pointer
-func (mf *mockFunction) toType() reflect.Type {
-	return reflect.ValueOf(mf.functionPtr).Elem().Type()
+func (stub *Stub) toType() reflect.Type {
+	return reflect.ValueOf(stub.functionPtr).Elem().Type()
 }
 
 // implementation defines the function that replaces the original
 // function's functionality
-func (mf *mockFunction) implementation(arguments []reflect.Value) []reflect.Value {
-	mf.lock.Lock()
-	defer mf.lock.Unlock()
+func (stub *Stub) implementation(arguments []reflect.Value) []reflect.Value {
+	stub.lock.Lock()
+	defer stub.lock.Unlock()
 
-	functionType := mf.toType()
+	functionType := stub.toType()
 	argumentsAsInterfaces := mapToInterfaces(arguments)
-	outParameters, maybeCustomArguments := mf.getReturnValues(argumentsAsInterfaces, functionType)
+	outParameters, maybeCustomArguments := stub.getReturnValues(argumentsAsInterfaces, functionType)
 	outParametersAsValues := mapToReflectValue(outParameters)
 
 	outParametersAsInterfaces := make([]interface{}, len(outParametersAsValues))
@@ -131,9 +103,9 @@ func (mf *mockFunction) implementation(arguments []reflect.Value) []reflect.Valu
 		}
 	}
 
-	mf.execFunc(argumentsAsInterfaces)
+	stub.execFunc(argumentsAsInterfaces)
 
-	mf.calls = append(mf.calls, call{args: argumentsAsInterfaces, out: outParametersAsInterfaces})
+	stub.calls = append(stub.calls, Call{args: argumentsAsInterfaces, out: outParametersAsInterfaces})
 
 	if maybeCustomArguments != nil {
 		maybeCustomArguments.callCount++
@@ -146,17 +118,17 @@ func (mf *mockFunction) implementation(arguments []reflect.Value) []reflect.Valu
 // arguments passed into the function.
 //
 // This function also takes into account the current call index of function.
-func (mf *mockFunction) getReturnValues(arguments []interface{}, functionType reflect.Type) ([]interface{}, *customArguments) {
-	out := mf.outParameters
+func (stub *Stub) getReturnValues(arguments []interface{}, functionType reflect.Type) ([]interface{}, *CustomArguments) {
+	out := stub.outParameters
 
-	for _, o := range mf.onCalls {
-		if o.index == len(mf.calls) && o.out != nil {
+	for _, o := range stub.onCalls {
+		if o.index == len(stub.calls) && o.out != nil {
 			out = o.out
 			break
 		}
 	}
 
-	maybeCustomArgs := getHighestPriority(getPossible(mf.customArgs, arguments), functionType.NumIn())
+	maybeCustomArgs := getHighestPriority(getPossible(stub.customArgs, arguments), functionType.NumIn())
 	if maybeCustomArgs == nil {
 		return out, nil
 	}
@@ -176,7 +148,7 @@ func (mf *mockFunction) getReturnValues(arguments []interface{}, functionType re
 
 // getHighestPriority returns the highest priority custom arguments if found;
 // otherwise a nil
-func getHighestPriority(customArgs []*customArguments, numArgs int) *customArguments {
+func getHighestPriority(customArgs []*CustomArguments, numArgs int) *CustomArguments {
 	switch len(customArgs) {
 	case 0:
 		return nil
@@ -186,13 +158,13 @@ func getHighestPriority(customArgs []*customArguments, numArgs int) *customArgum
 
 	for i := 0; i < numArgs; i++ {
 		var highestPriority float64
-		newCustomArgs := make([]*customArguments, 0)
+		newCustomArgs := make([]*CustomArguments, 0)
 
 		for _, ca := range customArgs {
 			p := match.Priority(ca.argMatchers[i])
 			if p > highestPriority {
 				highestPriority = p
-				newCustomArgs = make([]*customArguments, 0)
+				newCustomArgs = make([]*CustomArguments, 0)
 			}
 
 			if p == highestPriority {
@@ -212,7 +184,7 @@ func getHighestPriority(customArgs []*customArguments, numArgs int) *customArgum
 
 // getPossible returns the possible custom arguments
 // that match the provided arguments
-func getPossible(customArgs []*customArguments, arguments []interface{}) (possible []*customArguments) {
+func getPossible(customArgs []*CustomArguments, arguments []interface{}) (possible []*CustomArguments) {
 	for _, ca := range customArgs {
 		if ca != nil && ca.isMatch(arguments) {
 			possible = append(possible, ca)
@@ -221,58 +193,58 @@ func getPossible(customArgs []*customArguments, arguments []interface{}) (possib
 	return
 }
 
-// Returns updates the default out parameters returned when
+// Return updates the default out parameters returned when
 // the mock function is called
-func (mf *mockFunction) Return(returnValues ...interface{}) error {
-	mf.lock.Lock()
-	defer mf.lock.Unlock()
+func (stub *Stub) Return(returnValues ...interface{}) {
+	stub.lock.Lock()
+	defer stub.lock.Unlock()
 
-	if !validateOutParameters(mf.toType(), returnValues) {
-		return &outParameterValidationError{mf.toType(), returnValues}
+	if !validateOutParameters(stub.toType(), returnValues) {
+		reportInvalidOutParameters(stub.testReporter, stub.toType(), returnValues)
+		return
 	}
 
-	mf.outParameters = returnValues
-	return nil
+	stub.outParameters = returnValues
 }
 
 // WithArgs returns a StubWithArgs that can change the out parameters
 // returned based on the arguments provided to this function
-func (mf *mockFunction) WithArgs(arguments ...interface{}) OnCallReturner {
-	mf.lock.Lock()
-	defer mf.lock.Unlock()
+func (stub *Stub) WithArgs(arguments ...interface{}) *CustomArguments {
+	stub.lock.Lock()
+	defer stub.lock.Unlock()
 
-	newCA := newCustomArguments(mf, arguments)
-	for _, ca := range mf.customArgs {
+	newCA := newCustomArguments(stub, arguments)
+	for _, ca := range stub.customArgs {
 		if ca != nil && reflect.DeepEqual(ca.argMatchers, newCA.argMatchers) {
 			return ca
 		}
 	}
 
-	mf.customArgs = append(mf.customArgs, newCA)
+	stub.customArgs = append(stub.customArgs, newCA)
 
 	return newCA
 }
 
 // CallCount returns the number of times the original function was called
 // after the function was stubbed
-func (mf *mockFunction) CallCount() int {
-	mf.lock.RLock()
-	defer mf.lock.RUnlock()
+func (stub *Stub) CallCount() int {
+	stub.lock.RLock()
+	defer stub.lock.RUnlock()
 
-	return len(mf.calls)
+	return len(stub.calls)
 }
 
 // GetCalls returns all calls made to the original function that were
 // captured by the stubbed implementation
-func (mf *mockFunction) GetCalls() []Call {
-	mf.lock.RLock()
-	defer mf.lock.RUnlock()
+func (stub *Stub) GetCalls() []Call {
+	stub.lock.RLock()
+	defer stub.lock.RUnlock()
 
-	calls := make([]Call, len(mf.calls))
+	calls := make([]Call, len(stub.calls))
 
-	for i, call := range mf.calls {
+	for i, call := range stub.calls {
 		c := call
-		calls[i] = &c
+		calls[i] = c
 	}
 
 	return calls
@@ -286,15 +258,16 @@ func (mf *mockFunction) GetCalls() []Call {
 // the number of times the function was called.
 //
 // The call index uses zero-based indexing
-func (mf *mockFunction) GetCall(callIndex int) Call {
-	mf.lock.RLock()
-	defer mf.lock.RUnlock()
+func (stub *Stub) GetCall(callIndex int) Call {
+	stub.lock.RLock()
+	defer stub.lock.RUnlock()
 
-	if callIndex < 0 || callIndex >= mf.CallCount() {
-		panic(fmt.Errorf("mocka: attempted to get CallMetaData for call %v, when the function has only been called %v times", callIndex, len(mf.calls)))
+	if callIndex < 0 || callIndex >= stub.CallCount() {
+		stub.testReporter.Errorf("mocka: attempted to get Call for invocation %v, when the function has only been called %v times", callIndex, len(stub.calls))
+		return Call{}
 	}
 
-	return &mf.calls[callIndex]
+	return stub.calls[callIndex]
 }
 
 // GetFirstCall returns the arguments and return values of the original function
@@ -303,8 +276,8 @@ func (mf *mockFunction) GetCall(callIndex int) Call {
 //
 // GetFirstCall will also panic if the original function was not called at least
 // once.
-func (mf *mockFunction) GetFirstCall() Call {
-	return mf.GetCall(0)
+func (stub *Stub) GetFirstCall() Call {
+	return stub.GetCall(0)
 }
 
 // GetSecondCall returns the arguments and return values of the original function
@@ -313,8 +286,8 @@ func (mf *mockFunction) GetFirstCall() Call {
 //
 // GetSecondCall will also panic if the original function was not called at least
 // twice.
-func (mf *mockFunction) GetSecondCall() Call {
-	return mf.GetCall(1)
+func (stub *Stub) GetSecondCall() Call {
+	return stub.GetCall(1)
 }
 
 // GetThirdCall returns the arguments and return values of the original function
@@ -323,80 +296,80 @@ func (mf *mockFunction) GetSecondCall() Call {
 //
 // GetThirdCall will also panic if the original function was not called at least
 // thrice.
-func (mf *mockFunction) GetThirdCall() Call {
-	return mf.GetCall(2)
+func (stub *Stub) GetThirdCall() Call {
+	return stub.GetCall(2)
 }
 
 // CalledOnce returns true if the original function has been called at least once;
 // otherwise, it will return false.
-func (mf *mockFunction) CalledOnce() bool {
-	return mf.CallCount() >= 1
+func (stub *Stub) CalledOnce() bool {
+	return stub.CallCount() >= 1
 }
 
 // CalledTwice returns true if the original function has been called at twice once;
 // otherwise, it will return false.
-func (mf *mockFunction) CalledTwice() bool {
-	return mf.CallCount() >= 2
+func (stub *Stub) CalledTwice() bool {
+	return stub.CallCount() >= 2
 }
 
 // CalledThrice returns true if the original function has been called at thrice once;
 // otherwise, it will return false.
-func (mf *mockFunction) CalledThrice() bool {
-	return mf.CallCount() >= 3
+func (stub *Stub) CalledThrice() bool {
+	return stub.CallCount() >= 3
 }
 
 // OnCall returns an interface that allows for changing the
 // return values based on the call index.
-func (mf *mockFunction) OnCall(index int) Returner {
-	mf.lock.Lock()
-	defer mf.lock.Unlock()
+func (stub *Stub) OnCall(index int) *OnCall {
+	stub.lock.Lock()
+	defer stub.lock.Unlock()
 
-	for _, o := range mf.onCalls {
+	for _, o := range stub.onCalls {
 		if o.index == index {
 			return o
 		}
 	}
 
-	o := &onCall{index: index, stub: mf}
-	mf.onCalls = append(mf.onCalls, o)
+	o := &OnCall{index: index, stub: stub}
+	stub.onCalls = append(stub.onCalls, o)
 	return o
 }
 
 // OnFirstCall returns an interface that allows for changing the
 // return values of the first call.
-func (mf *mockFunction) OnFirstCall() Returner {
-	return mf.OnCall(0)
+func (stub *Stub) OnFirstCall() *OnCall {
+	return stub.OnCall(0)
 }
 
 // OnSecondCall returns an interface that allows for changing the
 // return values of the second call.
-func (mf *mockFunction) OnSecondCall() Returner {
-	return mf.OnCall(1)
+func (stub *Stub) OnSecondCall() *OnCall {
+	return stub.OnCall(1)
 }
 
 // OnThirdCall returns an interface that allows for changing the
 // return values of the third call.
-func (mf *mockFunction) OnThirdCall() Returner {
-	return mf.OnCall(2)
+func (stub *Stub) OnThirdCall() *OnCall {
+	return stub.OnCall(2)
 }
 
 // Restore removes the stub and restores the the original
 // functionality back to the method
-func (mf *mockFunction) Restore() {
-	mf.lock.Lock()
-	defer mf.lock.Unlock()
+func (stub *Stub) Restore() {
+	stub.lock.Lock()
+	defer stub.lock.Unlock()
 
-	valueOforiginalFunc := reflect.ValueOf(mf.originalFunc)
-	functionValue := reflect.ValueOf(mf.functionPtr).Elem()
+	valueOforiginalFunc := reflect.ValueOf(stub.originalFunc)
+	functionValue := reflect.ValueOf(stub.functionPtr).Elem()
 
 	functionValue.Set(valueOforiginalFunc)
 }
 
 // ExecOnCall assigns a function to be called when the stub
 // implementation is called.
-func (mf *mockFunction) ExecOnCall(execFunc func([]interface{})) {
-	mf.lock.Lock()
-	defer mf.lock.Unlock()
+func (stub *Stub) ExecOnCall(execFunc func([]interface{})) {
+	stub.lock.Lock()
+	defer stub.lock.Unlock()
 
-	mf.execFunc = execFunc
+	stub.execFunc = execFunc
 }

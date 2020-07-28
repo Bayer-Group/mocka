@@ -4,15 +4,16 @@ import (
 	"errors"
 	"reflect"
 
-	"github.com/MonsantoCo/mocka/match"
+	"github.com/MonsantoCo/mocka/v2/match"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("stub", func() {
 	var (
-		fn     func(string, int) (int, error)
-		mockfn *mockFunction
+		fn               func(string, int) (int, error)
+		stub             *Stub
+		failTestReporter *mockTestReporter
 	)
 
 	BeforeEach(func() {
@@ -20,28 +21,30 @@ var _ = Describe("stub", func() {
 			return len(str) + num, nil
 		}
 
-		mockfn = &mockFunction{
+		stub = &Stub{
+			testReporter:  GinkgoT(),
 			originalFunc:  nil,
 			functionPtr:   &fn,
 			outParameters: []interface{}{42, nil},
 			execFunc:      func([]interface{}) {},
 		}
 
-		err := cloneValue(&fn, &mockfn.originalFunc)
-		Expect(err).To(BeNil())
+		err := cloneValue(&fn, &stub.originalFunc)
+		Expect(err).To(Succeed())
+		failTestReporter = &mockTestReporter{}
 	})
 
 	AfterEach(func() {
 		// clean up pointers and slices to prevent memory leaks
-		mockfn.originalFunc = nil
-		mockfn.functionPtr = nil
-		mockfn.outParameters = nil
-		mockfn.calls = nil
-		mockfn.customArgs = nil
-		mockfn = nil
+		stub.originalFunc = nil
+		stub.functionPtr = nil
+		stub.outParameters = nil
+		stub.calls = nil
+		stub.customArgs = nil
+		stub = nil
 	})
 
-	Describe("newMockFunction", func() {
+	Describe("newStub", func() {
 		var callCount int
 
 		BeforeEach(func() {
@@ -52,40 +55,44 @@ var _ = Describe("stub", func() {
 			}
 		})
 
-		It("returns error if passed a nil as the function pointer", func() {
-			mockFn, err := newMockFunction(nil, nil)
+		It("reports an error if passed a nil as the function pointer", func() {
+			stub := newStub(failTestReporter, nil, nil)
 
-			Expect(mockFn).To(BeNil())
-			Expect(err).ToNot(BeNil())
-			Expect(err.Error()).To(Equal("mocka: expected the first argument to be a pointer to a function, but received a nil"))
+			Expect(stub).To(BeNil())
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: expected the second argument to be a pointer to a function, but received a nil",
+			}))
 		})
 
-		It("returns error if a non-pointer value is passed as the function pointer", func() {
-			mockFn, err := newMockFunction(42, nil)
+		It("reports an error if a non-pointer value is passed as the function pointer", func() {
+			stub := newStub(failTestReporter, 42, nil)
 
-			Expect(mockFn).To(BeNil())
-			Expect(err).ToNot(BeNil())
-			Expect(err.Error()).To(Equal("mocka: expected the first argument to be a pointer to a function, but received a int"))
+			Expect(stub).To(BeNil())
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: expected the second argument to be a pointer to a function, but received a int",
+			}))
 		})
 
-		It("returns error if a non-function value is passed as the function pointer", func() {
+		It("reports an error if a non-function value is passed as the function pointer", func() {
 			num := 42
-			mockFn, err := newMockFunction(&num, nil)
+			stub := newStub(failTestReporter, &num, nil)
 
-			Expect(mockFn).To(BeNil())
-			Expect(err).ToNot(BeNil())
-			Expect(err.Error()).To(Equal("mocka: expected the first argument to be a pointer to a function, but received a pointer to a int"))
+			Expect(stub).To(BeNil())
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: expected the second argument to be a pointer to a function, but received a pointer to a int",
+			}))
 		})
 
-		It("returns error supplied out parameters are not of the same type", func() {
-			mockFn, err := newMockFunction(&fn, []interface{}{"42", nil})
+		It("reports an error supplied out parameters are not of the same type", func() {
+			stub := newStub(failTestReporter, &fn, []interface{}{"42", nil})
 
-			Expect(mockFn).To(BeNil())
-			Expect(err).ToNot(BeNil())
-			Expect(err.Error()).To(Equal("mocka: expected return values of type (int, error), but received (string, <nil>)"))
+			Expect(stub).To(BeNil())
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: expected return values of type (int, error), but received (string, <nil>)",
+			}))
 		})
 
-		It("returns error if cloneValue returns an error", func() {
+		It("reports an error if cloneValue returns an error", func() {
 			_cloneValue = func(interface{}, interface{}) error {
 				return errors.New("Ope")
 			}
@@ -93,79 +100,77 @@ var _ = Describe("stub", func() {
 				_cloneValue = cloneValue
 			}()
 
-			mockFn, err := newMockFunction(&fn, []interface{}{42, nil})
+			stub := newStub(failTestReporter, &fn, []interface{}{42, nil})
 
-			Expect(mockFn).To(BeNil())
-			Expect(err).ToNot(BeNil())
-			Expect(err.Error()).To(Equal("mocka: could not clone function pointer to new memory address: Ope"))
+			Expect(stub).To(BeNil())
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: could not clone function pointer to new memory address: Ope",
+			}))
 		})
 
-		It("returns a mockFunction with a reference to the original function", func() {
-			mockFn, err := newMockFunction(&fn, []interface{}{42, nil})
+		It("returns a Stub with a reference to the original function", func() {
+			stub := newStub(GinkgoT(), &fn, []interface{}{42, nil})
 
-			Expect(err).To(BeNil())
-			Expect(mockFn).ToNot(BeNil())
-			Expect(mockFn.originalFunc).ToNot(BeNil())
+			Expect(stub).ToNot(BeNil())
+			Expect(stub.originalFunc).ToNot(BeNil())
 
-			_, _ = mockFn.originalFunc.(func(str string, num int) (int, error))("", 0)
+			_, _ = stub.originalFunc.(func(str string, num int) (int, error))("", 0)
 
 			Expect(callCount).To(Equal(1))
 		})
 
-		It("returns a mockFunction with properties initialized with zero values", func() {
-			mockFn, err := newMockFunction(&fn, []interface{}{42, nil})
+		It("returns a Stub with properties initialized with zero values", func() {
+			stub := newStub(GinkgoT(), &fn, []interface{}{42, nil})
 
-			Expect(err).To(BeNil())
-			Expect(mockFn).ToNot(BeNil())
-			Expect(mockFn.calls).To(BeNil())
-			Expect(mockFn.customArgs).To(BeNil())
+			Expect(stub).ToNot(BeNil())
+			Expect(stub.calls).To(BeNil())
+			Expect(stub.customArgs).To(BeNil())
 		})
 
-		It("returns a mockFunction with outParameters as supplied", func() {
-			mockFn, err := newMockFunction(&fn, []interface{}{42, nil})
+		It("returns a Stub with outParameters as supplied", func() {
+			stub := newStub(GinkgoT(), &fn, []interface{}{42, nil})
 
-			Expect(err).To(BeNil())
-			Expect(mockFn).ToNot(BeNil())
-			Expect(mockFn.outParameters).To(Equal([]interface{}{42, nil}))
+			Expect(stub).ToNot(BeNil())
+			Expect(stub.outParameters).To(Equal([]interface{}{42, nil}))
 		})
 	})
 
 	Describe("getReturnValues", func() {
-		It("returns the mockFunction.OutParameters if no customArgs or onCalls exist", func() {
+		It("returns the Stub.OutParameters if no customArgs or onCalls exist", func() {
 			args := []interface{}{"Hello", 42}
 
-			result, maybeCustomArguments := mockfn.getReturnValues(args, reflect.TypeOf(fn))
+			result, maybeCustomArguments := stub.getReturnValues(args, reflect.TypeOf(fn))
 
 			Expect(result).To(Equal([]interface{}{42, nil}))
 			Expect(maybeCustomArguments).To(BeNil())
 		})
 
-		It("returns the mockFunction.OutParameters if the customArgs are nil", func() {
+		It("returns the Stub.OutParameters if the customArgs are nil", func() {
 			args := []interface{}{"Hello", 42}
-			mockfn.customArgs = append(mockfn.customArgs, nil, nil, nil)
+			stub.customArgs = append(stub.customArgs, nil, nil, nil)
 
-			result, maybeCustomArguments := mockfn.getReturnValues(args, reflect.TypeOf(fn))
+			result, maybeCustomArguments := stub.getReturnValues(args, reflect.TypeOf(fn))
 
 			Expect(result).To(Equal([]interface{}{42, nil}))
 			Expect(maybeCustomArguments).To(BeNil())
 		})
 
-		It("returns the mockFunction.OutParameters if the argument do not equal any customArgs", func() {
+		It("returns the Stub.OutParameters if the argument do not equal any customArgs", func() {
 			args := []interface{}{"Hello", 42}
-			mockfn.customArgs = append(
-				mockfn.customArgs,
-				&customArguments{
-					stub:        mockfn,
+			stub.customArgs = append(
+				stub.customArgs,
+				&CustomArguments{
+					stub:        stub,
 					argMatchers: []match.SupportedKindsMatcher{match.Exactly("apple"), match.IntGreaterThanOrEqualTo(0)},
 					out:         []interface{}{0, errors.New("I am not an apple")},
 				},
-				&customArguments{
-					stub:        mockfn,
+				&CustomArguments{
+					stub:        stub,
 					argMatchers: []match.SupportedKindsMatcher{match.Exactly("B"), match.Exactly(63)},
 					out:         []interface{}{98, nil},
 				})
 
-			result, maybeCustomArguments := mockfn.getReturnValues(args, reflect.TypeOf(fn))
+			result, maybeCustomArguments := stub.getReturnValues(args, reflect.TypeOf(fn))
 
 			Expect(result).To(Equal([]interface{}{42, nil}))
 			Expect(maybeCustomArguments).To(BeNil())
@@ -173,27 +178,27 @@ var _ = Describe("stub", func() {
 
 		It("returns the out parameters if the customArgs if the arguments match", func() {
 			args := []interface{}{"Hello", 42}
-			expected := &customArguments{
-				stub:        mockfn,
+			expected := &CustomArguments{
+				stub:        stub,
 				argMatchers: []match.SupportedKindsMatcher{match.StringSuffix("ello"), match.Exactly(42)},
 				out:         []interface{}{22, errors.New("I am an error")},
 			}
-			mockfn.customArgs = append(
-				mockfn.customArgs,
-				&customArguments{
-					stub:        mockfn,
+			stub.customArgs = append(
+				stub.customArgs,
+				&CustomArguments{
+					stub:        stub,
 					argMatchers: []match.SupportedKindsMatcher{match.StringPrefix("app"), match.Exactly(0)},
 					out:         []interface{}{0, errors.New("I am not an apple")},
 				},
-				&customArguments{
-					stub:        mockfn,
+				&CustomArguments{
+					stub:        stub,
 					argMatchers: []match.SupportedKindsMatcher{match.Exactly("B"), match.IntGreaterThan(60)},
 					out:         []interface{}{98, nil},
 				},
 				expected,
 			)
 
-			result, maybeCustomArguments := mockfn.getReturnValues(args, reflect.TypeOf(fn))
+			result, maybeCustomArguments := stub.getReturnValues(args, reflect.TypeOf(fn))
 
 			Expect(result).To(Equal([]interface{}{22, errors.New("I am an error")}))
 			Expect(maybeCustomArguments).To(Equal(expected))
@@ -201,30 +206,30 @@ var _ = Describe("stub", func() {
 
 		It("returns the the out parameters for the specific call index", func() {
 			args := []interface{}{"apples", 42}
-			mockfn.customArgs = append(
-				mockfn.customArgs,
-				&customArguments{
-					stub:        mockfn,
+			stub.customArgs = append(
+				stub.customArgs,
+				&CustomArguments{
+					stub:        stub,
 					argMatchers: []match.SupportedKindsMatcher{match.Exactly("apple"), match.Exactly(0)},
 					out:         []interface{}{0, errors.New("I am not an apple")},
 					callCount:   2,
-					onCalls: []*onCall{
-						&onCall{
-							stub:  mockfn,
+					onCalls: []*OnCall{
+						{
+							stub:  stub,
 							index: 2,
 							out:   []interface{}{23, errors.New("I am the third not an apple")},
 						},
 					},
 				},
 			)
-			mockfn.calls = []call{call{}, call{}, call{}}
-			mockfn.onCalls = append(mockfn.onCalls, &onCall{
-				stub:  mockfn,
+			stub.calls = []Call{{}, {}, {}}
+			stub.onCalls = append(stub.onCalls, &OnCall{
+				stub:  stub,
 				index: 3,
 				out:   []interface{}{22, errors.New("I am the first error")},
 			})
 
-			result, maybeCustomArguments := mockfn.getReturnValues(args, reflect.TypeOf(fn))
+			result, maybeCustomArguments := stub.getReturnValues(args, reflect.TypeOf(fn))
 
 			Expect(result).To(Equal([]interface{}{22, errors.New("I am the first error")}))
 			Expect(maybeCustomArguments).To(BeNil())
@@ -232,28 +237,28 @@ var _ = Describe("stub", func() {
 
 		It("returns the the out parameters for the specific call index on a custom argument", func() {
 			args := []interface{}{"apple", 0}
-			expected := &customArguments{
-				stub:        mockfn,
+			expected := &CustomArguments{
+				stub:        stub,
 				argMatchers: []match.SupportedKindsMatcher{match.Exactly("apple"), match.Exactly(0)},
 				out:         []interface{}{0, errors.New("I am not an apple")},
 				callCount:   2,
-				onCalls: []*onCall{
-					&onCall{
-						stub:  mockfn,
+				onCalls: []*OnCall{
+					{
+						stub:  stub,
 						index: 2,
 						out:   []interface{}{23, errors.New("I am the third not an apple")},
 					},
 				},
 			}
-			mockfn.customArgs = append(mockfn.customArgs, expected)
-			mockfn.calls = []call{call{}, call{}, call{}}
-			mockfn.onCalls = append(mockfn.onCalls, &onCall{
-				stub:  mockfn,
+			stub.customArgs = append(stub.customArgs, expected)
+			stub.calls = []Call{{}, {}, {}}
+			stub.onCalls = append(stub.onCalls, &OnCall{
+				stub:  stub,
 				index: 0,
 				out:   []interface{}{22, errors.New("I am the first error")},
 			})
 
-			result, maybeCustomArguments := mockfn.getReturnValues(args, reflect.TypeOf(fn))
+			result, maybeCustomArguments := stub.getReturnValues(args, reflect.TypeOf(fn))
 
 			Expect(result).To(Equal([]interface{}{23, errors.New("I am the third not an apple")}))
 			Expect(maybeCustomArguments).To(Equal(expected))
@@ -264,7 +269,7 @@ var _ = Describe("stub", func() {
 		It("returns the tuype of the mocked function", func() {
 			fnValue := reflect.ValueOf(&fn).Elem()
 
-			result := mockfn.toType()
+			result := stub.toType()
 
 			Expect(result).To(Equal(fnValue.Type()))
 		})
@@ -272,16 +277,16 @@ var _ = Describe("stub", func() {
 
 	Describe("implementation", func() {
 		BeforeEach(func() {
-			mockfn.outParameters = []interface{}{42, nil}
-			mockfn.calls = []call{}
-			mockfn.customArgs = []*customArguments{
-				&customArguments{
-					stub:        mockfn,
+			stub.outParameters = []interface{}{42, nil}
+			stub.calls = []Call{}
+			stub.customArgs = []*CustomArguments{
+				{
+					stub:        stub,
 					argMatchers: []match.SupportedKindsMatcher{match.Exactly("custom"), match.Exactly(0)},
 					out:         []interface{}{0, errors.New("Ope")},
 				},
-				&customArguments{
-					stub:        mockfn,
+				{
+					stub:        stub,
 					argMatchers: []match.SupportedKindsMatcher{match.StringPrefix("custom-"), match.Exactly(0)},
 					out:         nil,
 				},
@@ -293,11 +298,11 @@ var _ = Describe("stub", func() {
 			args := []reflect.Value{reflect.ValueOf("Hello"), reflect.ValueOf(42)}
 			expected := []interface{}{"Hello", 42}
 
-			mockfn.execFunc = func(a []interface{}) {
+			stub.execFunc = func(a []interface{}) {
 				argsProvided = a
 			}
 
-			_ = mockfn.implementation(args)
+			_ = stub.implementation(args)
 
 			Expect(argsProvided).To(Equal(expected))
 		})
@@ -305,13 +310,13 @@ var _ = Describe("stub", func() {
 		It("appends the call meta data for this call into the calls slice", func() {
 			args := []reflect.Value{reflect.ValueOf("Hello"), reflect.ValueOf(42)}
 
-			Expect(mockfn.calls).To(HaveLen(0))
+			Expect(stub.calls).To(HaveLen(0))
 
-			_ = mockfn.implementation(args)
+			_ = stub.implementation(args)
 
-			Expect(mockfn.calls).To(HaveLen(1))
+			Expect(stub.calls).To(HaveLen(1))
 
-			ca := mockfn.calls[0]
+			ca := stub.calls[0]
 
 			Expect(ca.args).To(Equal([]interface{}{"Hello", 42}))
 			Expect(ca.out).To(Equal([]interface{}{42, nil}))
@@ -320,7 +325,7 @@ var _ = Describe("stub", func() {
 		It("returns the out parameters as reflection values", func() {
 			args := []reflect.Value{reflect.ValueOf("Hello"), reflect.ValueOf(42)}
 
-			outValues := mockfn.implementation(args)
+			outValues := stub.implementation(args)
 			outInterfaces := mapToInterfaces(outValues)
 
 			Expect(outInterfaces).To(Equal([]interface{}{42, nil}))
@@ -329,7 +334,7 @@ var _ = Describe("stub", func() {
 		It("uses out parameters for custom arguments if applicable", func() {
 			args := []reflect.Value{reflect.ValueOf("custom"), reflect.ValueOf(0)}
 
-			outValues := mockfn.implementation(args)
+			outValues := stub.implementation(args)
 			outInterfaces := mapToInterfaces(outValues)
 
 			Expect(outInterfaces).To(Equal([]interface{}{0, errors.New("Ope")}))
@@ -338,7 +343,7 @@ var _ = Describe("stub", func() {
 		It("doesn't use custom arguments if the return values have not been supplied", func() {
 			args := []reflect.Value{reflect.ValueOf("custom-missing"), reflect.ValueOf(0)}
 
-			outValues := mockfn.implementation(args)
+			outValues := stub.implementation(args)
 			outInterfaces := mapToInterfaces(outValues)
 
 			Expect(outInterfaces).To(Equal([]interface{}{42, nil}))
@@ -350,22 +355,22 @@ var _ = Describe("stub", func() {
 					return len(str) + len(opts), nil
 				}
 
-				mockfn.functionPtr = &fn
-				Expect(cloneValue(&fn, &mockfn.originalFunc)).To(Succeed())
-				mockfn.outParameters = []interface{}{42, nil}
-				mockfn.calls = []call{}
+				stub.functionPtr = &fn
+				Expect(cloneValue(&fn, &stub.originalFunc)).To(Succeed())
+				stub.outParameters = []interface{}{42, nil}
+				stub.calls = []Call{}
 			})
 
 			It("appends the call meta data omitting the missing variadic arguments", func() {
 				args := []reflect.Value{reflect.ValueOf("Hello")}
 
-				Expect(mockfn.calls).To(HaveLen(0))
+				Expect(stub.calls).To(HaveLen(0))
 
-				_ = mockfn.implementation(args)
+				_ = stub.implementation(args)
 
-				Expect(mockfn.calls).To(HaveLen(1))
+				Expect(stub.calls).To(HaveLen(1))
 
-				ca := mockfn.calls[0]
+				ca := stub.calls[0]
 
 				Expect(ca.args).To(Equal([]interface{}{"Hello"}))
 			})
@@ -373,13 +378,13 @@ var _ = Describe("stub", func() {
 			It("appends the call meta data spreading the variadic arguments", func() {
 				args := []reflect.Value{reflect.ValueOf("Hello"), reflect.ValueOf("A"), reflect.ValueOf("B")}
 
-				Expect(mockfn.calls).To(HaveLen(0))
+				Expect(stub.calls).To(HaveLen(0))
 
-				_ = mockfn.implementation(args)
+				_ = stub.implementation(args)
 
-				Expect(mockfn.calls).To(HaveLen(1))
+				Expect(stub.calls).To(HaveLen(1))
 
-				ca := mockfn.calls[0]
+				ca := stub.calls[0]
 
 				Expect(ca.args).To(Equal([]interface{}{"Hello", "A", "B"}))
 			})
@@ -387,96 +392,95 @@ var _ = Describe("stub", func() {
 	})
 
 	Describe("Return", func() {
-		It("returns error if the out parameters are not valid", func() {
-			err := mockfn.Return(42, 42)
+		It("reports an error if the out parameters are not valid", func() {
+			stub.testReporter = failTestReporter
 
-			Expect(err).ToNot(BeNil())
-			Expect(err.Error()).To(Equal("mocka: expected return values of type (int, error), but received (int, int)"))
+			stub.Return(42, 42)
+
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: expected return values of type (int, error), but received (int, int)",
+			}))
 		})
 
 		It("replaces the out parameters if they are valid", func() {
-			err := mockfn.Return(22, errors.New("I am new"))
+			stub.Return(22, errors.New("I am new"))
 
-			Expect(err).To(BeNil())
-			Expect(mockfn.outParameters).To(Equal([]interface{}{22, errors.New("I am new")}))
+			Expect(stub.outParameters).To(Equal([]interface{}{22, errors.New("I am new")}))
 		})
 	})
 
 	Describe("WithArgs", func() {
 		It("returns existing custom arguments if it matching arguments", func() {
-			ca := &customArguments{
-				stub:        mockfn,
+			ca := &CustomArguments{
+				stub:        stub,
 				argMatchers: []match.SupportedKindsMatcher{match.Exactly("apple"), match.Exactly(0)},
 				out:         []interface{}{0, errors.New("I am not an apple")},
 			}
-			mockfn.customArgs = append(mockfn.customArgs, ca)
+			stub.customArgs = append(stub.customArgs, ca)
 
-			withArgs := mockfn.WithArgs("apple", 0)
+			withArgs := stub.WithArgs("apple", 0)
 
 			Expect(withArgs).ToNot(BeNil())
 			Expect(withArgs).To(Equal(ca))
 		})
 
 		It("creates and returns new custom arguments if one does not exist", func() {
-			Expect(mockfn.customArgs).To(HaveLen(0))
+			Expect(stub.customArgs).To(HaveLen(0))
 
-			withArgs := mockfn.WithArgs("apple", 0)
+			withArgs := stub.WithArgs("apple", 0)
 
 			Expect(withArgs).ToNot(BeNil())
-			Expect(mockfn.customArgs).To(HaveLen(1))
+			Expect(stub.customArgs).To(HaveLen(1))
 
-			ca, ok := withArgs.(*customArguments)
-			Expect(ok).To(BeTrue())
-
-			Expect(ca.stub).To(Equal(mockfn))
-			Expect(ca.argMatchers).To(Equal([]match.SupportedKindsMatcher{match.Exactly("apple"), match.Exactly(0)}))
-			Expect(ca.out).To(BeNil())
+			Expect(withArgs.stub).To(Equal(stub))
+			Expect(withArgs.argMatchers).To(Equal([]match.SupportedKindsMatcher{match.Exactly("apple"), match.Exactly(0)}))
+			Expect(withArgs.out).To(BeNil())
 		})
 	})
 
 	Describe("CallCount", func() {
 		It("returns the number of times the stub was called", func() {
-			Expect(mockfn.CallCount()).To(Equal(0))
+			Expect(stub.CallCount()).To(Equal(0))
 
-			mockfn.calls = append(mockfn.calls, call{})
+			stub.calls = append(stub.calls, Call{})
 
-			Expect(mockfn.CallCount()).To(Equal(1))
+			Expect(stub.CallCount()).To(Equal(1))
 
-			mockfn.calls = append(mockfn.calls, call{})
+			stub.calls = append(stub.calls, Call{})
 
-			Expect(mockfn.CallCount()).To(Equal(2))
+			Expect(stub.CallCount()).To(Equal(2))
 		})
 	})
 
 	Describe("GetCalls", func() {
 		It("returns all the call meta data made to the stub", func() {
-			mockfn.calls = append(mockfn.calls,
-				call{
+			stub.calls = append(stub.calls,
+				Call{
 					args: []interface{}{"hello", 42},
 					out:  []interface{}{22, nil},
 				},
-				call{
+				Call{
 					args: []interface{}{"sam", 22},
 					out:  []interface{}{42, nil},
 				},
-				call{
+				Call{
 					args: []interface{}{"rob", 12},
 					out:  []interface{}{0, errors.New("ope")},
 				},
 			)
 
-			result := mockfn.GetCalls()
+			result := stub.GetCalls()
 
 			Expect(result).To(Equal([]Call{
-				&call{
+				{
 					args: []interface{}{"hello", 42},
 					out:  []interface{}{22, nil},
 				},
-				&call{
+				{
 					args: []interface{}{"sam", 22},
 					out:  []interface{}{42, nil},
 				},
-				&call{
+				{
 					args: []interface{}{"rob", 12},
 					out:  []interface{}{0, errors.New("ope")},
 				},
@@ -486,16 +490,16 @@ var _ = Describe("stub", func() {
 
 	Describe("GetCall", func() {
 		BeforeEach(func() {
-			mockfn.calls = []call{
-				call{
+			stub.calls = []Call{
+				{
 					args: []interface{}{"hello", 42},
 					out:  []interface{}{22, nil},
 				},
-				call{
+				{
 					args: []interface{}{"sam", 22},
 					out:  []interface{}{42, nil},
 				},
-				call{
+				{
 					args: []interface{}{"rob", 12},
 					out:  []interface{}{0, errors.New("ope")},
 				},
@@ -503,45 +507,29 @@ var _ = Describe("stub", func() {
 		})
 
 		It("panics if the call index is less than 0", func() {
-			defer func() {
-				r := recover()
-				if r == nil {
-					Fail("expected a panic")
-				}
+			stub.testReporter = failTestReporter
 
-				err, ok := r.(error)
-				Expect(ok).To(BeTrue())
-				Expect(err.Error()).To(Equal("mocka: attempted to get CallMetaData for call -1, when the function has only been called 3 times"))
-			}()
+			_ = stub.GetCall(-1)
 
-			_ = mockfn.GetCall(-1)
-			Fail("expected test to panic")
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: attempted to get Call for invocation -1, when the function has only been called 3 times",
+			}))
 		})
 
 		It("panics if the call index is greater than the number of calls", func() {
-			defer func() {
-				r := recover()
-				if r == nil {
-					Fail("expected a panic")
-				}
+			stub.testReporter = failTestReporter
 
-				err, ok := r.(error)
-				Expect(ok).To(BeTrue())
-				Expect(err.Error()).To(Equal("mocka: attempted to get CallMetaData for call 5, when the function has only been called 3 times"))
-			}()
+			_ = stub.GetCall(5)
 
-			_ = mockfn.GetCall(5)
-			Fail("expected test to panic")
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: attempted to get Call for invocation 5, when the function has only been called 3 times",
+			}))
 		})
 
 		It("returns the call meta data for the specified call index", func() {
-			result := mockfn.GetCall(1)
+			result := stub.GetCall(1)
 
-			Expect(result).ToNot(BeNil())
-
-			c := result.(*call)
-
-			Expect(*c).To(Equal(call{
+			Expect(result).To(Equal(Call{
 				args: []interface{}{"sam", 22},
 				out:  []interface{}{42, nil},
 			}))
@@ -550,44 +538,34 @@ var _ = Describe("stub", func() {
 
 	Describe("GetFirstCall", func() {
 		It("panics if the stub has not been called once", func() {
-			defer func() {
-				r := recover()
-				if r == nil {
-					Fail("expected a panic")
-				}
+			stub.testReporter = failTestReporter
 
-				err, ok := r.(error)
-				Expect(ok).To(BeTrue())
-				Expect(err.Error()).To(Equal("mocka: attempted to get CallMetaData for call 0, when the function has only been called 0 times"))
-			}()
+			_ = stub.GetFirstCall()
 
-			_ = mockfn.GetFirstCall()
-			Fail("expected test to panic")
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: attempted to get Call for invocation 0, when the function has only been called 0 times",
+			}))
 		})
 
 		It("returns the call meta data for the first call", func() {
-			mockfn.calls = []call{
-				call{
+			stub.calls = []Call{
+				{
 					args: []interface{}{"hello", 42},
 					out:  []interface{}{22, nil},
 				},
-				call{
+				{
 					args: []interface{}{"sam", 22},
 					out:  []interface{}{42, nil},
 				},
-				call{
+				{
 					args: []interface{}{"rob", 12},
 					out:  []interface{}{0, errors.New("ope")},
 				},
 			}
 
-			result := mockfn.GetFirstCall()
+			result := stub.GetFirstCall()
 
-			Expect(result).ToNot(BeNil())
-
-			c := result.(*call)
-
-			Expect(*c).To(Equal(call{
+			Expect(result).To(Equal(Call{
 				args: []interface{}{"hello", 42},
 				out:  []interface{}{22, nil},
 			}))
@@ -596,44 +574,34 @@ var _ = Describe("stub", func() {
 
 	Describe("GetSecondCall", func() {
 		It("panics if the stub has not been called twice", func() {
-			defer func() {
-				r := recover()
-				if r == nil {
-					Fail("expected a panic")
-				}
+			stub.testReporter = failTestReporter
 
-				err, ok := r.(error)
-				Expect(ok).To(BeTrue())
-				Expect(err.Error()).To(Equal("mocka: attempted to get CallMetaData for call 1, when the function has only been called 0 times"))
-			}()
+			_ = stub.GetSecondCall()
 
-			_ = mockfn.GetSecondCall()
-			Fail("expected test to panic")
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: attempted to get Call for invocation 1, when the function has only been called 0 times",
+			}))
 		})
 
 		It("returns the call meta data for the second call", func() {
-			mockfn.calls = []call{
-				call{
+			stub.calls = []Call{
+				{
 					args: []interface{}{"hello", 42},
 					out:  []interface{}{22, nil},
 				},
-				call{
+				{
 					args: []interface{}{"sam", 22},
 					out:  []interface{}{42, nil},
 				},
-				call{
+				{
 					args: []interface{}{"rob", 12},
 					out:  []interface{}{0, errors.New("ope")},
 				},
 			}
 
-			result := mockfn.GetSecondCall()
+			result := stub.GetSecondCall()
 
-			Expect(result).ToNot(BeNil())
-
-			c := result.(*call)
-
-			Expect(*c).To(Equal(call{
+			Expect(result).To(Equal(Call{
 				args: []interface{}{"sam", 22},
 				out:  []interface{}{42, nil},
 			}))
@@ -642,44 +610,34 @@ var _ = Describe("stub", func() {
 
 	Describe("GetThirdCall", func() {
 		It("panics if the stub has not been called three times", func() {
-			defer func() {
-				r := recover()
-				if r == nil {
-					Fail("expected a panic")
-				}
+			stub.testReporter = failTestReporter
 
-				err, ok := r.(error)
-				Expect(ok).To(BeTrue())
-				Expect(err.Error()).To(Equal("mocka: attempted to get CallMetaData for call 2, when the function has only been called 0 times"))
-			}()
+			_ = stub.GetThirdCall()
 
-			_ = mockfn.GetThirdCall()
-			Fail("expected test to panic")
+			Expect(failTestReporter.messages).To(Equal([]string{
+				"mocka: attempted to get Call for invocation 2, when the function has only been called 0 times",
+			}))
 		})
 
 		It("returns the call meta data for the third call", func() {
-			mockfn.calls = []call{
-				call{
+			stub.calls = []Call{
+				{
 					args: []interface{}{"hello", 42},
 					out:  []interface{}{22, nil},
 				},
-				call{
+				{
 					args: []interface{}{"sam", 22},
 					out:  []interface{}{42, nil},
 				},
-				call{
+				{
 					args: []interface{}{"rob", 12},
 					out:  []interface{}{0, errors.New("ope")},
 				},
 			}
 
-			result := mockfn.GetThirdCall()
+			result := stub.GetThirdCall()
 
-			Expect(result).ToNot(BeNil())
-
-			c := result.(*call)
-
-			Expect(*c).To(Equal(call{
+			Expect(result).To(Equal(Call{
 				args: []interface{}{"rob", 12},
 				out:  []interface{}{0, errors.New("ope")},
 			}))
@@ -688,28 +646,28 @@ var _ = Describe("stub", func() {
 
 	Describe("CalledOnce", func() {
 		It("returns true is the stub has been called at least once", func() {
-			mockfn.calls = []call{
-				call{
+			stub.calls = []Call{
+				{
 					args: []interface{}{"hello", 42},
 					out:  []interface{}{22, nil},
 				},
-				call{
+				{
 					args: []interface{}{"sam", 22},
 					out:  []interface{}{42, nil},
 				},
-				call{
+				{
 					args: []interface{}{"rob", 12},
 					out:  []interface{}{0, errors.New("ope")},
 				},
 			}
 
-			result := mockfn.CalledOnce()
+			result := stub.CalledOnce()
 
 			Expect(result).To(BeTrue())
 		})
 
 		It("returns false if the stub has not been called at least once", func() {
-			result := mockfn.CalledOnce()
+			result := stub.CalledOnce()
 
 			Expect(result).To(BeFalse())
 		})
@@ -717,28 +675,28 @@ var _ = Describe("stub", func() {
 
 	Describe("CalledTwice", func() {
 		It("returns true is the stub has been called at least twice", func() {
-			mockfn.calls = []call{
-				call{
+			stub.calls = []Call{
+				{
 					args: []interface{}{"hello", 42},
 					out:  []interface{}{22, nil},
 				},
-				call{
+				{
 					args: []interface{}{"sam", 22},
 					out:  []interface{}{42, nil},
 				},
-				call{
+				{
 					args: []interface{}{"rob", 12},
 					out:  []interface{}{0, errors.New("ope")},
 				},
 			}
 
-			result := mockfn.CalledTwice()
+			result := stub.CalledTwice()
 
 			Expect(result).To(BeTrue())
 		})
 
 		It("returns false if the stub has not been called at least twice", func() {
-			result := mockfn.CalledTwice()
+			result := stub.CalledTwice()
 
 			Expect(result).To(BeFalse())
 		})
@@ -746,28 +704,28 @@ var _ = Describe("stub", func() {
 
 	Describe("CalledThrice", func() {
 		It("returns true is the stub has been called at least thrice", func() {
-			mockfn.calls = []call{
-				call{
+			stub.calls = []Call{
+				{
 					args: []interface{}{"hello", 42},
 					out:  []interface{}{22, nil},
 				},
-				call{
+				{
 					args: []interface{}{"sam", 22},
 					out:  []interface{}{42, nil},
 				},
-				call{
+				{
 					args: []interface{}{"rob", 12},
 					out:  []interface{}{0, errors.New("ope")},
 				},
 			}
 
-			result := mockfn.CalledThrice()
+			result := stub.CalledThrice()
 
 			Expect(result).To(BeTrue())
 		})
 
 		It("returns false if the stub has not been called at least thrice", func() {
-			result := mockfn.CalledThrice()
+			result := stub.CalledThrice()
 
 			Expect(result).To(BeFalse())
 		})
@@ -775,154 +733,130 @@ var _ = Describe("stub", func() {
 
 	Describe("OnCall", func() {
 		BeforeEach(func() {
-			mockfn.onCalls = []*onCall{
-				&onCall{stub: mockfn, index: 1},
-				&onCall{stub: mockfn, index: 2},
-				&onCall{stub: mockfn, index: 0},
+			stub.onCalls = []*OnCall{
+				{stub: stub, index: 1},
+				{stub: stub, index: 2},
+				{stub: stub, index: 0},
 			}
 		})
 
 		It("returns a pointer to an onCall struct", func() {
-			result := mockfn.OnCall(5)
+			result := stub.OnCall(5)
 
-			o, ok := result.(*onCall)
-
-			Expect(ok).To(BeTrue())
-			Expect(*o).To(Equal(onCall{stub: mockfn, index: 5}))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 5}))
 		})
 
 		It("appends the new onCall struct to the onCalls slice", func() {
-			_ = mockfn.OnCall(5)
+			_ = stub.OnCall(5)
 
-			Expect(mockfn.onCalls).To(HaveLen(4))
+			Expect(stub.onCalls).To(HaveLen(4))
 		})
 
 		It("returns an existing onCall object if one exists for that index", func() {
-			result := mockfn.OnCall(2)
+			result := stub.OnCall(2)
 
-			o, ok := result.(*onCall)
-
-			Expect(mockfn.onCalls).To(HaveLen(3))
-			Expect(ok).To(BeTrue())
-			Expect(*o).To(Equal(onCall{stub: mockfn, index: 2}))
+			Expect(stub.onCalls).To(HaveLen(3))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 2}))
 		})
 	})
 
 	Describe("OnFirstCall", func() {
 		It("creates a new onCall with a 0 index", func() {
-			mockfn.onCalls = []*onCall{
-				&onCall{stub: mockfn, index: 1},
-				&onCall{stub: mockfn, index: 2},
+			stub.onCalls = []*OnCall{
+				{stub: stub, index: 1},
+				{stub: stub, index: 2},
 			}
 
-			result := mockfn.OnFirstCall()
+			result := stub.OnFirstCall()
 
-			o, ok := result.(*onCall)
-
-			Expect(mockfn.onCalls).To(HaveLen(3))
-			Expect(ok).To(BeTrue())
-			Expect(*o).To(Equal(onCall{stub: mockfn, index: 0}))
+			Expect(stub.onCalls).To(HaveLen(3))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 0}))
 		})
 
 		It("returns the existing first call", func() {
-			mockfn.onCalls = []*onCall{
-				&onCall{stub: mockfn, index: 1},
-				&onCall{stub: mockfn, index: 2},
-				&onCall{stub: mockfn, index: 0},
+			stub.onCalls = []*OnCall{
+				{stub: stub, index: 1},
+				{stub: stub, index: 2},
+				{stub: stub, index: 0},
 			}
 
-			result := mockfn.OnFirstCall()
+			result := stub.OnFirstCall()
 
-			o, ok := result.(*onCall)
-
-			Expect(mockfn.onCalls).To(HaveLen(3))
-			Expect(ok).To(BeTrue())
-			Expect(*o).To(Equal(onCall{stub: mockfn, index: 0}))
+			Expect(stub.onCalls).To(HaveLen(3))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 0}))
 		})
 	})
 
 	Describe("OnSecondCall", func() {
 		It("creates a new onCall with a 1 index", func() {
-			mockfn.onCalls = []*onCall{
-				&onCall{stub: mockfn, index: 0},
-				&onCall{stub: mockfn, index: 2},
+			stub.onCalls = []*OnCall{
+				{stub: stub, index: 0},
+				{stub: stub, index: 2},
 			}
 
-			result := mockfn.OnSecondCall()
+			result := stub.OnSecondCall()
 
-			o, ok := result.(*onCall)
-
-			Expect(mockfn.onCalls).To(HaveLen(3))
-			Expect(ok).To(BeTrue())
-			Expect(*o).To(Equal(onCall{stub: mockfn, index: 1}))
+			Expect(stub.onCalls).To(HaveLen(3))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 1}))
 		})
 
 		It("returns the existing second call", func() {
-			mockfn.onCalls = []*onCall{
-				&onCall{stub: mockfn, index: 1},
-				&onCall{stub: mockfn, index: 2},
-				&onCall{stub: mockfn, index: 0},
+			stub.onCalls = []*OnCall{
+				{stub: stub, index: 1},
+				{stub: stub, index: 2},
+				{stub: stub, index: 0},
 			}
 
-			result := mockfn.OnSecondCall()
+			result := stub.OnSecondCall()
 
-			o, ok := result.(*onCall)
-
-			Expect(mockfn.onCalls).To(HaveLen(3))
-			Expect(ok).To(BeTrue())
-			Expect(*o).To(Equal(onCall{stub: mockfn, index: 1}))
+			Expect(stub.onCalls).To(HaveLen(3))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 1}))
 		})
 	})
 
 	Describe("OnThirdCall", func() {
 		It("creates a new onCall with a 2 index", func() {
-			mockfn.onCalls = []*onCall{
-				&onCall{stub: mockfn, index: 0},
-				&onCall{stub: mockfn, index: 1},
+			stub.onCalls = []*OnCall{
+				{stub: stub, index: 0},
+				{stub: stub, index: 1},
 			}
 
-			result := mockfn.OnThirdCall()
+			result := stub.OnThirdCall()
 
-			o, ok := result.(*onCall)
-
-			Expect(mockfn.onCalls).To(HaveLen(3))
-			Expect(ok).To(BeTrue())
-			Expect(*o).To(Equal(onCall{stub: mockfn, index: 2}))
+			Expect(stub.onCalls).To(HaveLen(3))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 2}))
 		})
 
 		It("returns the existing third call", func() {
-			mockfn.onCalls = []*onCall{
-				&onCall{stub: mockfn, index: 1},
-				&onCall{stub: mockfn, index: 2},
-				&onCall{stub: mockfn, index: 0},
+			stub.onCalls = []*OnCall{
+				{stub: stub, index: 1},
+				{stub: stub, index: 2},
+				{stub: stub, index: 0},
 			}
 
-			result := mockfn.OnThirdCall()
+			result := stub.OnThirdCall()
 
-			o, ok := result.(*onCall)
-
-			Expect(mockfn.onCalls).To(HaveLen(3))
-			Expect(ok).To(BeTrue())
-			Expect(*o).To(Equal(onCall{stub: mockfn, index: 2}))
+			Expect(stub.onCalls).To(HaveLen(3))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 2}))
 		})
 	})
 
 	Describe("Restore", func() {
 		It("overrides the function pointer with the the original pointer", func() {
-			mockfn.originalFunc = func(str string, num int) (int, error) {
+			stub.originalFunc = func(str string, num int) (int, error) {
 				return 42, errors.New("Ope")
 			}
 
-			castfn, ok := mockfn.functionPtr.(*func(str string, num int) (int, error))
+			castfn, ok := stub.functionPtr.(*func(str string, num int) (int, error))
 			Expect(ok).To(BeTrue())
 
 			n, err := (*castfn)("hello", 2)
 			Expect(n).To(Equal(7))
 			Expect(err).To(BeNil())
 
-			mockfn.Restore()
+			stub.Restore()
 
-			castfn, ok = mockfn.functionPtr.(*func(str string, num int) (int, error))
+			castfn, ok = stub.functionPtr.(*func(str string, num int) (int, error))
 			Expect(ok).To(BeTrue())
 
 			n, err = (*castfn)("hello", 2)
@@ -939,11 +873,11 @@ var _ = Describe("stub", func() {
 				called = true
 			}
 
-			mockfn.ExecOnCall(newFn)
+			stub.ExecOnCall(newFn)
 
 			Expect(called).To(BeFalse())
 
-			mockfn.execFunc([]interface{}{})
+			stub.execFunc([]interface{}{})
 
 			Expect(called).To(BeTrue())
 		})
@@ -953,23 +887,23 @@ var _ = Describe("stub", func() {
 		const numArguments = 2
 
 		var (
-			customArgs []*customArguments
-			matcher1   *customArguments
-			matcher2   *customArguments
+			customArgs []*CustomArguments
+			matcher1   *CustomArguments
+			matcher2   *CustomArguments
 		)
 
 		BeforeEach(func() {
-			matcher1 = &customArguments{
-				stub:        mockfn,
+			matcher1 = &CustomArguments{
+				stub:        stub,
 				argMatchers: []match.SupportedKindsMatcher{match.Exactly("custom-"), match.Exactly(0)},
 				out:         []interface{}{0, errors.New("Ope")},
 			}
-			matcher2 = &customArguments{
-				stub:        mockfn,
+			matcher2 = &CustomArguments{
+				stub:        stub,
 				argMatchers: []match.SupportedKindsMatcher{match.StringPrefix("custom-"), match.Exactly(0)},
 				out:         nil,
 			}
-			customArgs = []*customArguments{matcher1, matcher2}
+			customArgs = []*CustomArguments{matcher1, matcher2}
 		})
 
 		It("returns nil when no custom arguments are provided", func() {
@@ -979,7 +913,7 @@ var _ = Describe("stub", func() {
 		})
 
 		It("return the only custom argument when provided one custom argument", func() {
-			actual := getHighestPriority([]*customArguments{matcher1}, numArguments)
+			actual := getHighestPriority([]*CustomArguments{matcher1}, numArguments)
 
 			Expect(actual).To(Equal(matcher1))
 		})
@@ -991,10 +925,10 @@ var _ = Describe("stub", func() {
 		})
 
 		It("returns the first matcher if multiple matchers have the same priority", func() {
-			customArgs = []*customArguments{
+			customArgs = []*CustomArguments{
 				matcher2,
-				&customArguments{
-					stub:        mockfn,
+				{
+					stub:        stub,
 					argMatchers: []match.SupportedKindsMatcher{match.StringPrefix("custom"), match.Exactly(0)},
 					out:         nil,
 				},
@@ -1007,23 +941,23 @@ var _ = Describe("stub", func() {
 
 	Describe("getPossible", func() {
 		var (
-			customArgs []*customArguments
-			matcher1   *customArguments
-			matcher2   *customArguments
+			customArgs []*CustomArguments
+			matcher1   *CustomArguments
+			matcher2   *CustomArguments
 		)
 
 		BeforeEach(func() {
-			matcher1 = &customArguments{
-				stub:        mockfn,
+			matcher1 = &CustomArguments{
+				stub:        stub,
 				argMatchers: []match.SupportedKindsMatcher{match.Exactly("custom-"), match.Exactly(0)},
 				out:         []interface{}{0, errors.New("Ope")},
 			}
-			matcher2 = &customArguments{
-				stub:        mockfn,
+			matcher2 = &CustomArguments{
+				stub:        stub,
 				argMatchers: []match.SupportedKindsMatcher{match.StringPrefix("custom-"), match.Exactly(0)},
 				out:         nil,
 			}
-			customArgs = []*customArguments{matcher1, matcher2}
+			customArgs = []*CustomArguments{matcher1, matcher2}
 		})
 
 		It("returns an empty slice when no matches are found", func() {
