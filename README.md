@@ -8,6 +8,8 @@ Mocka is a simple mocking and stubbing library for the [Go programming language]
 
 All changes will be reflected in the [CHANGELOG][changelog].
 
+> If you are looking to migrate from **v1** to **v2** check out the [migration guide][migrationGuide].
+
 ## Why Mocka?
 
 There are times when you would want to control the output of a third-party function in testing. Sometimes making a wrapper around that package/function is more effort than it is worth. Mocka is here to solve that problem. It allows you to control the output of functions without needing to write any additional code. 
@@ -651,3 +653,5 @@ func TestSandbox(t *testing.T) {
 [godoc-badge]:     https://godoc.org/github.com/MonsantoCo/mocka?status.svg
 [godoc]:           https://pkg.go.dev/github.com/MonsantoCo/mocka?tab=doc
 [ginkgo]: https://github.com/onsi/ginkgo
+[migrationGuide]: https://github.com/MonsantoCo/mocka/blob/master/MIGRATE_TO_V2.md
+
