@@ -210,7 +210,7 @@ var _ = Describe("CustomArguments", func() {
 		It("returns a pointer to an onCall struct", func() {
 			result := ca.OnCall(5)
 
-			Expect(result).To(Equal(&OnCall{stub: stub, index: 5}))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 5}))
 		})
 
 		It("appends the new onCall struct to the onCalls slice", func() {
@@ -223,7 +223,7 @@ var _ = Describe("CustomArguments", func() {
 			result := ca.OnCall(2)
 
 			Expect(ca.onCalls).To(HaveLen(3))
-			Expect(result).To(Equal(&OnCall{stub: stub, index: 2}))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 2}))
 		})
 	})
 
@@ -240,7 +240,7 @@ var _ = Describe("CustomArguments", func() {
 			result := ca.OnFirstCall()
 
 			Expect(ca.onCalls).To(HaveLen(3))
-			Expect(result).To(Equal(&OnCall{stub: stub, index: 0}))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 0}))
 		})
 
 		It("returns the existing first call", func() {
@@ -256,7 +256,7 @@ var _ = Describe("CustomArguments", func() {
 			result := ca.OnFirstCall()
 
 			Expect(ca.onCalls).To(HaveLen(3))
-			Expect(result).To(Equal(&OnCall{stub: stub, index: 0}))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 0}))
 		})
 	})
 
@@ -289,7 +289,7 @@ var _ = Describe("CustomArguments", func() {
 			result := ca.OnSecondCall()
 
 			Expect(ca.onCalls).To(HaveLen(3))
-			Expect(result).To(Equal(&OnCall{stub: stub, index: 1}))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 1}))
 		})
 	})
 
@@ -306,7 +306,7 @@ var _ = Describe("CustomArguments", func() {
 			result := ca.OnThirdCall()
 
 			Expect(ca.onCalls).To(HaveLen(3))
-			Expect(result).To(Equal(&OnCall{stub: stub, index: 2}))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 2}))
 		})
 
 		It("returns the existing third call", func() {
@@ -322,7 +322,7 @@ var _ = Describe("CustomArguments", func() {
 			result := ca.OnThirdCall()
 
 			Expect(ca.onCalls).To(HaveLen(3))
-			Expect(result).To(Equal(&OnCall{stub: stub, index: 2}))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 2}))
 		})
 	})
 

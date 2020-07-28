@@ -743,7 +743,7 @@ var _ = Describe("stub", func() {
 		It("returns a pointer to an onCall struct", func() {
 			result := stub.OnCall(5)
 
-			Expect(result).To(Equal(&OnCall{stub: stub, index: 5}))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 5}))
 		})
 
 		It("appends the new onCall struct to the onCalls slice", func() {
@@ -756,7 +756,7 @@ var _ = Describe("stub", func() {
 			result := stub.OnCall(2)
 
 			Expect(stub.onCalls).To(HaveLen(3))
-			Expect(result).To(Equal(&OnCall{stub: stub, index: 2}))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 2}))
 		})
 	})
 
@@ -770,7 +770,7 @@ var _ = Describe("stub", func() {
 			result := stub.OnFirstCall()
 
 			Expect(stub.onCalls).To(HaveLen(3))
-			Expect(result).To(Equal(&OnCall{stub: stub, index: 0}))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 0}))
 		})
 
 		It("returns the existing first call", func() {
@@ -783,7 +783,7 @@ var _ = Describe("stub", func() {
 			result := stub.OnFirstCall()
 
 			Expect(stub.onCalls).To(HaveLen(3))
-			Expect(result).To(Equal(&OnCall{stub: stub, index: 0}))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 0}))
 		})
 	})
 
@@ -797,7 +797,7 @@ var _ = Describe("stub", func() {
 			result := stub.OnSecondCall()
 
 			Expect(stub.onCalls).To(HaveLen(3))
-			Expect(result).To(Equal(&OnCall{stub: stub, index: 1}))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 1}))
 		})
 
 		It("returns the existing second call", func() {
@@ -810,7 +810,7 @@ var _ = Describe("stub", func() {
 			result := stub.OnSecondCall()
 
 			Expect(stub.onCalls).To(HaveLen(3))
-			Expect(result).To(Equal(&OnCall{stub: stub, index: 1}))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 1}))
 		})
 	})
 
@@ -824,7 +824,7 @@ var _ = Describe("stub", func() {
 			result := stub.OnThirdCall()
 
 			Expect(stub.onCalls).To(HaveLen(3))
-			Expect(result).To(Equal(&OnCall{stub: stub, index: 2}))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 2}))
 		})
 
 		It("returns the existing third call", func() {
@@ -837,7 +837,7 @@ var _ = Describe("stub", func() {
 			result := stub.OnThirdCall()
 
 			Expect(stub.onCalls).To(HaveLen(3))
-			Expect(result).To(Equal(&OnCall{stub: stub, index: 2}))
+			Expect(*result).To(Equal(OnCall{stub: stub, index: 2}))
 		})
 	})
 
