@@ -200,9 +200,9 @@ var _ = Describe("CustomArguments", func() {
 			ca = &CustomArguments{
 				stub: stub,
 				onCalls: []*OnCall{
-					&OnCall{stub: stub, index: 1},
-					&OnCall{stub: stub, index: 2},
-					&OnCall{stub: stub, index: 0},
+					{stub: stub, index: 1},
+					{stub: stub, index: 2},
+					{stub: stub, index: 0},
 				},
 			}
 		})
@@ -232,8 +232,8 @@ var _ = Describe("CustomArguments", func() {
 			ca := &CustomArguments{
 				stub: stub,
 				onCalls: []*OnCall{
-					&OnCall{stub: stub, index: 1},
-					&OnCall{stub: stub, index: 2},
+					{stub: stub, index: 1},
+					{stub: stub, index: 2},
 				},
 			}
 
@@ -247,9 +247,9 @@ var _ = Describe("CustomArguments", func() {
 			ca := &CustomArguments{
 				stub: stub,
 				onCalls: []*OnCall{
-					&OnCall{stub: stub, index: 1},
-					&OnCall{stub: stub, index: 2},
-					&OnCall{stub: stub, index: 0},
+					{stub: stub, index: 1},
+					{stub: stub, index: 2},
+					{stub: stub, index: 0},
 				},
 			}
 
@@ -265,8 +265,8 @@ var _ = Describe("CustomArguments", func() {
 			ca := &CustomArguments{
 				stub: stub,
 				onCalls: []*OnCall{
-					&OnCall{stub: stub, index: 0},
-					&OnCall{stub: stub, index: 2},
+					{stub: stub, index: 0},
+					{stub: stub, index: 2},
 				},
 			}
 
@@ -280,9 +280,9 @@ var _ = Describe("CustomArguments", func() {
 			ca := &CustomArguments{
 				stub: stub,
 				onCalls: []*OnCall{
-					&OnCall{stub: stub, index: 1},
-					&OnCall{stub: stub, index: 2},
-					&OnCall{stub: stub, index: 0},
+					{stub: stub, index: 1},
+					{stub: stub, index: 2},
+					{stub: stub, index: 0},
 				},
 			}
 
@@ -298,8 +298,8 @@ var _ = Describe("CustomArguments", func() {
 			ca := &CustomArguments{
 				stub: stub,
 				onCalls: []*OnCall{
-					&OnCall{stub: stub, index: 0},
-					&OnCall{stub: stub, index: 1},
+					{stub: stub, index: 0},
+					{stub: stub, index: 1},
 				},
 			}
 
@@ -313,9 +313,9 @@ var _ = Describe("CustomArguments", func() {
 			ca := &CustomArguments{
 				stub: stub,
 				onCalls: []*OnCall{
-					&OnCall{stub: stub, index: 1},
-					&OnCall{stub: stub, index: 2},
-					&OnCall{stub: stub, index: 0},
+					{stub: stub, index: 1},
+					{stub: stub, index: 2},
+					{stub: stub, index: 0},
 				},
 			}
 

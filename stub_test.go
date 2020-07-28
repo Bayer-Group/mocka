@@ -214,7 +214,7 @@ var _ = Describe("stub", func() {
 					out:         []interface{}{0, errors.New("I am not an apple")},
 					callCount:   2,
 					onCalls: []*OnCall{
-						&OnCall{
+						{
 							stub:  stub,
 							index: 2,
 							out:   []interface{}{23, errors.New("I am the third not an apple")},
@@ -222,7 +222,7 @@ var _ = Describe("stub", func() {
 					},
 				},
 			)
-			stub.calls = []Call{Call{}, Call{}, Call{}}
+			stub.calls = []Call{{}, {}, {}}
 			stub.onCalls = append(stub.onCalls, &OnCall{
 				stub:  stub,
 				index: 3,
@@ -243,7 +243,7 @@ var _ = Describe("stub", func() {
 				out:         []interface{}{0, errors.New("I am not an apple")},
 				callCount:   2,
 				onCalls: []*OnCall{
-					&OnCall{
+					{
 						stub:  stub,
 						index: 2,
 						out:   []interface{}{23, errors.New("I am the third not an apple")},
@@ -251,7 +251,7 @@ var _ = Describe("stub", func() {
 				},
 			}
 			stub.customArgs = append(stub.customArgs, expected)
-			stub.calls = []Call{Call{}, Call{}, Call{}}
+			stub.calls = []Call{{}, {}, {}}
 			stub.onCalls = append(stub.onCalls, &OnCall{
 				stub:  stub,
 				index: 0,
@@ -280,12 +280,12 @@ var _ = Describe("stub", func() {
 			stub.outParameters = []interface{}{42, nil}
 			stub.calls = []Call{}
 			stub.customArgs = []*CustomArguments{
-				&CustomArguments{
+				{
 					stub:        stub,
 					argMatchers: []match.SupportedKindsMatcher{match.Exactly("custom"), match.Exactly(0)},
 					out:         []interface{}{0, errors.New("Ope")},
 				},
-				&CustomArguments{
+				{
 					stub:        stub,
 					argMatchers: []match.SupportedKindsMatcher{match.StringPrefix("custom-"), match.Exactly(0)},
 					out:         nil,
@@ -472,15 +472,15 @@ var _ = Describe("stub", func() {
 			result := stub.GetCalls()
 
 			Expect(result).To(Equal([]Call{
-				Call{
+				{
 					args: []interface{}{"hello", 42},
 					out:  []interface{}{22, nil},
 				},
-				Call{
+				{
 					args: []interface{}{"sam", 22},
 					out:  []interface{}{42, nil},
 				},
-				Call{
+				{
 					args: []interface{}{"rob", 12},
 					out:  []interface{}{0, errors.New("ope")},
 				},
@@ -491,15 +491,15 @@ var _ = Describe("stub", func() {
 	Describe("GetCall", func() {
 		BeforeEach(func() {
 			stub.calls = []Call{
-				Call{
+				{
 					args: []interface{}{"hello", 42},
 					out:  []interface{}{22, nil},
 				},
-				Call{
+				{
 					args: []interface{}{"sam", 22},
 					out:  []interface{}{42, nil},
 				},
-				Call{
+				{
 					args: []interface{}{"rob", 12},
 					out:  []interface{}{0, errors.New("ope")},
 				},
@@ -549,15 +549,15 @@ var _ = Describe("stub", func() {
 
 		It("returns the call meta data for the first call", func() {
 			stub.calls = []Call{
-				Call{
+				{
 					args: []interface{}{"hello", 42},
 					out:  []interface{}{22, nil},
 				},
-				Call{
+				{
 					args: []interface{}{"sam", 22},
 					out:  []interface{}{42, nil},
 				},
-				Call{
+				{
 					args: []interface{}{"rob", 12},
 					out:  []interface{}{0, errors.New("ope")},
 				},
@@ -585,15 +585,15 @@ var _ = Describe("stub", func() {
 
 		It("returns the call meta data for the second call", func() {
 			stub.calls = []Call{
-				Call{
+				{
 					args: []interface{}{"hello", 42},
 					out:  []interface{}{22, nil},
 				},
-				Call{
+				{
 					args: []interface{}{"sam", 22},
 					out:  []interface{}{42, nil},
 				},
-				Call{
+				{
 					args: []interface{}{"rob", 12},
 					out:  []interface{}{0, errors.New("ope")},
 				},
@@ -621,15 +621,15 @@ var _ = Describe("stub", func() {
 
 		It("returns the call meta data for the third call", func() {
 			stub.calls = []Call{
-				Call{
+				{
 					args: []interface{}{"hello", 42},
 					out:  []interface{}{22, nil},
 				},
-				Call{
+				{
 					args: []interface{}{"sam", 22},
 					out:  []interface{}{42, nil},
 				},
-				Call{
+				{
 					args: []interface{}{"rob", 12},
 					out:  []interface{}{0, errors.New("ope")},
 				},
@@ -647,15 +647,15 @@ var _ = Describe("stub", func() {
 	Describe("CalledOnce", func() {
 		It("returns true is the stub has been called at least once", func() {
 			stub.calls = []Call{
-				Call{
+				{
 					args: []interface{}{"hello", 42},
 					out:  []interface{}{22, nil},
 				},
-				Call{
+				{
 					args: []interface{}{"sam", 22},
 					out:  []interface{}{42, nil},
 				},
-				Call{
+				{
 					args: []interface{}{"rob", 12},
 					out:  []interface{}{0, errors.New("ope")},
 				},
@@ -676,15 +676,15 @@ var _ = Describe("stub", func() {
 	Describe("CalledTwice", func() {
 		It("returns true is the stub has been called at least twice", func() {
 			stub.calls = []Call{
-				Call{
+				{
 					args: []interface{}{"hello", 42},
 					out:  []interface{}{22, nil},
 				},
-				Call{
+				{
 					args: []interface{}{"sam", 22},
 					out:  []interface{}{42, nil},
 				},
-				Call{
+				{
 					args: []interface{}{"rob", 12},
 					out:  []interface{}{0, errors.New("ope")},
 				},
@@ -705,15 +705,15 @@ var _ = Describe("stub", func() {
 	Describe("CalledThrice", func() {
 		It("returns true is the stub has been called at least thrice", func() {
 			stub.calls = []Call{
-				Call{
+				{
 					args: []interface{}{"hello", 42},
 					out:  []interface{}{22, nil},
 				},
-				Call{
+				{
 					args: []interface{}{"sam", 22},
 					out:  []interface{}{42, nil},
 				},
-				Call{
+				{
 					args: []interface{}{"rob", 12},
 					out:  []interface{}{0, errors.New("ope")},
 				},
@@ -734,9 +734,9 @@ var _ = Describe("stub", func() {
 	Describe("OnCall", func() {
 		BeforeEach(func() {
 			stub.onCalls = []*OnCall{
-				&OnCall{stub: stub, index: 1},
-				&OnCall{stub: stub, index: 2},
-				&OnCall{stub: stub, index: 0},
+				{stub: stub, index: 1},
+				{stub: stub, index: 2},
+				{stub: stub, index: 0},
 			}
 		})
 
@@ -763,8 +763,8 @@ var _ = Describe("stub", func() {
 	Describe("OnFirstCall", func() {
 		It("creates a new onCall with a 0 index", func() {
 			stub.onCalls = []*OnCall{
-				&OnCall{stub: stub, index: 1},
-				&OnCall{stub: stub, index: 2},
+				{stub: stub, index: 1},
+				{stub: stub, index: 2},
 			}
 
 			result := stub.OnFirstCall()
@@ -775,9 +775,9 @@ var _ = Describe("stub", func() {
 
 		It("returns the existing first call", func() {
 			stub.onCalls = []*OnCall{
-				&OnCall{stub: stub, index: 1},
-				&OnCall{stub: stub, index: 2},
-				&OnCall{stub: stub, index: 0},
+				{stub: stub, index: 1},
+				{stub: stub, index: 2},
+				{stub: stub, index: 0},
 			}
 
 			result := stub.OnFirstCall()
@@ -790,8 +790,8 @@ var _ = Describe("stub", func() {
 	Describe("OnSecondCall", func() {
 		It("creates a new onCall with a 1 index", func() {
 			stub.onCalls = []*OnCall{
-				&OnCall{stub: stub, index: 0},
-				&OnCall{stub: stub, index: 2},
+				{stub: stub, index: 0},
+				{stub: stub, index: 2},
 			}
 
 			result := stub.OnSecondCall()
@@ -802,9 +802,9 @@ var _ = Describe("stub", func() {
 
 		It("returns the existing second call", func() {
 			stub.onCalls = []*OnCall{
-				&OnCall{stub: stub, index: 1},
-				&OnCall{stub: stub, index: 2},
-				&OnCall{stub: stub, index: 0},
+				{stub: stub, index: 1},
+				{stub: stub, index: 2},
+				{stub: stub, index: 0},
 			}
 
 			result := stub.OnSecondCall()
@@ -817,8 +817,8 @@ var _ = Describe("stub", func() {
 	Describe("OnThirdCall", func() {
 		It("creates a new onCall with a 2 index", func() {
 			stub.onCalls = []*OnCall{
-				&OnCall{stub: stub, index: 0},
-				&OnCall{stub: stub, index: 1},
+				{stub: stub, index: 0},
+				{stub: stub, index: 1},
 			}
 
 			result := stub.OnThirdCall()
@@ -829,9 +829,9 @@ var _ = Describe("stub", func() {
 
 		It("returns the existing third call", func() {
 			stub.onCalls = []*OnCall{
-				&OnCall{stub: stub, index: 1},
-				&OnCall{stub: stub, index: 2},
-				&OnCall{stub: stub, index: 0},
+				{stub: stub, index: 1},
+				{stub: stub, index: 2},
+				{stub: stub, index: 0},
 			}
 
 			result := stub.OnThirdCall()
@@ -927,7 +927,7 @@ var _ = Describe("stub", func() {
 		It("returns the first matcher if multiple matchers have the same priority", func() {
 			customArgs = []*CustomArguments{
 				matcher2,
-				&CustomArguments{
+				{
 					stub:        stub,
 					argMatchers: []match.SupportedKindsMatcher{match.StringPrefix("custom"), match.Exactly(0)},
 					out:         nil,
