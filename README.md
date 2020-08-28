@@ -651,7 +651,7 @@ func TestSandbox(t *testing.T) {
 [build-badge]: https://github.com/MonsantoCo/mocka/workflows/build/badge.svg
 [build-ci]:       https://github.com/MonsantoCo/mocka/actions?query=workflow%3A%22build%22
 [godoc-badge]:     https://godoc.org/github.com/MonsantoCo/mocka?status.svg
-[godoc]:           https://pkg.go.dev/github.com/MonsantoCo/mocka?tab=doc
+[godoc]:           https://pkg.go.dev/github.com/MonsantoCo/mocka/v2?tab=doc
 [ginkgo]: https://github.com/onsi/ginkgo
 [migrationGuide]: https://github.com/MonsantoCo/mocka/blob/master/MIGRATE_TO_V2.md
 
