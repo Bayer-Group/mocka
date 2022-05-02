@@ -24,7 +24,7 @@ github.com/MonsantoCo/mocka v1.x.x
 
 To
 ```
-github.com/MonsantoCo/mocka/v2 v2.0.0
+github.com/Bayer-Group/mocka/v2 v2.0.0
 ```
 
 ## The Way to Create Stubs

@@ -1,11 +1,10 @@
-module github.com/MonsantoCo/mocka/v2
+module github.com/Bayer-Group/mocka/v2
 
-go 1.12
+go 1.16
 
 require (
-	github.com/onsi/ginkgo v1.8.0
-	github.com/onsi/gomega v1.5.0
-	golang.org/x/net v0.0.0-20200625001655-4c5254603344 // indirect
-	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208 // indirect
-	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
+	github.com/fsnotify/fsnotify v1.5.4 // indirect
+	github.com/onsi/ginkgo v1.16.5
+	github.com/onsi/gomega v1.10.1
+	golang.org/x/sys v0.0.0-20220502124256-b6088ccd6cba // indirect
 )

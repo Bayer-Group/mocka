@@ -4,7 +4,7 @@ import (
 	"errors"
 	"reflect"
 
-	"github.com/MonsantoCo/mocka/v2/match"
+	"github.com/Bayer-Group/mocka/v2/match"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

@@ -4,11 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v2.0.1] - 2022-05-02
 ## Changed
 - Updated godoc reference in README.md to point to v2
+- change module path to reflect change to Bayer-Group org
+- minimum required Go version to 1.16
 
-## [2.0.0]
+## [v2.0.0] - 2020-07-27
 ## Added
 - New `SliceOf()` matcher that allows matchers for specific slice elements
 - Examples for variadic functions
@@ -35,7 +37,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - `outParameterValidationError`
 - All public interfaces that were only used for defining the API
 
-## [1.1.0]
+## [v1.1.0] - 2020-06-02
 ## Added
 - Revive for linting Go code
 - Dlv for debugging Go code
@@ -79,7 +81,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - `customArguments` struct to use `[]match.SupportedKindsMatcher` instead of an array of `[]interface{}`
 - README to document new and custom matchers
 
-## [1.0.1]
+## [v1.0.1] - 2020-01-13
 ### Added
 - Revive for linting Go code
 - Dlv for debugging Go code
@@ -95,6 +97,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Equality checks in WithArgs to use reflect.DeepEqual to compare slices
 - Stringified type names to not be empty strings for none primitives
 
-## [1.0.0]
+## [v1.0.0] - 2019-07-01
 ### Added
 - Initial public release of this package

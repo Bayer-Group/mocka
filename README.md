@@ -1,7 +1,7 @@
 # mocka [![Build Status][build-badge]][build-ci] [![gopherbadger-tag-do-not-edit][coverage-badge]][coverage] [![GoDoc][godoc-badge]][godoc]
 
 ```go
-import "github.com/MonsantoCo/mocka/v2"
+import "github.com/Bayer-Group/mocka/v2"
 ```
 
 Mocka is a simple mocking and stubbing library for the [Go programming language][golang]. It is used to assist with writing unit tests around third-party functions.
@@ -108,7 +108,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka/v2"
+    "github.com/Bayer-Group/mocka/v2"
 )
 
 func TestMocka(t *testing.T) {
@@ -141,7 +141,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka/v2"
+    "github.com/Bayer-Group/mocka/v2"
 )
 
 func TestMocka(t *testing.T) {
@@ -183,7 +183,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka/v2"
+    "github.com/Bayer-Group/mocka/v2"
 )
 
 func TestMocka(t *testing.T) {
@@ -234,7 +234,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka/v2"
+    "github.com/Bayer-Group/mocka/v2"
 )
 
 func TestMocka(t *testing.T) {
@@ -272,7 +272,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka/v2"
+    "github.com/Bayer-Group/mocka/v2"
 )
 
 func TestMocka(t *testing.T) {
@@ -310,7 +310,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka/v2"
+    "github.com/Bayer-Group/mocka/v2"
 )
 
 func TestMocka(t *testing.T) {
@@ -363,7 +363,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka/v2"
+    "github.com/Bayer-Group/mocka/v2"
 )
 
 func TestMocka(t *testing.T) {
@@ -412,7 +412,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka/v2"
+    "github.com/Bayer-Group/mocka/v2"
 )
 
 func TestMocka(t *testing.T) {
@@ -448,7 +448,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka/v2"
+    "github.com/Bayer-Group/mocka/v2"
 )
 
 type test struct {
@@ -513,7 +513,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka/v2"
+    "github.com/Bayer-Group/mocka/v2"
 )
 
 func TestMocka(t *testing.T) {
@@ -555,7 +555,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka/v2"
+    "github.com/Bayer-Group/mocka/v2"
 )
 
 func TestMocka(t *testing.T) {
@@ -622,7 +622,7 @@ package main
 import (
     "testing"
 
-    "github.com/MonsantoCo/mocka/v2"
+    "github.com/Bayer-Group/mocka/v2"
 )
 
 func TestSandbox(t *testing.T) {
@@ -651,7 +651,7 @@ func TestSandbox(t *testing.T) {
 [build-badge]: https://github.com/MonsantoCo/mocka/workflows/build/badge.svg
 [build-ci]:       https://github.com/MonsantoCo/mocka/actions?query=workflow%3A%22build%22
 [godoc-badge]:     https://godoc.org/github.com/MonsantoCo/mocka?status.svg
-[godoc]:           https://pkg.go.dev/github.com/MonsantoCo/mocka/v2?tab=doc
+[godoc]:           https://pkg.go.dev/github.com/Bayer-Group/mocka/v2?tab=doc
 [ginkgo]: https://github.com/onsi/ginkgo
 [migrationGuide]: https://github.com/MonsantoCo/mocka/blob/master/MIGRATE_TO_V2.md
 
