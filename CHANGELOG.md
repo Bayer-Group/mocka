@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [v2.0.1] - 2022-05-02
+## [v2.0.1] - 2022-05-03
 ## Changed
 - Updated godoc reference in README.md to point to v2
 - change module path to reflect change to Bayer-Group org
