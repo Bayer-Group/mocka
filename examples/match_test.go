@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/MonsantoCo/mocka/v2"
-	"github.com/MonsantoCo/mocka/v2/match"
+	"github.com/Bayer-Group/mocka/v2"
+	"github.com/Bayer-Group/mocka/v2/match"
 )
 
 func ExampleAnything() {

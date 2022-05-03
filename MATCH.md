@@ -1,7 +1,7 @@
 # mocka/match
 
 ```go
-import "github.com/MonsantoCo/mocka/v2/match"
+import "github.com/Bayer-Group/mocka/v2/match"
 ```
 
 The package match provides a powerful suite of matchers that can be used in conjunction with the `WithArgs` function for a mocka Stub.
