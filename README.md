@@ -643,15 +643,15 @@ func TestSandbox(t *testing.T) {
 ```
 </details>
 
-[changelog]: https://github.com/MonsantoCo/mocka/blob/master/CHANGELOG.md
+[changelog]: https://github.com/Bayer-Group/mocka//blob/master/CHANGELOG.md
 [coverage]: https://github.com/jpoles1/gopherbadger
 [coverage-badge]: https://img.shields.io/badge/Go%20Coverage-100%25-brightgreen.svg?longCache=true&style=flat
 [golang]:          http://golang.org/
 [golang-install]:  http://golang.org/doc/install.html#releases
-[build-badge]: https://github.com/MonsantoCo/mocka/workflows/build/badge.svg
-[build-ci]:       https://github.com/MonsantoCo/mocka/actions?query=workflow%3A%22build%22
-[godoc-badge]:     https://godoc.org/github.com/MonsantoCo/mocka?status.svg
+[build-badge]: https://github.com/Bayer-Group/mocka//workflows/build/badge.svg
+[build-ci]:       https://github.com/Bayer-Group/mocka//actions?query=workflow%3A%22build%22
+[godoc-badge]:     https://godoc.org/github.com/Bayer-Group/mocka/?status.svg
 [godoc]:           https://pkg.go.dev/github.com/Bayer-Group/mocka/v2?tab=doc
 [ginkgo]: https://github.com/onsi/ginkgo
-[migrationGuide]: https://github.com/MonsantoCo/mocka/blob/master/MIGRATE_TO_V2.md
+[migrationGuide]: https://github.com/Bayer-Group/mocka//blob/master/MIGRATE_TO_V2.md
 
